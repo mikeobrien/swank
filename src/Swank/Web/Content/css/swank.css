@@ -1,0 +1,627 @@
+html {
+    height: 100%;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-smoothing: antialiased;
+    letter-spacing: 0.05rem;
+    text-align: justify;
+    color: #525252;
+    height: 100%;
+}
+
+.emoji {
+    height: 20px;
+    width: 20px;
+}
+
+/* ------ Boostrap Overrides ------ */
+
+h1:first-child,
+h2:first-child,
+h3:first-child,
+h4:first-child,
+h5:first-child {
+    margin-top: 0;
+}
+
+.table {
+    background-color: #fff;
+}
+
+.table thead tr th {
+    vertical-align: middle;
+}
+
+.btn {
+    border: 0;
+    border-radius: 0;
+}
+
+pre:last-child,
+p:last-child,
+.table:last-child,
+.alert:last-child,
+.panel:last-child {
+    margin-bottom: 0;
+}
+
+.table > thead > tr > th, 
+.table > tbody > tr > th, 
+.table > tfoot > tr > th, 
+.table > thead > tr > td, 
+.table > tbody > tr > td, 
+.table > tfoot > tr > td {
+    border: 0;
+    padding: 7px;
+}
+
+code {
+    background-color: transparent;
+    border-radius: 0;
+    color: #0115ff;
+}
+
+pre {
+    background-color: #fff;
+    border: 0;
+    border-radius: 0;
+    margin: 0;
+}
+
+.alert,
+.panel {
+    border: 0;
+    border-radius: 0;
+}
+
+.panel-heading {
+    border-width: 1px 1px 0 1px;
+    border-radius: 0;
+}
+
+.panel-default > .panel-heading .badge {
+    color: #fff;
+    background-color: #777;
+}
+
+.panel-default > .panel-heading {
+    color: #525252;
+    background-color: #fff;
+}
+
+/* ------ GitHub Markdown Overrides ------ */
+
+.markdown-body p code {
+    color: #0115ff;
+    font-size: 13pt;
+    background-color: transparent;
+    word-spacing: -1rem;
+    letter-spacing: 0;
+}
+
+/* ------------ Swank ------------ */
+
+#container {
+    display: table;
+    height: 100%;
+}
+
+#container > div {
+    display: table-row;
+}
+
+#container > div > div {
+    display: table-cell;
+    vertical-align: top;
+}
+
+/* Side bar */
+
+.swank-sidebar {
+    display: table-cell;
+    padding: 20px;
+    background-color: #0e304b;
+}
+
+.swank-sidebar a {
+    color: #f7f8f9;
+    text-decoration: none;
+}
+
+.swank-header {
+    width: 100%;
+    margin-bottom: 20px;
+    display: table;
+}
+
+.swank-header > div {
+    display: table-row;
+}
+
+.swank-header > div > div {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.swank-brand-container {
+    width: 100%;
+    white-space: nowrap;
+}
+
+.navbar-brand {
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.swank-spec-link-container {
+    padding-top: 4px;
+    padding-left: 20px;
+}
+
+.swank-logo {
+    max-height: 40px;
+}
+
+.swank-sidebar .list-group-item {
+    background-color: #0e304b;
+    border: 0;
+    font-size: 16px;
+    padding: 3px 30px;
+}
+
+.swank-sidebar .list-group-item.swank-resource {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 14px;
+    letter-spacing: 0;
+}
+
+/* Side bar panel */
+
+.swank-sidebar .panel {
+    margin-bottom: 0;
+}
+
+.swank-sidebar .panel-default {
+    border: 0;
+}
+
+.swank-sidebar .panel-title {
+    font-size: 18px;
+}
+
+.swank-sidebar .panel,
+.swank-sidebar .panel-default > .panel-heading {
+    background-color: #0e304b;
+}
+
+.swank-sidebar .panel-default > .panel-heading {
+    border: 0;
+}
+
+/* Content */
+
+.swank-content {
+    display: table-cell;
+    padding: 30px 50px 50px 50px;
+    width: 100%;
+}
+
+/* Resources */
+
+.swank-resource-header {
+    font-weight: bold;
+    padding-bottom: 20px;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.swank-resource-description {
+    margin-bottom: 30px;
+}
+
+/* Endpoints */
+
+.swank-endpoint-description {
+    margin-bottom: 15px;
+}
+
+.swank-endpoint table {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #c1c1c1;
+}
+
+.swank-endpoint table:not(.swank-options) > tbody > tr > td:first-child {
+    min-width: 130px;
+    white-space: nowrap;
+}
+
+.swank-endpoint table:not(.swank-message) > tbody > tr > td:nth-child(2) {
+    width: 100%;
+}
+
+.swank-endpoint :not(pre) > code {
+    background-color: #e2e2e2;
+    padding: 2px 4px;
+    font-size: 12pt;
+    margin: 0 5px;
+}
+
+.swank-endpoint code:first-child {
+    margin-left: 0;
+}
+
+.swank-endpoint td > .table > thead > tr > th,
+.swank-endpoint td > .panel > .table > thead > tr > th {
+    color: #484848;
+}
+
+.swank-endpoint td > table th,
+.swank-endpoint td > .panel > table th {
+    background-color: #d2d2d2;
+}
+
+.swank-endpoint td > table,
+.swank-endpoint td > .panel > table,
+.swank-endpoint .panel-heading {
+    border-color: #d2d2d2;
+}
+
+.swank-endpoint .table > thead > tr > th {
+    color: #f7f8f9;
+    padding: 5px 7px;
+}
+
+.swank-endpoint th {
+    background-color: #7d7d7d;
+}
+
+.swank-endpoint .table-zebra > tbody > tr:nth-child(even) > td {
+    background-color: #f5f5f5;
+}
+
+.swank-endpoint .label {
+    font-size: 12px;
+    padding: .2em .5em .2em;
+}
+
+.swank-endpoint .badge code,
+.swank-endpoint .label code {
+    background-color: inherit;
+    padding: 0;
+    color: #fff;
+    font-size: 11px;
+    margin: 0;
+    font-size: 13px;
+}
+
+.swank-endpoint .value {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    letter-spacing: 0;
+}
+
+.swank-endpoint.swank-get {
+    background-color: #EBF3F9;
+}
+
+.swank-endpoint.swank-post {
+    background-color: #EBF7F0;
+}
+
+.swank-endpoint.swank-put {
+    background-color: #FAF5EE;
+}
+
+.swank-endpoint.swank-delete {
+    background-color: #F7EDED;
+}
+
+/* Endpoint header */
+
+.swank-endpoint-header {
+    margin-top: 20px;
+    cursor: hand;
+    cursor: pointer;
+    color: #3e3e3e;
+}
+
+.swank-get .swank-endpoint-header {
+    background-color: #cfe1ef;
+}
+
+.swank-post .swank-endpoint-header {
+    background-color: #c9ead7;
+}
+
+.swank-put .swank-endpoint-header {
+    background-color: #f5e6d2;
+}
+
+.swank-delete .swank-endpoint-header {
+    background-color: #ecd9d9;
+}
+
+.swank-endpoint-method {
+    text-transform: uppercase;
+    color: white;
+    font-size: 0.8em;
+    width: 55px;
+    height: 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    padding: 9px 0;
+}
+
+.swank-get .swank-endpoint-method {
+    background-color: #0F6AB4;
+}
+
+.swank-post .swank-endpoint-method {
+    background-color: #10A54A;
+}
+
+.swank-put .swank-endpoint-method {
+    background-color: #C5862B;
+}
+
+.swank-delete .swank-endpoint-method {
+    background-color: #A41E22;
+}
+
+.swank-endpoint-url {
+    display: inline-block;
+    padding: 3px 0 3px 10px;
+    vertical-align: middle;
+    font-size: 14px;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    margin: 0;
+}
+
+.swank-endpoint-secure {
+    display: inline-block;
+    padding-left: 5px;
+    vertical-align: middle;
+}
+
+.swank-get .swank-endpoint-parameter,
+.swank-get .swank-endpoint-name,
+.swank-get .swank-endpoint-secure {
+    color: #0F6AB4;
+}
+
+.swank-post .swank-endpoint-parameter,
+.swank-post .swank-endpoint-name,
+.swank-post .swank-endpoint-secure {
+    color: #1a8e47;
+}
+
+.swank-put .swank-endpoint-parameter,
+.swank-put .swank-endpoint-name,
+.swank-put .swank-endpoint-secure {
+    color: #8c5e1c;
+}
+
+.swank-delete .swank-endpoint-parameter,
+.swank-delete .swank-endpoint-name,
+.swank-delete .swank-endpoint-secure {
+    color: #A41E22;
+}
+
+.swank-endpoint-parameter {
+    font-weight: bolder;
+}
+
+.swank-endpoint-name {
+    font-weight: bold;
+}
+
+.swank-endpoint-name {
+    float: right;
+    margin: 6px 10px 0 0;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Endpoint content */
+
+.swank-endpoint-body {
+    padding: 20px;
+}
+
+.swank-endpoint-description {
+    margin-bottom: 20px;
+}
+
+.swank-message-description {
+    margin-bottom: 15px;;
+}
+
+.swank-endpoint h4, 
+.swank-endpoint .h4, 
+.swank-endpoint h5,
+.swank-endpoint .h5,
+.swank-endpoint h6,
+.swank-endpoint .h6 {
+    margin-bottom: 15px;
+}
+
+.swank-endpoint .panel-heading {
+    border-width: 1px;
+    border-style: solid;
+}
+
+.swank-endpoint-body > table > thead tr {
+    border: #7d7d7d 1px solid;
+}
+
+.swank-endpoint td .alert:not(:last-child),
+.swank-endpoint td .panel:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+/* Endpoint tabs */
+
+.swank-endpoint .nav-tabs {
+    border-bottom: 0;
+}
+
+.swank-endpoint .nav-tabs > li > a {
+    border-radius: 0;
+    font-weight: bold;
+    padding: 7px 15px;
+    border-width: 0 0 1px 0;
+}
+
+.swank-endpoint .nav-tabs > li.active > a {
+    color: #f7f8f9;
+    border-width: 1px;
+}
+
+.swank-endpoint .nav-tabs > li.active > a,
+.swank-endpoint .nav-tabs > li.active > a:hover {
+    background-color: #7d7d7d;
+    border-color: #7d7d7d;
+}
+
+.swank-endpoint .nav-tabs a:hover, 
+.swank-endpoint .nav-tabs > li > a {
+    color: #525252;
+}
+
+.swank-endpoint .nav-tabs > li > a:hover {
+    background-color: #e0e0e0;
+    border-bottom-color: #e0e0e0;
+}
+
+.swank-endpoint .tab-content {
+    padding: 10px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #c1c1c1;
+    background-color: #f5f5f5;
+}
+
+/* Endpoint sample data */
+
+.swank-sample-data {
+    color: #333;
+    white-space: nowrap;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.swank-sample-data-copy {
+    float: right;
+    padding: 0;
+    font-size: 14pt;
+    width: 33px;
+    height: 33px;    
+    background-color: #e0e0e0;
+    color: #525252;
+}
+
+.swank-sample-data-copy:focus {
+    outline: 0;
+    color: #525252;
+}
+
+.swank-sample-data-copy:active:focus {
+    background-color: #f5f5f5;
+    border: #c1c1c1 1px solid;
+    outline: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.swank-endpoint .table > thead > tr > 
+th.swank-sample-data-selector-container {
+    width: 300px;
+    padding-left: 4px;
+}
+
+.swank-endpoint .swank-sample-data-selector > li > a {
+    color: #f7f8f9;
+}
+
+.swank-endpoint .swank-sample-data-selector a:hover, 
+.swank-endpoint .swank-sample-data-selector > li.active > a {
+    color: #525252;
+}
+
+.swank-endpoint .swank-sample-data-selector:before,
+.swank-endpoint .swank-sample-data-selector:after {
+    display: inline;
+}
+
+.swank-endpoint .swank-sample-data-selector > li,
+.swank-endpoint .swank-sample-data-selector > li > a,
+.swank-endpoint .swank-sample-data-selector > li.active > a,
+.swank-endpoint .swank-sample-data-selector > li > a:hover,
+.swank-endpoint .swank-sample-data-selector > li.active > a:hover {
+    border-width: 0;
+}
+
+.swank-endpoint .swank-sample-data-selector a {
+    height: 33px;
+    color: #f7f8f9;
+    font-weight: bold;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.swank-endpoint .swank-sample-data-selector > li.active > a,
+.swank-endpoint .swank-sample-data-selector > li.active > a:hover {
+    background-color: #e0e0e0;
+}
+
+.swank-sample-data-json .swank-string {
+    color: #A31515;
+}
+
+.swank-sample-data-json .swank-primitive {
+    color: #0000FF;
+}
+
+.swank-sample-data-xml .swank-bracket {
+    color: #6666c5;
+}
+
+.swank-sample-data-xml .swank-name {
+    color: #A31515;
+}
+
+/* Endpoint code examples */
+
+.swank-code-example {
+    padding: 0;
+    border: #c1c1c1 1px solid;
+    font-weight: bold;
+}
+
+.swank-code-example-copy {
+    position: absolute;
+    right: 81px;
+    font-size: 14pt;
+}
+
+.swank-code-example-copy:focus {
+    outline: 0;
+}
+
+.swank-code-example-copy:active:focus {
+    background-color: #f5f5f5;
+    border: #c1c1c1 1px solid;
+    outline: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+/* Footer */
+
+.swank-footer {
+    padding-top: 70px;
+    text-align: center;
+}
