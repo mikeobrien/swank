@@ -1,0 +1,89 @@
+﻿@model Swank.Description.CodeExamples.TemplateModel
+@using Swank.Extensions;
+var https = require("https");
+
+var userName = "username";
+var password = "password";
+
+var options = {
+    hostname: "@Model.Host",
+    port: @Model.Port,
+    path: "@Model.UrlTemplate",
+    method: "@Model.Method.ToUpper()",
+    headers: {
+@if (@Model.Request != null && @Model.Request.Body != null)
+{
+@:        Accept: "application/json",
+}
+@if (@Model.Response != null && @Model.Response.Body != null)
+{
+@:        Content-Type: "application/json",
+    }
+        Authorization: "Basic " + new  Buffer(userName + ":" + password).toString("base64");
+    }
+};
+
+@if (@Model.Request != null && @Model.Request.Body != null)
+{
+    @("var postData = ")
+    foreach (var line in @Model.Request.Body)
+    {
+        if (line.IsFirst != true) { @Raw(line.Whitespace) }
+
+        if (line.IsClosing != true)
+        {
+            if (line.IsMember == true) { @("\"" + line.Name + "\": ") }
+            if (line.IsDictionaryEntry == true) { @("\"[" + line.Name + "]\": ") }
+        }
+
+        if (line.IsSimpleType == true)
+        {
+            if (line.IsBoolean == true || line.IsNumeric == true) 
+                { @(line.SampleValue) }
+            else { @("\"" + line.SampleValue + "\"") }
+        }
+
+        if (line.IsOpening == true)
+        {
+            if (line.IsComplexType == true || line.IsDictionary == true) { @("{") }
+            else if (line.IsArray == true) { @("[") }
+        }
+
+        if (line.IsClosing == true)
+        {
+            if (line.IsComplexType == true || line.IsDictionary == true) { @("}") }
+            else if (line.IsArray == true) { @("]") }
+        }
+
+        if (line.IsMember == true && line.IsOpening != true && line.IsLastMember != true)
+        {
+            @(",")
+        }
+
+        if (line.IsLast == true) { @(";") }
+
+        @Raw("\r\n")
+    }
+@:
+@:var requestBody = JSON.stringify(postData);
+@:options.headers["Content-Length"] = requestBody.length;
+}
+
+var request = https.request(options, function(res) {
+    console.log("statusCode: ", res.statusCode);
+    console.log("headers: ", res.headers); 
+
+    res.on("data", function(d) {
+        process.stdout.write(d);
+    });
+});
+
+@if (@Model.Response != null && @Model.Response.Body != null)
+{
+@:request.write(requestBody);
+}
+request.end();
+
+request.on("error", function(e) {
+    console.error(e);
+});
