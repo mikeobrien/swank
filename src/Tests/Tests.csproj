@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{544F74B1-5075-4F9F-A6F9-3517E460A997}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tests</RootNamespace>
+    <AssemblyName>Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Tests.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Tests.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Bender, Version=3.0.54.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bender.3.0.54.0\lib\Bender.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Flexo, Version=1.0.24.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\flexo.1.0.24.0\lib\Flexo.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IISExpressBootstrapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IISExpressBootstrapper.1.2.0\lib\net45\IISExpressBootstrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NSubstitute, Version=1.10.0.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
+      <HintPath>..\packages\NSubstitute.1.10.0.0\lib\net45\NSubstitute.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.4.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Should, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Should.1.1.20\lib\Should.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\ApiDescriptionDsl.cs" />
+    <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Common\ReflectionExtensions.cs" />
+    <Compile Include="Common\ShouldExtensions.cs" />
+    <Compile Include="Common\SpecExtensions.cs" />
+    <Compile Include="Common\TestCaseSource.cs" />
+    <Compile Include="IISBootstrap.cs" />
+    <Compile Include="Acceptance\SpecTests.cs" />
+    <Compile Include="Acceptance\UITests.cs" />
+    <Compile Include="Acceptance\WebClient.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\Configuration\ConfigurationDslTests.cs" />
+    <Compile Include="Unit\Description\CodeExamples\CodeExampleTests.cs" />
+    <Compile Include="Unit\Description\EndpointConventionTests\Controllers.cs" />
+    <Compile Include="Unit\Description\EndpointConventionTests\EndpointConventionTests.cs" />
+    <Compile Include="Unit\Description\EnumConventionTests.cs" />
+    <Compile Include="Unit\Description\HeaderConventionTests.cs" />
+    <Compile Include="Unit\Description\MarkerConventionTests\Markers.cs" />
+    <Compile Include="Unit\Description\MarkerConventionTests\MarkerConventionTests.cs" />
+    <Compile Include="Unit\Description\ParameterConventionTests.cs" />
+    <Compile Include="Unit\Description\MemberConventionTests.cs" />
+    <Compile Include="Unit\Description\ModuleConventionTests\Modules.cs" />
+    <Compile Include="Unit\Description\ModuleConventionTests\ModuleConventionTests.cs" />
+    <Compile Include="Unit\Description\OptionConventionTests.cs" />
+    <Compile Include="Unit\Description\ResourceConventionTests\Resources.cs" />
+    <Compile Include="Unit\Description\ResourceConventionTests\ResourceConventionTests.cs" />
+    <Compile Include="Unit\Description\StatusCodeConventionTests.cs" />
+    <Compile Include="Unit\Description\TypeConventionTests.cs" />
+    <Compile Include="Unit\Description\XmlCommentsTests.cs" />
+    <Compile Include="Unit\EmbeddedCommentsTests.cs" />
+    <Compile Include="Unit\Extensions\FuncTests.cs" />
+    <Compile Include="Unit\Extensions\LinqExtensionTests.cs" />
+    <Compile Include="Unit\Extensions\MicroContainerTests.cs" />
+    <Compile Include="Unit\Extensions\ObjectExtensionTests.cs" />
+    <Compile Include="Unit\Extensions\ReflectionExtensionTests.cs" />
+    <Compile Include="Unit\Extensions\StringExtensionTests.cs" />
+    <Compile Include="Unit\Extensions\TemplateExtensionTests.cs" />
+    <Compile Include="Unit\Extensions\XmlTests.cs" />
+    <Compile Include="Unit\Extensions\WebExtensionTests.cs" />
+    <Compile Include="Unit\Web\Handlers\BodyDescriptionFactoryTests.cs" />
+    <Compile Include="Unit\Specification\Extensions.cs" />
+    <Compile Include="Unit\Specification\OptionFactoryTests.cs" />
+    <Compile Include="Unit\Specification\OverrideTests\Controllers.cs" />
+    <Compile Include="Unit\Specification\OverrideTests\Tests.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\EndpointTests\EndpointTests.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\EndpointTests\Controllers.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\EndpointTests\HeadersTests.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\EndpointTests\RequestTests.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\EndpointTests\ResponseTests.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\EndpointTests\QuerystringTests.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\EndpointTests\StatusCodeTests.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\EndpointTests\UrlParameterTests.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\ModuleTests\Controllers.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\ModuleTests\ModuleTests.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\ResourceTests\Controllers.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\ResourceTests\ResourceTests.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\Tests\Controllers.cs" />
+    <Compile Include="Unit\Specification\SpecificationService\Tests\Tests.cs" />
+    <Compile Include="Unit\Specification\TypeGraphFactoryTests.cs" />
+    <Compile Include="Unit\Web\Assets\LazyUrlTests.cs" />
+    <Compile Include="Unit\Web\Assets\ResourceAssetTests.cs" />
+    <Compile Include="Unit\Web\Assets\WebAssetTests.cs" />
+    <Compile Include="Unit\Web\Templates\RazorTemplateTests.cs" />
+    <Compile Include="Unit\Web\Templates\MustacheTemplateTests.cs" />
+    <Compile Include="Unit\Web\Assets\MarkdownAssetTests.cs" />
+    <Compile Include="Unit\Web\Assets\FileAssetTests.cs" />
+    <Compile Include="Unit\Web\Templates\WebTemplateTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Swank\Swank.csproj">
+      <Project>{ef146e97-9a5a-418c-8330-9dbecfd32b9a}</Project>
+      <Name>Swank</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestHarness\TestHarness.csproj">
+      <Project>{d5a3fe82-34b7-4264-bb57-5cc8a9eb7903}</Project>
+      <Name>TestHarness</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <EmbeddedResource Include="Unit\Description\CodeExamples\CodeExampleWithCommentsAndTemplate.md" />
+    <EmbeddedResource Include="Unit\Description\CodeExamples\CodeExampleWithCommentsAndTemplate.cshtml" />
+    <EmbeddedResource Include="Unit\Description\CodeExamples\CodeExampleWithNoComments.mustache" />
+    <EmbeddedResource Include="Unit\Description\CodeExamples\CodeExampleWithNoTemplate.md" />
+    <EmbeddedResource Include="Unit\Description\EndpointConventionTests\AttributePriority\Controller.Get.md" />
+    <EmbeddedResource Include="Unit\Description\EndpointConventionTests\EndpointDescriptions\ActionDescription\EmbeddedDescriptionController.Get.md" />
+    <EmbeddedResource Include="Unit\Description\EndpointConventionTests\EndpointDescriptions\RequestDescription\EmbeddedDescriptionController.Get.Request.md" />
+    <EmbeddedResource Include="Unit\Description\EndpointConventionTests\EndpointDescriptions\ResponseDescription\EmbeddedDescriptionController.Get.Response.md" />
+    <EmbeddedResource Include="Unit\Description\MarkerConventionTests\MarkerCommentsPriority\Description.md" />
+    <EmbeddedResource Include="Unit\Description\MarkerConventionTests\MarkerDescriptions\EmbeddedMarkdownComments\Description.md" />
+    <EmbeddedResource Include="Unit\Description\ModuleConventionTests\ModuleDescriptions\EmbeddedMarkdownComments\Module.md" />
+    <EmbeddedResource Include="Unit\Description\ResourceConventionTests\AttributeResource\EmbeddedMarkdownController.md" />
+    <EmbeddedResource Include="Unit\Description\ResourceConventionTests\ResourceCommentsPriority\Resource.md" />
+    <EmbeddedResource Include="Unit\Description\ResourceConventionTests\ResourceDescriptions\EmbeddedMarkdownComments\Resource.md" />
+    <EmbeddedResource Include="Unit\Specification\SpecificationService\EndpointTests\ControllerResource\Controller.md" />
+    <EmbeddedResource Include="Unit\Specification\SpecificationService\EndpointTests\EndpointDescriptions\ActionDescription\EmbeddedDescriptionController.Get.md" />
+    <EmbeddedResource Include="Unit\Specification\SpecificationService\ModuleTests\ModuleDescriptions\EmbeddedMarkdownComments\Module.md" />
+    <EmbeddedResource Include="Unit\Specification\SpecificationService\ResourceTests\AttributeResource\EmbeddedMarkdownComments\Controller.md" />
+    <EmbeddedResource Include="Unit\Specification\SpecificationService\ResourceTests\ResourceDescriptions\EmbeddedMarkdownComments\Resource.md" />
+    <EmbeddedResource Include="Unit\Specification\SpecificationService\ResourceTests\ResourceDescriptions\OrphanedEmbeddedMarkdown\Controller.md" />
+    <EmbeddedResource Include="Unit\Specification\SpecificationService\Tests\Comments\Comments.md" />
+    <EmbeddedResource Include="Unit\Web\Assets\MarkdownAssetTests.md" />
+    <EmbeddedResource Include="Unit\Web\Templates\RazorTemplateTests.cshtml" />
+    <EmbeddedResource Include="Unit\Web\Assets\ResourceAssertResources\Resources\ResourceAssetTests.txt" />
+    <EmbeddedResource Include="Unit\Web\Assets\ResourceAssertResources\Resources\ResourceAssetTests.md" />
+    <EmbeddedResource Include="Unit\Web\Assets\WebAssetTests\Resources\File3.fark" />
+    <EmbeddedResource Include="Unit\Web\Assets\WebAssetTests\Resources\File2.html" />
+    <EmbeddedResource Include="Unit\Web\Templates\WebTemplateTests\Resources\RazorTemplate.cshtml" />
+    <EmbeddedResource Include="Unit\Web\Templates\WebTemplateTests\Resources\MustacheTemplate.mustache" />
+    <EmbeddedResource Include="Unit\Configuration\ConfigurationDslTests\Templates\Nested\template.mustache" />
+    <EmbeddedResource Include="Unit\Configuration\ConfigurationDslTests\Templates\Nested\razor.cshtml" />
+    <EmbeddedResource Include="Unit\Configuration\ConfigurationDslTests\markdown.md" />
+    <EmbeddedResource Include="Unit\Configuration\ConfigurationDslTests\CodeExamples\csharp.cshtml" />
+    <EmbeddedResource Include="Unit\Configuration\ConfigurationDslTests\CodeExamples\curl.mustache" />
+    <EmbeddedResource Include="Unit\Configuration\ConfigurationDslTests\CodeExamples\curl.md" />
+    <EmbeddedResource Include="Unit\Configuration\ConfigurationDslTests\CodeExamples\csharp.md" />
+    <EmbeddedResource Include="Unit\Configuration\ConfigurationDslTests\App\razor.cshtml" />
+    <EmbeddedResource Include="Unit\Description\ResourceConventionTests\XmlCommentsResource\MarkdownCommentsController.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Unit\Extensions\EmbeddedStringResource.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Unit\Web\Assets\WebAssetTests\Resources\File1.json" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

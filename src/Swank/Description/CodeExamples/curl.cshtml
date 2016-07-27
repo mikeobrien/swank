@@ -1,0 +1,68 @@
+﻿@model Swank.Description.CodeExamples.TemplateModel
+@using Swank.Extensions;
+curl -X @Model.Method.ToUpper() -v \
+@if (@Model.Secure)
+{
+@:    -u username:password
+}
+@if (@Model.Response != null && @Model.Response.Body != null)
+{
+@:    -H "Accept: application/json"
+}
+@if (@Model.Request != null)
+{
+    if (@Model.Request.Body != null)
+    {
+@:    -H "Content-Type: application/json"
+@:    --data-binary
+        foreach (var line in @Model.Request.Body)
+        {
+            @Raw("        " + line.Whitespace) 
+
+            if (line.IsFirst == true) { @("'") }
+            if (line.IsLast == true) { @(" ") }
+
+            if (line.IsClosing != true)
+            {
+                if (line.IsMember == true) { @("\"" + line.Name + "\": ") }
+                if (line.IsDictionaryEntry == true) { @("\"[" + line.Name + "]\": ") }
+            }
+
+            if (line.IsSimpleType == true)
+            {
+                if (line.IsBoolean == true || line.IsNumeric == true) 
+                    { @(line.SampleValue) }
+                else { @("\"" + line.SampleValue + "\"") }
+            }
+
+            if (line.IsOpening == true)
+            {
+                if (line.IsComplexType == true || line.IsDictionary == true) { @("{") }
+                else if (line.IsArray == true) { @("[") }
+            }
+
+            if (line.IsClosing == true)
+            {
+                if (line.IsComplexType == true || line.IsDictionary == true) { @("}") }
+                else if (line.IsArray == true) { @("]") }
+            }
+
+            if (line.IsMember == true && line.IsOpening != true && line.IsLastMember != true)
+            {
+                @(",")
+            }
+
+            if (line.IsLast == true)
+            {
+                @("' /")
+            }
+
+            @Raw("\r\n")
+        }
+    }
+    else if (@Model.Request.IsBinary)
+    {
+@:    --data-binary @@/path/to/file
+    }
+}
+    @Model.Url
