@@ -1,0 +1,502 @@
+﻿@model Swank.Web.Handlers.AppModel
+@using Swank.Extensions;
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    @if (@Model.FavIconUrl.IsNotNullOrEmpty())
+    {
+        <link rel="icon" href="@Model.FavIconUrl">
+    }
+
+    @if (@Model.Title.IsNotNullOrEmpty())
+    {
+        <title>@Model.Title</title>
+    }
+
+    @foreach (var url in Model.Stylesheets)
+    {
+        <link href="@url" rel="stylesheet">
+    }
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+    @foreach (var url in Model.IEPolyfills)
+    {
+            <script src="@url"></script>
+    }
+        <![endif]-->
+    
+        <script>
+            window.Swank = {
+                overview: '@Raw(@Model.Overview.JavaScriptStringEncode())',
+                modules: {
+                    @foreach (var module in Model.Modules.Where(x => x.Overview.IsNotNullOrEmpty()))
+                    {
+                        @:'@module.Name': '@Raw(@module.Overview.JavaScriptStringEncode())',
+                    }
+                }
+            };
+        </script>
+    </head>
+
+    <body>
+        <div id="container"><div>
+        
+            <div class="swank-sidebar">
+                <div class="swank-header">
+                    <div>
+                        <div class="swank-logo-container">
+                            @if (@Model.LogoUrl.IsNotNullOrEmpty())
+                            {
+                                <img class="swank-logo" src="@Model.LogoUrl" />
+                            }
+                        </div>
+                        <div class="swank-brand-container">
+                            @if (@Model.Name.IsNotNullOrEmpty())
+                            {
+                                <a class="navbar-brand" href="#">@Model.Name</a>
+                            }
+                        </div>
+                        <div class="swank-spec-link-container">
+                            <a href="/@Model.SpecificationUrl" title="Specification">
+                                <span class="glyphicon glyphicon glyphicon-cloud-download"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            
+                @if (@Model.Overview.IsNotNullOrEmpty())
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a href="#"> Overview </a>
+                            </h4>
+                        </div>
+                        @if (@Model.OverviewLinks.Any())
+                        {
+                            <div class="panel-collapse collapse in">
+                                <ul class="list-group">
+                                    @foreach (var link in Model.OverviewLinks)
+                                    {
+                                        <li class="list-group-item">
+                                            <a href="#@link.FragmentId">@link.Name</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                }       
+             
+                @foreach (var module in Model.Modules)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a href="#ModulePanel-@module.Index" data-toggle="collapse"> @module.Name </a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse collapse in" id="ModulePanel-@module.Index">
+                            <ul class="list-group">
+                                    
+                                @if (module.Overview.IsNotNullOrEmpty())
+                                {
+                                    <li class="list-group-item"><a href="#modules/@module.Name">Overview</a></li>
+                                }
+
+                                @foreach (var resource in module.Resources)
+                                {
+                                    <li class="list-group-item swank-resource">
+                                        <a href="#resources/@resource">@resource</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+
+                    </div>
+                }            
+                  
+            </div>
+
+            <div class="swank-content">
+              
+                <div id="content">
+                
+                </div>
+
+                @if (@Model.Copyright.IsNotNullOrEmpty())
+                {
+                    <footer class="swank-footer">@Raw(@Model.Copyright)</footer>
+                }
+            
+            </div>
+        
+        </div></div>
+
+        @foreach (var url in Model.Scripts)
+        {
+            <script src="@url"></script>
+        }
+    </body>
+
+    <script type="text/html" id="swank-resource-template">
+        <h3 class="swank-resource-header">{{name}}</h3>
+        {{#overview}}
+        <div class="swank-resource-description">{{{.}}}</div>
+        {{/overview}}
+    
+        {{#endpoints}}
+    
+        <div class="swank-endpoint swank-{{method}}">
+
+            <div class="sticky swank-endpoint-header" data-toggle="collapse" data-target="#Endpoint-{{id}}">
+                <div class="swank-endpoint-method">{{method}}</div>
+                <div class="swank-endpoint-url">{{{replace urlTemplate '/(\{.*?\})/g' 
+                    '&lt;span class="swank-endpoint-parameter">$1&lt;/span>'}}}</div>
+                {{#secure}}
+                <div class="swank-endpoint-secure">
+                    <span class="glyphicon glyphicon-lock" alt="Secure"></span>
+                </div>
+                {{/secure}}
+                <div class="swank-endpoint-name">{{name}}</div>
+            </div>
+
+            <div id="Endpoint-{{id}}" class="collapse swank-endpoint-body">
+
+                {{#if comments}}
+                <div class="swank-endpoint-description">{{{comments}}}</div>
+                {{/if}}
+            
+                {{#if urlParameters}}
+                    {{> urlParameters}}
+                {{/if}}
+            
+                {{#if querystringParameters}}
+                    {{> querystringParameters}}
+                {{/if}}
+            
+                {{#request}}
+                    {{#if headers}}
+                        <h4>Request Headers</h4>
+                        {{> headers}}
+                    {{/if}}
+
+                    {{#either comments body}}
+                        <h4>Request</h4>
+                        {{> message}}
+                    {{/either}}
+                {{/request}}
+
+                {{#response}}
+                    {{#if headers}}
+                        <h4>Response Headers</h4>
+                        {{> headers}}
+                    {{/if}}
+
+                    {{#either comments body}}
+                        <h4>Response</h4>
+                        {{> message}}
+                    {{/either}}
+                {{/response}}
+
+                {{#if statusCodes}}
+                    {{> statusCodes}}
+                {{/if}}
+
+                {{#if codeExamples}}
+                    {{> codeExamples}}
+                {{/if}}
+ 
+            </div>
+         </div>
+
+        {{/endpoints}}
+    </script>
+
+    <script type="text/html" id="swank-url-parameters-template">
+        <h4>Url Parameters</h4>
+        <table class="table table-zebra">
+            <tbody>
+                {{#urlParameters}}
+                <tr>
+                    <td class="value"><strong>{{name}}</strong></td>
+                    <td>
+                        <p><code>{{type}}</code>{{{comments}}}</p>
+                        {{#options}}
+                            {{> options}}
+                        {{/options}}
+                    </td>
+                </tr>
+                {{/urlParameters}}
+            </tbody>
+        </table>    
+    </script>
+
+    <script type="text/html" id="swank-querystring-template">
+        <h4>Querystring</h4>
+        <table class="table table-zebra">
+            <tbody>
+                {{#querystringParameters}}
+                <tr>
+                    <td class="value"><strong>{{name}}</strong></td>
+                    <td>
+                        <p><code>{{type}}</code>
+                        {{#required}}<span class="badge">Required</span>{{/required}}
+                        {{^required}}<span class="badge">Optional</span>{{/required}}
+                        {{#multipleAllowed}}<span class="badge">Multiple Allowed</span>{{/multipleAllowed}}
+                        {{^required}}
+                        {{#if defaultValue}}
+                        <span class="label label-default">Default: <code>{{defaultValue}}</code></span>
+                        {{/if}}
+                        {{/required}}
+                        {{{comments}}}
+                        {{#options}}
+                            {{> options}}
+                        {{/options}}
+                    </td>
+                </tr>
+                {{/querystringParameters}}
+            </tbody>
+        </table>  
+    </script>
+
+    <script type="text/html" id="swank-headers-template">
+        <table class="table table-zebra">
+            <tbody>
+                {{#headers}}
+                <tr>
+                    <td class="value"><strong>{{name}}</strong></td>
+                    <td>
+                        <p>
+                        {{#optional}}<span class="badge">Optional</span>{{/optional}}
+                        {{#required}}<span class="badge">Required</span>{{/required}}
+                        {{{comments}}}</p>
+                    </td>
+                </tr>
+                {{/headers}}
+            </tbody>
+        </table>
+    </script>
+
+    <script type="text/html" id="swank-message-template">
+        
+
+        {{#if comments}}
+        <div class="swank-message-description">
+            <p>{{{comments}}}</p>
+        </div>
+        {{/if}}
+
+        {{#if body}}
+
+            <table class="table table-zebra swank-message">
+                <thead>
+                    <tr>
+                        <th class="swank-sample-data-selector-container">
+
+                            <ul class="nav nav-tabs swank-sample-data-selector">
+                                <li class="@(@Model.DisplayJsonData ? "active" : "hide")">
+                                    <a data-format="json" href="#1" data-toggle="tab">{}</a>
+                                </li>
+                                <li class="@(@Model.DisplayXmlData ? (@Model.DisplayJsonData ? "" : "active") : "hide")">
+                                    <a data-format="xml" href="#2" data-toggle="tab">&lt;/&gt;</a>
+                                </li>
+                            </ul>
+
+                            <button class="btn swank-sample-data-copy" data-placement="bottom" data-original-title="Copied">
+                                <span class="glyphicon glyphicon-copy"></span>
+                                </button>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#body}}
+                    <tr>
+                        <td class="swank-sample-data swank-sample-data-json">{{> jsonMessage}}</td>
+                        <td class="swank-sample-data swank-sample-data-xml hide">{{> xmlMessage}}</td>
+                        <td>{{> messageDescription}}</td>
+                    </tr>
+                    {{/body}}
+                </tbody>
+            </table>
+        
+        {{/if}}
+
+    </script>
+
+    <script type="text/html" id="swank-message-description-template">
+        {{^isClosing}}
+            {{^isDictionaryEntry}}
+                <p>
+                    {{#isSimpleType}}<code>{{typeName}}</code>{{/isSimpleType}}
+                    {{#isDictionary}}<span class="badge">Dictionary</span>{{/isDictionary}}
+                    {{#isArray}}<span class="badge">Array</span>{{/isArray}}
+                    {{#isMember}}
+                        {{#required}}<span class="badge">Required</span>{{/required}}
+                        {{#optional}}<span class="badge">Optional</span>{{/optional}}
+                        {{#if defaultValue}}
+                            <span class="badge badge-inverse">Default: <code>{{defaultValue}}</code></span>
+                        {{/if}}
+                    {{/isMember}}
+                    {{{comments}}}
+                </p>
+
+                {{#isDeprecated}}
+                    <div class="alert alert-danger">{{{deprecationMessage}}}</div>
+                {{/isDeprecated}}
+
+                {{#options}}{{> options}}{{/options}}
+            {{/isDictionaryEntry}}
+            {{#isDictionaryEntry}}
+                <div class="panel panel-default">
+                    {{#with dictionaryKey}}
+                        <div class="panel-heading {{#unless options}}empty{{/unless}}">
+                            <span class="label label-default">Key</span>
+                            <code>{{{typeName}}}</code>
+                            {{{comments}}}
+                        </div>
+                        {{#options}}{{> options}}{{/options}}
+                    {{/with}}
+                </div>
+                {{#either typeName comments}}
+                    <div class="panel panel-default">
+                        <div class="panel-heading {{#unless options}}empty{{/unless}}">
+                            <span class="label label-default">Value</span>
+                            {{#isSimpleType}}<code>{{{typeName}}}</code>{{/isSimpleType}}
+                            {{#isDictionary}}<span class="badge">Dictionary</span>{{/isDictionary}}
+                            {{#isArray}}<span class="badge">Array</span>{{/isArray}}
+                            {{{comments}}}
+                        </div>
+                        {{#options}}{{> options}}{{/options}}
+                    </div>
+                {{/either}}
+            {{/isDictionaryEntry}}
+        {{/isClosing}}
+    </script>
+
+    <script type="text/html" id="swank-json-message-template">
+        <span class="sample-code-whitespace">{{{replace whitespace ' ' '&nbsp;'}}}</span>
+        {{^isClosing}}
+            {{#isMember}}
+                <span class="swank-string">"{{name}}"</span>:&nbsp;
+            {{/isMember}}
+            {{#isDictionaryEntry}}
+                <span class="swank-string">"<span style="font-style: italic">[{{name}}]</span>"</span>:&nbsp;
+            {{/isDictionaryEntry}}
+        {{/isClosing}}
+        {{#isSimpleType}}
+            {{#isString}}<span class="swank-string">"{{sampleValue}}"</span>{{/isString}}
+            {{#isBoolean}}<span class="swank-primitive">{{sampleValue}}</span>{{/isBoolean}}
+            {{#isNumeric}}<span class="swank-primitive">{{sampleValue}}</span>{{/isNumeric}}
+            {{#isDateTime}}<span class="swank-string">"{{sampleValue}}"</span>{{/isDateTime}}
+            {{#isDuration}}<span class="swank-string">"{{sampleValue}}"</span>{{/isDuration}}
+            {{#isGuid}}<span class="swank-string">"{{sampleValue}}"</span>{{/isGuid}}
+        {{/isSimpleType}}
+        {{#isOpening}}
+            {{#isArray}}[{{/isArray}}
+            {{#isComplexType}}&#123;{{/isComplexType}}
+            {{#isDictionary}}&#123;{{/isDictionary}}
+        {{/isOpening}}
+        {{#isClosing}}
+            {{#isArray}}]{{/isArray}}
+            {{#isComplexType}}&#125;{{/isComplexType}}
+            {{#isDictionary}}&#125;{{/isDictionary}}
+        {{/isClosing}}
+        {{#isMember}}
+            {{^isOpening}}
+                {{^isLastMember}},{{/isLastMember}}
+            {{/isOpening}}
+        {{/isMember}}
+    </script>
+
+    <script type="text/html" id="swank-xml-message-template">
+        <span class="sample-code-whitespace">{{{replace whitespace ' ' '&nbsp;'}}}</span>
+        <span class="swank-bracket">&lt;
+            {{~#isClosing~}}/{{~/isClosing~}}
+        </span><span class="swank-name" style="{{#isDictionaryEntry}}font-style: italic{{/isDictionaryEntry}}">
+            {{~#isDictionaryEntry~}}[{{name}}]{{~/isDictionaryEntry~}}
+            {{~^isDictionaryEntry~}}{{name}}{{~/isDictionaryEntry~}}
+        </span><span class="swank-bracket">&gt;</span>
+        {{#isSimpleType}}
+            {{sampleValue}}
+            <span class="swank-bracket">&lt;/</span><span class="swank-name" style="{{#isDictionaryEntry}}font-style: italic{{/isDictionaryEntry}}">
+                {{~#isDictionaryEntry~}}[{{name}}]{{~/isDictionaryEntry~}}
+                {{~^isDictionaryEntry~}}{{name}}{{~/isDictionaryEntry~}}
+            </span><span class="swank-bracket">&gt;</span>
+        {{/isSimpleType}}
+    </script>
+
+    <script type="text/html" id="swank-status-codes-template">
+        <h4>Status Codes</h4>
+
+        <table class="table table-zebra">
+            <tbody>
+                {{#statusCodes}}
+                <tr>
+                    <td class="value"><strong>{{code}} {{name}}</strong></td>
+                    <td><p>{{{comments}}}</p></td>
+                </tr>
+                {{/statusCodes}}
+            </tbody>
+        </table>
+    </script>
+
+    <script type="text/html" id="swank-code-examples-template">
+        <h4>Examples</h4>
+
+        <ul class="nav nav-tabs swank-code-example-selector" role="tablist">
+            {{#codeExamples}}
+            <li {{#equals index '0'}}class="active"{{/equals}}>
+                <a data-language="{{language}}" href="#code-example-{{../id}}-{{index}}" data-toggle="tab">{{name}}</a>
+            </li>
+            {{/codeExamples}}
+        </ul>
+
+        <div class="tab-content">
+            {{#codeExamples}}
+            <div class="tab-pane {{#equals index '0'}}active{{/equals}}" id="code-example-{{../id}}-{{index}}">
+                {{{comments}}}
+                <div>
+                    <button class="btn swank-code-example-copy" 
+                        data-clipboard-target="#code-example-{{../id}}-{{index}}-content"
+                        data-placement="bottom" data-original-title="Copied">
+                    <span class="glyphicon glyphicon-copy"></span>
+                    </button>
+                    <pre class="swank-code-example {{language}}"><code id="code-example-{{../id}}-{{index}}-content">
+                        {{~#with example~}}
+                            {{{replace . '\r\n' '&lt;br/>'}}}
+                        {{~/with~}}
+                    </code></pre>
+                </div>
+            </div>
+            {{/codeExamples}}
+        </div>
+    </script>
+
+    <script type="text/html" id="swank-options-template">
+        <table class="table table-zebra swank-options">
+            <thead><tr><th>Possible Values</th></tr></thead>
+            <tbody>
+            {{#if comments}}
+            <tr>
+                <td>{{{comments}}}</td>
+            </tr>
+            {{/if}}
+            {{#options}}
+            <tr>
+                <td>
+                    {{^equals name value}}<b>{{name}}</b>:{{/equals}}<code>{{value}}</code>{{{comments}}}
+                </td>
+             </tr>
+            {{/options}}
+            </tbody>
+        </table>
+    </script>
+</html>
