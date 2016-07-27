@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+   <metadata>
+      <id>Swank</id>
+      <version>0.0.0.0</version>
+      <title>Swank</title>
+      <authors>Mike O'Brien</authors>
+      <description>API Documentation for ASP.NET Web API 2.</description>
+      <releaseNotes />
+      <copyright />
+      <language>en-US</language>
+      <licenseUrl>https://github.com/mikeobrien/swank/blob/master/LICENSE</licenseUrl>
+      <projectUrl>https://github.com/mikeobrien/swank</projectUrl>
+      <owners>Mike O'Brien</owners>
+      <summary>API Documentation for ASP.NET Web API 2.</summary>
+      <iconUrl>https://github.com/mikeobrien/Swank/raw/master/misc/logo.png</iconUrl>
+      <tags>fubumvc</tags>
+      <dependencies>
+         <dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.3" />
+         <dependency id="MarkdownDeep.NET" version="1.5.0" />
+         <dependency id="Nustache" version="1.15.3.7" />
+         <dependency id="RazorEngine" version="3.9.0" />
+      </dependencies>
+   </metadata>
+</package>
