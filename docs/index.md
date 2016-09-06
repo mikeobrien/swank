@@ -531,7 +531,7 @@ Overrides are available for everything in the spec, the configuration DSL method
 If you want to modify how Swank actually generates the spec you can override the default conventions. Conventions are passed various objects they are related to and return a description. For example the default convention for status codes is passed an `ApiDescription`. It looks for any status code attributes on the controller and action method and then returns status code descriptions.
 
 ```csharp
-public class StatusCodeConvention : IDescriptionConvention<ApiDescription, List<StatusCodeDescription>>{    public virtual List<StatusCodeDescription> GetDescription(ApiDescription endpoint)    {        return endpoint.GetControllerAndActionAttributes<StatusCodeAttribute>()            .Select(x => new StatusCodeDescription            {                Code = x.Code,                Name = x.Name,                Comments = x.Comments.Transform[markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)Inline()            }).OrderBy(x => x.Code).ToList();    }}
+public class StatusCodeConvention : IDescriptionConvention<ApiDescription, List<StatusCodeDescription>>{    public virtual List<StatusCodeDescription> GetDescription(ApiDescription endpoint)    {        return endpoint.GetControllerAndActionAttributes<StatusCodeAttribute>()            .Select(x => new StatusCodeDescription            {                Code = x.Code,                Name = x.Name,                Comments = x.Comments            }).OrderBy(x => x.Code).ToList();    }}
 ```
 
 Lets say for example we stored all endpoint status codes in a file and you wanted to include them in your documentation (Obviously this is a *very* contrived example).
@@ -545,9 +545,9 @@ You could create a status code convention that pulls these from the file, matche
 
 ```csharp
 public class FileStatusCodeConvention : StatusCodeConvention 
-{    public virtual List<StatusCodeDescription> GetDescription(ApiDescription endpoint)    {        return File.ReadAllLines("path/to/statuscodes.csv")
+{    public override List<StatusCodeDescription> GetDescription(ApiDescription endpoint)    {        return File.ReadAllLines("path/to/statuscodes.csv")
             .Select(x => x.Split(','))
-            .Where(x => x[0] == endpoint.ID)            .Select(x => new StatusCodeDescription            {                Code = x[1],                Name = x[2],                Comments = x[3].Transform[markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)Inline()            })
+            .Where(x => x[0] == endpoint.ID)            .Select(x => new StatusCodeDescription            {                Code = x[1],                Name = x[2],                Comments = x[3]            })
             .Concat(base.GetDescription(endpoint))
             .OrderBy(x => x.Code).ToList();    }}
 ```
@@ -573,7 +573,7 @@ public class SomeConvention : StatusCodeConvention
     {
         _config = config;
     }
-        public virtual List<StatusCodeDescription> GetDescription(ApiDescription endpoint)    {        if (_config.Flag)...;    }}
+        public override List<StatusCodeDescription> GetDescription(ApiDescription endpoint)    {        if (_config.Flag)...;    }}
 configuration.EnableSwank(x => x
     .WithStatusCodeConvention<SomeConvention, SomeConfig>(x => x.Flag == true)...);
 ```
