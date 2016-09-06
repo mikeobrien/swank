@@ -78,6 +78,9 @@ namespace Swank
                 routeTemplate: configuration.SpecificationUrl.TrimStart('/'),
                 defaults: null, constraints: null,
                 handler: container.GetInstance<SpecificationHandler>());
+
+            if (configuration.IgnoreFolders)
+                IgnorePaths.Initialize(configuration.AppUrl, configuration.SpecificationUrl);
         }
     }
 }

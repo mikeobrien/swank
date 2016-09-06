@@ -51,6 +51,16 @@ namespace Swank.Configuration
         }
 
         /// <summary>
+        /// Overrides the configured virtual path provider to ignore
+        /// physical folders that match Swank urls.
+        /// </summary>
+        public ConfigurationDsl IgnoreFolders()
+        {
+            _configuration.IgnoreFolders = true;
+            return this;
+        }
+
+        /// <summary>
         /// Includes the assembly of the specified type.
         /// This call is additive, so you can specify multiple assemblies.
         /// </summary>

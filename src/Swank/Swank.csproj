@@ -115,6 +115,7 @@
     <Compile Include="Description\TypeConvention.cs" />
     <Compile Include="Description\XmlComments.cs" />
     <Compile Include="Extensions\Func.cs" />
+    <Compile Include="Extensions\IgnorePaths.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="MicroContainer.cs" />

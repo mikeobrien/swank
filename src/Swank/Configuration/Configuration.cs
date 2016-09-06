@@ -152,6 +152,7 @@ namespace Swank.Configuration
         }
 
         public bool DebugMode { get; set; }
+        public bool IgnoreFolders { get; set; }
         public string AppUrl { get; set; }
         public string SpecificationUrl { get; set; }
         public RazorTemplate AppTemplate { get; set; }

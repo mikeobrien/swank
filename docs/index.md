@@ -36,14 +36,14 @@ At this point you should see documentation under `http://yoursite/api`. The url 
 ```csharpconfiguration.EnableSwank(x => x.WithAppAt("my/custom/path")...);
 ```  
 <div class="bs-callout bs-callout-danger">
-<p>Note: If your url matches a physical path, IIS will try to list directory contents (and you'll likely get a 403). The reason is that the <code>DirectoryListingModule</code> takes precedence over the <code>UrlRoutingModule</code>. There are a few options:</p>
+<p>Note: If your url matches a physical folder path, IIS will try to list directory contents (and you'll likely get a 403). The reason is that the <code>DirectoryListingModule</code> takes precedence over the <code>UrlRoutingModule</code>. Swank can override this behavior with the <code>IgnoreFolders()</code> option.</p>
 
-<ol>
-<li>Set <code>RouteTable.Routes.RouteExistingFiles = true</code>. This will route all existing files and folders. This may have repercussions so you may have to ignore routes where physical files need to be served.</li>
-<li>Reorder the <code>DirectoryListingModule</code> (IIS Manager > Server node > Modules then click View Ordered List and then move the <code>DirectoryListingModule</code> below the <code>UrlRoutingModule</code>).</li>
-<li>Remove the <code>DirectoryListingModule</code> (IIS Manager > Server node > Modules select the <code>DirectoryListingModule</code> then click Delete).</li>
-<li>Choose a different folder name that doesn't conflict.</li>
-</ol>
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="n">configuration</span><span class="p">.</span><span class="nf">EnableSwank</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="nf"> IgnoreFolders</span><span class="p">()...);</span>
+</code></pre>
+</div>
+
+<p>This option overrides the configured virtual path provider to selectively ignore physical paths that match Swank urls.</p>
+
 </div>
 
 By default the request authority is used throughout the docs. Although you can override it as follows.
