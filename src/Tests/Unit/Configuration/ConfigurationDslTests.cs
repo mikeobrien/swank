@@ -895,7 +895,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_module_override()
         {
-            Action<Swank.Specification.Module> @override = x => {};
+            Action<ModuleOverrideContext> @override = x => {};
 
             _dsl.OverrideModules(@override);
 
@@ -909,13 +909,18 @@ namespace Tests.Unit.Configuration
         public void should_add_module_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideModulesWhen(x => x.Comments = "oh hai", x => x.Name == name);
+            _dsl.OverrideModulesWhen(
+                x => x.Module.Comments = "oh hai", 
+                x => x.Module.Name == name);
 
             _configuration.ModuleOverrides.Count.ShouldEqual(1);
 
             var module = new Swank.Specification.Module { Name = "fark" };
 
-            _configuration.ModuleOverrides.First()(module);
+            _configuration.ModuleOverrides.First()(new ModuleOverrideContext
+            {
+                Module = module
+            });
 
             module.Name.ShouldEqual("fark");
             module.Comments.ShouldEqual(comments);
@@ -924,7 +929,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_resource_override()
         {
-            Action<Resource> @override = x => { };
+            Action<ResourceOverrideContext> @override = x => { };
 
             _dsl.OverrideResources(@override);
 
@@ -938,13 +943,18 @@ namespace Tests.Unit.Configuration
         public void should_add_resource_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideResourcesWhen(x => x.Comments = "oh hai", x => x.Name == name);
+            _dsl.OverrideResourcesWhen(
+                x => x.Resource.Comments = "oh hai", 
+                x => x.Resource.Name == name);
 
             _configuration.ResourceOverrides.Count.ShouldEqual(1);
 
             var resource = new Resource { Name = "fark" };
 
-            _configuration.ResourceOverrides.First()(resource);
+            _configuration.ResourceOverrides.First()(new ResourceOverrideContext
+            {
+                Resource = resource
+            });
 
             resource.Name.ShouldEqual("fark");
             resource.Comments.ShouldEqual(comments);
@@ -953,7 +963,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_endpoint_override()
         {
-            Action<ApiDescription, Endpoint> @override = (x, y) => { };
+            Action<EndpointOverrideContext> @override = x => { };
 
             _dsl.OverrideEndpoints(@override);
 
@@ -967,14 +977,17 @@ namespace Tests.Unit.Configuration
         public void should_add_endpoint_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideEndpointsWhen((a, e) => e.Comments = "oh hai", 
-                (a, e) => e.Name == name);
+            _dsl.OverrideEndpointsWhen(e => e.Endpoint.Comments = "oh hai", 
+                e => e.Endpoint.Name == name);
 
             _configuration.EndpointOverrides.Count.ShouldEqual(1);
 
             var endpoint = new Endpoint { Name = "fark" };
 
-            _configuration.EndpointOverrides.First()(new ApiDescription(), endpoint);
+            _configuration.EndpointOverrides.First()(new EndpointOverrideContext
+            {
+                Endpoint =  endpoint
+            });
 
             endpoint.Name.ShouldEqual("fark");
             endpoint.Comments.ShouldEqual(comments);
@@ -983,8 +996,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_url_parameters_override()
         {
-            Action<ApiDescription, ApiParameterDescription, 
-                UrlParameter> @override = (x, y, z) => { };
+            Action<UrlParameterOverrideContext> @override = x => { };
 
             _dsl.OverrideUrlParameters(@override);
 
@@ -998,15 +1010,17 @@ namespace Tests.Unit.Configuration
         public void should_add_url_parameters_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideUrlParametersWhen((a, p, e) => e.Comments = "oh hai",
-                (a, p, e) => e.Name == name);
+            _dsl.OverrideUrlParametersWhen(e => e.UrlParameter.Comments = "oh hai",
+                e => e.UrlParameter.Name == name);
 
             _configuration.UrlParameterOverrides.Count.ShouldEqual(1);
 
             var urlParameter = new UrlParameter { Name = "fark" };
 
-            _configuration.UrlParameterOverrides.First()(new ApiDescription(), 
-                new ApiParameterDescription(), urlParameter);
+            _configuration.UrlParameterOverrides.First()(new UrlParameterOverrideContext
+            {
+                UrlParameter =  urlParameter
+            });
 
             urlParameter.Name.ShouldEqual("fark");
             urlParameter.Comments.ShouldEqual(comments);
@@ -1015,9 +1029,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_querystring_override()
         {
-            Action<ApiDescription, ApiParameterDescription,
-                QuerystringParameter> 
-                    @override = (x, y, z) => { };
+            Action<QuerystringOverrideContext> @override = x => { };
 
             _dsl.OverrideQuerystring(@override);
 
@@ -1031,15 +1043,18 @@ namespace Tests.Unit.Configuration
         public void should_add_querystring_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideQuerystringWhen((a, p, e) => e.Comments = "oh hai",
-                (a, p, e) => e.Name == name);
+            _dsl.OverrideQuerystringWhen(
+                e => e.Querystring.Comments = "oh hai",
+                e => e.Querystring.Name == name);
 
             _configuration.QuerystringOverrides.Count.ShouldEqual(1);
 
             var querystring = new QuerystringParameter { Name = "fark" };
 
-            _configuration.QuerystringOverrides.First()(new ApiDescription(),
-                new ApiParameterDescription(), querystring);
+            _configuration.QuerystringOverrides.First()(new QuerystringOverrideContext
+            {
+                Querystring = querystring
+            });
 
             querystring.Name.ShouldEqual("fark");
             querystring.Comments.ShouldEqual(comments);
@@ -1048,13 +1063,16 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_parameter_override()
         {
-            _dsl.OverrideParameters((a, e) => e.Comments = "oh hai");
+            _dsl.OverrideParameters(e => e.Parameter.Comments = "oh hai");
 
             _configuration.UrlParameterOverrides.Count.ShouldEqual(1);
 
             var urlParameter = new UrlParameter { Name = "fark" };
 
-            _configuration.UrlParameterOverrides.First()(null, null, urlParameter);
+            _configuration.UrlParameterOverrides.First()(new UrlParameterOverrideContext
+            {
+                UrlParameter = urlParameter
+            });
 
             urlParameter.Name.ShouldEqual("fark");
             urlParameter.Comments.ShouldEqual("oh hai");
@@ -1063,7 +1081,10 @@ namespace Tests.Unit.Configuration
 
             var querystring = new QuerystringParameter { Name = "fark" };
 
-            _configuration.QuerystringOverrides.First()(null, null, querystring);
+            _configuration.QuerystringOverrides.First()(new QuerystringOverrideContext
+            {
+                Querystring = querystring
+            });
 
             querystring.Name.ShouldEqual("fark");
             querystring.Comments.ShouldEqual("oh hai");
@@ -1075,14 +1096,18 @@ namespace Tests.Unit.Configuration
         public void should_add_parameter_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideParametersWhen((a, e) => e.Comments = "oh hai",
-                (a, e) => e.Name == name);
+            _dsl.OverrideParametersWhen(
+                e => e.Parameter.Comments = "oh hai",
+                e => e.Parameter.Name == name);
 
             _configuration.UrlParameterOverrides.Count.ShouldEqual(1);
 
             var urlParameter = new UrlParameter { Name = "fark" };
 
-            _configuration.UrlParameterOverrides.First()(null, null, urlParameter);
+            _configuration.UrlParameterOverrides.First()(new UrlParameterOverrideContext
+            {
+                UrlParameter = urlParameter
+            });
 
             urlParameter.Name.ShouldEqual("fark");
             urlParameter.Comments.ShouldEqual(comments);
@@ -1091,7 +1116,10 @@ namespace Tests.Unit.Configuration
 
             var querystring = new QuerystringParameter { Name = "fark" };
 
-            _configuration.QuerystringOverrides.First()(null, null, querystring);
+            _configuration.QuerystringOverrides.First()(new QuerystringOverrideContext
+            {
+                Querystring = querystring
+            });
 
             querystring.Name.ShouldEqual("fark");
             querystring.Comments.ShouldEqual(comments);
@@ -1100,7 +1128,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_status_code_override()
         {
-            Action<ApiDescription, StatusCode> @override = (x, y) => { };
+            Action<StatusCodeOverrideContext> @override = x => { };
 
             _dsl.OverrideStatusCodes(@override);
 
@@ -1114,14 +1142,18 @@ namespace Tests.Unit.Configuration
         public void should_add_status_code_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideStatusCodesWhen((a, e) => e.Comments = "oh hai",
-                (a, e) => e.Name == name);
+            _dsl.OverrideStatusCodesWhen(
+                e => e.StatusCode.Comments = "oh hai",
+                e => e.StatusCode.Name == name);
 
             _configuration.StatusCodeOverrides.Count.ShouldEqual(1);
 
             var statusCode = new StatusCode { Name = "fark" };
 
-            _configuration.StatusCodeOverrides.First()(new ApiDescription(), statusCode);
+            _configuration.StatusCodeOverrides.First()(new StatusCodeOverrideContext
+            {
+                StatusCode = statusCode
+            });
 
             statusCode.Name.ShouldEqual("fark");
             statusCode.Comments.ShouldEqual(comments);
@@ -1130,7 +1162,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_header_override()
         {
-            Action<ApiDescription, Header> @override = (x, y) => { };
+            Action<HeaderOverrideContext> @override = x => { };
 
             _dsl.OverrideHeaders(@override);
 
@@ -1147,14 +1179,18 @@ namespace Tests.Unit.Configuration
         public void should_add_header_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideHeadersWhen((a, e) => e.Comments = "oh hai",
-                (a, e) => e.Name == name);
+            _dsl.OverrideHeadersWhen(
+                e => e.Header.Comments = "oh hai",
+                e => e.Header.Name == name);
 
             _configuration.RequestHeaderOverrides.Count.ShouldEqual(1);
 
             var header = new Header { Name = "fark" };
 
-            _configuration.RequestHeaderOverrides.First()(new ApiDescription(), header);
+            _configuration.RequestHeaderOverrides.First()(new HeaderOverrideContext
+            {
+                Header = header
+            });
 
             header.Name.ShouldEqual("fark");
             header.Comments.ShouldEqual(comments);
@@ -1163,7 +1199,10 @@ namespace Tests.Unit.Configuration
 
             header = new Header { Name = "fark" };
 
-            _configuration.ResponseHeaderOverrides.First()(new ApiDescription(), header);
+            _configuration.ResponseHeaderOverrides.First()(new HeaderOverrideContext
+            {
+                Header = header
+            });
 
             header.Name.ShouldEqual("fark");
             header.Comments.ShouldEqual(comments);
@@ -1172,7 +1211,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_request_header_override()
         {
-            Action<ApiDescription, Header> @override = (x, y) => { };
+            Action<HeaderOverrideContext> @override = x => { };
 
             _dsl.OverrideRequestHeaders(@override);
 
@@ -1188,14 +1227,18 @@ namespace Tests.Unit.Configuration
         public void should_add_request_header_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideRequestHeadersWhen((a, e) => e.Comments = "oh hai",
-                (a, e) => e.Name == name);
+            _dsl.OverrideRequestHeadersWhen(
+                e => e.Header.Comments = "oh hai",
+                e => e.Header.Name == name);
 
             _configuration.RequestHeaderOverrides.Count.ShouldEqual(1);
 
             var header = new Header { Name = "fark" };
 
-            _configuration.RequestHeaderOverrides.First()(new ApiDescription(), header);
+            _configuration.RequestHeaderOverrides.First()(new HeaderOverrideContext
+            {
+                Header = header
+            });
 
             header.Name.ShouldEqual("fark");
             header.Comments.ShouldEqual(comments);
@@ -1206,7 +1249,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_response_header_override()
         {
-            Action<ApiDescription, Header> @override = (x, y) => { };
+            Action<HeaderOverrideContext> @override = x => { };
 
             _dsl.OverrideResponseHeaders(@override);
 
@@ -1222,8 +1265,9 @@ namespace Tests.Unit.Configuration
         public void should_add_response_header_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideResponseHeadersWhen((a, e) => e.Comments = "oh hai",
-                (a, e) => e.Name == name);
+            _dsl.OverrideResponseHeadersWhen(
+                e => e.Header.Comments = "oh hai",
+                e => e.Header.Name == name);
 
             _configuration.RequestHeaderOverrides.ShouldBeEmpty();
 
@@ -1231,7 +1275,10 @@ namespace Tests.Unit.Configuration
 
             var header = new Header { Name = "fark" };
 
-            _configuration.ResponseHeaderOverrides.First()(new ApiDescription(), header);
+            _configuration.ResponseHeaderOverrides.First()(new HeaderOverrideContext
+            {
+                Header = header
+            });
 
             header.Name.ShouldEqual("fark");
             header.Comments.ShouldEqual(comments);
@@ -1240,7 +1287,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_request_override()
         {
-            Action<ApiDescription, Message> @override = (x, y) => { };
+            Action<MessageOverrideContext> @override = x => { };
 
             _dsl.OverrideRequest(@override);
 
@@ -1256,8 +1303,9 @@ namespace Tests.Unit.Configuration
         public void should_add_request_override_with_predicate(
             string commentMatches, string comments)
         {
-            _dsl.OverrideRequestWhen((a, e) => e.Comments += " farker",
-                (a, e) => e.Comments == commentMatches);
+            _dsl.OverrideRequestWhen(
+                e => e.Message.Comments += " farker",
+                e => e.Message.Comments == commentMatches);
 
             _configuration.ResponseOverrides.ShouldBeEmpty();
 
@@ -1265,7 +1313,10 @@ namespace Tests.Unit.Configuration
 
             var data = new Message { Comments = "fark" };
 
-            _configuration.RequestOverrides.First()(new ApiDescription(), data);
+            _configuration.RequestOverrides.First()(new MessageOverrideContext
+            {
+                Message = data
+            });
             
             data.Comments.ShouldEqual(comments);
         }
@@ -1273,7 +1324,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_response_override()
         {
-            Action<ApiDescription, Message> @override = (x, y) => { };
+            Action<MessageOverrideContext> @override = x => { };
 
             _dsl.OverrideResponse(@override);
 
@@ -1289,8 +1340,9 @@ namespace Tests.Unit.Configuration
         public void should_add_response_override_with_predicate(
             string commentMatches, string comments)
         {
-            _dsl.OverrideResponseWhen((a, e) => e.Comments += " farker",
-                (a, e) => e.Comments == commentMatches);
+            _dsl.OverrideResponseWhen(
+                e => e.Message.Comments += " farker",
+                e => e.Message.Comments == commentMatches);
 
             _configuration.RequestOverrides.ShouldBeEmpty();
 
@@ -1298,7 +1350,10 @@ namespace Tests.Unit.Configuration
 
             var data = new Message { Comments = "fark" };
 
-            _configuration.ResponseOverrides.First()(new ApiDescription(), data);
+            _configuration.ResponseOverrides.First()(new MessageOverrideContext
+            {
+                Message = data
+            });
 
             data.Comments.ShouldEqual(comments);
         }
@@ -1306,7 +1361,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_data_override()
         {
-            Action<ApiDescription, Message> @override = (x, y) => { };
+            Action< MessageOverrideContext> @override = x => { };
 
             _dsl.OverrideMessage(@override);
 
@@ -1323,14 +1378,18 @@ namespace Tests.Unit.Configuration
         public void should_add_data_override_with_predicate(
             string commentMatches, string comments)
         {
-            _dsl.OverrideMessageWhen((a, e) => e.Comments += " farker",
-                (a, e) => e.Comments == commentMatches);
+            _dsl.OverrideMessageWhen(
+                e => e.Message.Comments += " farker",
+                e => e.Message.Comments == commentMatches);
 
             _configuration.RequestOverrides.Count.ShouldEqual(1);
 
             var data = new Message { Comments = "fark" };
 
-            _configuration.RequestOverrides.First()(new ApiDescription(), data);
+            _configuration.RequestOverrides.First()(new MessageOverrideContext
+            {
+                Message = data
+            });
 
             data.Comments.ShouldEqual(comments);
 
@@ -1338,7 +1397,10 @@ namespace Tests.Unit.Configuration
 
             data = new Message { Comments = "fark" };
 
-            _configuration.ResponseOverrides.First()(new ApiDescription(), data);
+            _configuration.ResponseOverrides.First()(new MessageOverrideContext
+            {
+                Message = data
+            });
 
             data.Comments.ShouldEqual(comments);
         }
@@ -1346,7 +1408,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_type_override()
         {
-            Action<Type, DataType> @override = (x, y) => { };
+            Action<TypeOverrideContext> @override = x => { };
 
             _dsl.OverrideTypes(@override);
 
@@ -1360,14 +1422,18 @@ namespace Tests.Unit.Configuration
         public void should_add_type_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideTypesWhen((a, e) => e.Comments = "oh hai",
-                (a, e) => e.Name == name);
+            _dsl.OverrideTypesWhen(
+                e => e.DataType.Comments = "oh hai",
+                e => e.DataType.Name == name);
 
             _configuration.TypeOverrides.Count.ShouldEqual(1);
 
             var dataType = new DataType { Name = "fark" };
 
-            _configuration.TypeOverrides.First()(typeof(string), dataType);
+            _configuration.TypeOverrides.First()(new TypeOverrideContext
+            {
+                DataType = dataType
+            });
 
             dataType.Name.ShouldEqual("fark");
             dataType.Comments.ShouldEqual(comments);
@@ -1376,7 +1442,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_member_override()
         {
-            Action<PropertyInfo, Member> @override = (x, y) => { };
+            Action<MemberOverrideContext> @override = x => { };
 
             _dsl.OverrideMembers(@override);
 
@@ -1390,14 +1456,18 @@ namespace Tests.Unit.Configuration
         public void should_add_member_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideMembersWhen((a, e) => e.Comments = "oh hai",
-                (a, e) => e.Name == name);
+            _dsl.OverrideMembersWhen(
+                e => e.Member.Comments = "oh hai",
+                e => e.Member.Name == name);
 
             _configuration.MemberOverrides.Count.ShouldEqual(1);
 
             var member = new Member { Name = "fark" };
 
-            _configuration.MemberOverrides.First()(null, member);
+            _configuration.MemberOverrides.First()(new MemberOverrideContext
+            {
+                Member = member
+            });
 
             member.Name.ShouldEqual("fark");
             member.Comments.ShouldEqual(comments);
@@ -1406,7 +1476,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_add_option_override()
         {
-            Action<FieldInfo, Option> @override = (x, y) => { };
+            Action<OptionOverrideContext> @override = x => { };
 
             _dsl.OverrideOptions(@override);
 
@@ -1420,14 +1490,17 @@ namespace Tests.Unit.Configuration
         public void should_add_option_override_with_predicate(
             string name, string comments)
         {
-            _dsl.OverrideOptionsWhen((a, e) => e.Comments = "oh hai",
-                (a, e) => e.Name == name);
+            _dsl.OverrideOptionsWhen(e => e.Option.Comments = "oh hai",
+                e => e.Option.Name == name);
 
             _configuration.OptionOverrides.Count.ShouldEqual(1);
-
+            
             var option = new Option { Name = "fark" };
 
-            _configuration.OptionOverrides.First()(null, option);
+            _configuration.OptionOverrides.First()(new OptionOverrideContext
+            {
+                Option = option
+            });
 
             option.Name.ShouldEqual("fark");
             option.Comments.ShouldEqual(comments);
