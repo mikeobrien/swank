@@ -5,7 +5,7 @@
       <version>0.0.0.0</version>
       <title>Swank</title>
       <authors>Mike O'Brien</authors>
-      <description>API Documentation for ASP.NET Web API 2.</description>
+      <description>RESTful API Documentation for ASP.NET Web API 2.</description>
       <releaseNotes />
       <copyright />
       <language>en-US</language>

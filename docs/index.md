@@ -2,7 +2,7 @@
 layout: site
 ---
 
-Swank is an ASP.NET Web API 2 library that documents RESTful services. You can take a look at a sample [here](http://www.mikeobrien.net/swank/sample). 
+Swank is an ASP.NET Web API 2 library that documents RESTful services. You can take a look at a sample of the documentation it generates [here](http://www.mikeobrien.net/swank/sample). 
 
 ## Features
 
@@ -12,7 +12,7 @@ Swank is an ASP.NET Web API 2 library that documents RESTful services. You can t
 - Optional [custom [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) main page](#main-page).
 - Supports [XML comments](#xml-comments-1).
 - Custom [code examples](#code-examples) from Razor or Mustache templates.
-- [Conventions](#conventions) and [overrides](#overrides) allow you to customize every aspect of spec generation.
+- [Overrides](#overrides) and [conventions](#conventions) allow you to customize every aspect of spec generation.
 - Custom [templates](#templates) that allow generation of code or documentation.
 
 ## Getting Started
@@ -25,20 +25,20 @@ Swank can be found on nuget:
     
 ### Basic Configuration
 
-Swank can be enabled by calling the `EnableSwank` extension method on an `HttpConfiguration` instance. There are a handful of options you you'll probably want to fill in, although these are not required.
+Swank can be enabled by calling the `Swank` extension method on an `HttpConfiguration` instance. There are a handful of options you you'll probably want to fill in, although these are not required.
 
 ```csharpusing Swank;using Swank.Configuration;using Swank.Extensions;var configuration = GlobalConfiguration.Configuration;
-configuration.EnableSwank(x => x    .WithFavIconAt("/img/favicon.png")    .WithPageTitle("Setec Astronomy API")    .WithLogoAt("/img/logo.png")    .WithHeader("Setec Astronomy")    .WithCopyright("Copyright &copy; {year} Setec Astronomy"));
+configuration.Swank(x => x    .WithFavIconAt("/img/favicon.png")    .WithPageTitle("Setec Astronomy API")    .WithLogoAt("/img/logo.png")    .WithHeader("Setec Astronomy")    .WithCopyright("Copyright &copy; {year} Setec Astronomy"));
 ```  
 
 At this point you should see documentation under `http://yoursite/api`. The url of the docs can be changed to whatever you want, even the root of the website.
 
-```csharpconfiguration.EnableSwank(x => x.WithAppAt("my/custom/path")...);
+```csharpconfiguration.Swank(x => x.WithAppAt("my/custom/path")...);
 ```  
 <div class="bs-callout bs-callout-danger">
 <p>Note: If your url matches a physical folder path, IIS will try to list directory contents (and you'll likely get a 403). The reason is that the <code>DirectoryListingModule</code> takes precedence over the <code>UrlRoutingModule</code>. Swank can override this behavior with the <code>IgnoreFolders()</code> option.</p>
 
-<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="n">configuration</span><span class="p">.</span><span class="nf">EnableSwank</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="nf"> IgnoreFolders</span><span class="p">()...);</span>
+<div class="language-csharp highlighter-rouge"><pre class="highlight"><code><span class="n">configuration</span><span class="p">.</span><span class="nf">Swank</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="nf"> IgnoreFolders</span><span class="p">()...);</span>
 </code></pre>
 </div>
 
@@ -48,19 +48,19 @@ At this point you should see documentation under `http://yoursite/api`. The url 
 
 By default the request authority is used throughout the docs. Although you can override it as follows.
 
-```csharpconfiguration.EnableSwank(x => x.WithApiAt("https://www.setecastronomy.com")...);
+```csharpconfiguration.Swank(x => x.WithApiAt("https://www.setecastronomy.com")...);
 ```  
 
 If you plan to document your API via [XML comments](https://msdn.microsoft.com/en-us/library/b2s063f7.aspx) you'll want to reference those. This overload assumes the Visual Studio convention and expects them to be in the `\bin` folder along side the calling assembly and named as `[Assembly name].xml`.
 
 ```csharp
-configuration.EnableSwank(x => x.AddXmlComments()...);
+configuration.Swank(x => x.AddXmlComments()...);
 ``` 
 
 If they are located somewhere else you can reference them directly. You can add as many XML documentation files as you want.
 
 ```csharp
-configuration.EnableSwank(x => x
+configuration.Swank(x => x
     .AddXmlComments("~/assets/docs1.xml")
     .AddXmlComments("~/assets/docs2.xml")...);
 ``` 
@@ -89,7 +89,7 @@ There are number of ways to override this behavior as described below.
 
 First you can replace the function used to generate the resource grouping id. For example, lets say you wanted to group resources by controller, regardless of the url:
 
-```configuration.EnableSwank(x => x
+```configuration.Swank(x => x
     .WithResourceIdentifier(r => r.ActionDescriptor
         .ControllerDescriptor.ControllerType.FullName)...);
 ```
@@ -204,20 +204,20 @@ We covered a few places where you can describe your API in the previous section 
 Swank allows you to set content on the main page. All documentation supports [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) and [emojis](http://www.webpagefx.com/tools/emoji-cheat-sheet/). By default Swank looks for a [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) file at the root of the website called `Overview.md`. You can also load a file from a virtual path, embedded resource or by passing the document in directly.
 
 ```csharp
-// Embedded resource, only the file name is required.configuration.EnableSwank(x => x.WithOverviewResource("Overview.md")...);
+// Embedded resource, only the file name is required.configuration.Swank(x => x.WithOverviewResource("Overview.md")...);
 
-// Virtual pathconfiguration.EnableSwank(x => x.WithOverviewFromVirtualPath("~/docs/Overview.md")...);
+// Virtual pathconfiguration.Swank(x => x.WithOverviewFromVirtualPath("~/docs/Overview.md")...);
 
-// Directly passedconfiguration.EnableSwank(x => x.WithOverview("*Sweet* docs! :trollface:")...);
+// Directly passedconfiguration.Swank(x => x.WithOverview("*Sweet* docs! :trollface:")...);
 ```  
 
 If your document contains headers, you can add links to these in the UI.
 
 ```csharp
 // If the fragment id is not passed, one will automatically be 
-// generated by snake casing the link name (e.g. `sweet-section`).  configuration.EnableSwank(x => x.WithOverviewLink("Sweet Section")...);
+// generated by snake casing the link name (e.g. `sweet-section`).  configuration.Swank(x => x.WithOverviewLink("Sweet Section")...);
 
-// Or you can pass in a specific fragment id.configuration.EnableSwank(x => x.WithOverviewLink("Sweet Section", "my-sweet-section")...);
+// Or you can pass in a specific fragment id.configuration.Swank(x => x.WithOverviewLink("Sweet Section", "my-sweet-section")...);
 ```  
 
 ### Endpoints
@@ -283,7 +283,11 @@ The following are all the built in attributes.
 | `SampleValue` | Sets the sample value which is displayed in the XML and json samples. Used on members and action parameters. |
 | `DefaultValue` | Specifies a default value, used on members and querystring action parameters. |
 | `Optional` | Indicates that something is optional, used on members and querystring action parameters. |
-| `Required` | Indicates that a querystring action parameter is required. |
+| `OptionalForPost` | Indicates that a member is optional for `POST` otherwise required. |
+| `OptionalForPut` | Indicates that a member is optional for `PUT` otherwise required. |
+| `Required` | Indicates that a member or querystring action parameter is required. |
+| `RequiredForPost` | Indicates that a member is required for `POST` otherwise optional. |
+| `RequiredForPut` | Indicates that a member is required for `PUT` otherwise optional. |
 | `Multiple` | Indicates that multiple querystring action parameters are allowed. |
 | `ArrayDescription` | Describes list types and members. You can set the name and comments as well as the item name and comments. |
 | `DictionaryDescription` | Describes dictionary types and members. You can set the name and comments as well as the key name and, key and value comments. |
@@ -358,34 +362,34 @@ Currently there is not support for creating different [markdown](https://github.
 
 Swank supports code examples that are generated from the specification. This can be done with Razor or Mustache templates. Two examples ship with Swank, [curl](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/curl.cshtml) and [Node.js](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/node.cshtml). You can use these as a starting point for creating your own custom examples. Code example templates are passed a [model](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/TemplateModel.cs) that contains a complete description of the endpoint. Swank uses [Highlight.js](https://highlightjs.org/) to highlight code examples. Swank ships with all the available themes and defaults to GitHub [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet). You can change the theme as follows.
 
-```csharpconfiguration.EnableSwank(x => x.WithCodeExampleTheme(CodeExampleTheme.SolarizedDark)...);
+```csharpconfiguration.Swank(x => x.WithCodeExampleTheme(CodeExampleTheme.SolarizedDark)...);
 ``` 
 
 If you are adding your own templates you may want to clear out the stock ones, you can do this in the configuration DSL as follows.
 
-```csharpconfiguration.EnableSwank(x => x.ClearCodeExamples()...);
+```csharpconfiguration.Swank(x => x.ClearCodeExamples()...);
 ``` 
 
 Code examples can be loaded from a file, a virtual path, embedded resource or by passing the template in directly.
 
 ```csharp
-// Embedded resource, only the file name is required.configuration.EnableSwank(x => x
+// Embedded resource, only the file name is required.configuration.Swank(x => x
     .WithCodeExampleResource("Fsharp.cshtml",
         "F#", CodeExampleLanguage.Fsharp)...);
         
-// Virtual pathconfiguration.EnableSwank(x => x
+// Virtual pathconfiguration.Swank(x => x
     .WithCodeExampleFromVirtualPath(
         "~/Code Samples/Fsharp.cshtml",
         "F#", CodeExampleLanguage.Fsharp)...);
 
-// Directly passed mustache templateconfiguration.EnableSwank(x => x
+// Directly passed mustache templateconfiguration.Swank(x => x
     .WithMustacheCodeExample(
         "F#", 
         CodeExampleLanguage.Fsharp, 
         "Code example comments. :trollface:", 
         "let model = new...")...);
 
-// Directly passed Razor templateconfiguration.EnableSwank(x => x
+// Directly passed Razor templateconfiguration.Swank(x => x
     .WithRazorCodeExample(
         "F#", 
         CodeExampleLanguage.Fsharp, 
@@ -406,17 +410,17 @@ FSharp.cshtml
 All files under the resource namespace or virtual path with a `.cshtml`, `.mustache` or `.md` will be loaded using the following configuration.
 
 ```csharp
-// Embedded resourcesconfiguration.EnableSwank(x => x.WithCodeExampleResources("MyApp.Assets.CodeSamples")...);
+// Embedded resourcesconfiguration.Swank(x => x.WithCodeExampleResources("MyApp.Assets.CodeSamples")...);
         
-// Virtual pathconfiguration.EnableSwank(x => x.WithCodeExamplesInVirtualPath("~/Code Samples")...);
+// Virtual pathconfiguration.Swank(x => x.WithCodeExamplesInVirtualPath("~/Code Samples")...);
 ``` 
 You can turn on debugging, where errors are displayed instead of the rendered template, with the following configuration.
 
 ```csharp
-// Enable debug modeconfiguration.EnableSwank(x => x.IsInDebugMode()...);
+// Enable debug modeconfiguration.Swank(x => x.IsInDebugMode()...);
         
 // Enable debug mode when calling assembly is in debug mode
-configuration.EnableSwank(x => x.IsInDebugModeWhenAppIsInDebugMode()...);
+configuration.Swank(x => x.IsInDebugModeWhenAppIsInDebugMode()...);
 ``` 
 
 ## Customize
@@ -446,7 +450,7 @@ There are a few options that control what is displayed.
 The user interface was designed so that you can easily override any part of the layout. You can see all the css classes listed in [the Swank stylesheet](https://github.com/mikeobrien/swank/blob/master/src/Swank/Web/Content/css/swank.css). The configuration allows you to add your own stylesheets and scripts.
 
 ```csharp
-configuration.EnableSwank(x => x
+configuration.Swank(x => x
     .WithStylesheets("/css/my.css", "/css/theme.css")
     .WithScripts("/js/some.js", "/js/another.js")...);
 ```
@@ -456,11 +460,11 @@ configuration.EnableSwank(x => x
 If overriding styles and scripts isn't enough, you can provide your own UI template. You can use [the existing one](https://github.com/mikeobrien/swank/blob/master/src/Swank/Web/Content/App.cshtml) as a starting point and customize from there. The UI is a Razor template rendered by [RazorEngine](https://github.com/Antaris/RazorEngine). To set your own you can load it from an embedded resource, a virtual path or pass it in directly.
 
 ```csharp
-// Embedded resource, only the file name is required.configuration.EnableSwank(x => x.WithAppTemplateResource("App.cshtml")...);
+// Embedded resource, only the file name is required.configuration.Swank(x => x.WithAppTemplateResource("App.cshtml")...);
 
-// Virtual pathconfiguration.EnableSwank(x => x.WithAppTemplateFromVirtualPath("~/docs/App.cshtml")...);
+// Virtual pathconfiguration.Swank(x => x.WithAppTemplateFromVirtualPath("~/docs/App.cshtml")...);
 
-// Directly passedconfiguration.EnableSwank(x => x.WithAppTemplate("@model Swank.Web.Handlers.AppModel...")...);
+// Directly passedconfiguration.Swank(x => x.WithAppTemplate("@model Swank.Web.Handlers.AppModel...")...);
 ```  
 
 ### Specification
@@ -485,46 +489,60 @@ There are a few options to control how the specification is generated.
 
 #### Overrides
 
-If you want to modify the spec *after* it's been created you can override it. Lets say for example you wanted to generate all the resource comments instead of manually filling them in. 
+If you want to modify the spec *after* it's been generated you can override it. Lets say for example you wanted to generate all the resource comments instead of manually filling them in. 
 
-```csharpconfiguration.EnableSwank(x => x.OverrideResources(
-    r => r.Comments = $"This is the {r.Name.ToLower()} resource.")...);
+```csharpconfiguration.Swank(x => x.OverrideResources(
+    r => r.Resource.Comments = $"This is the {r.Resource.Name.ToLower()} resource.")...);
 ```
 
 This will set the comments for every resource. But what if you only wanted to do it for resources that don't have comments, you can pass a predicate.
 
-```csharpconfiguration.EnableSwank(x => x.OverrideResourcesWhen(
-    r => r.Comments = $"This is the {r.Name.ToLower()} resource.", 
-    r => r.Comments.IsNullOrEmpty())...);
+```csharpconfiguration.Swank(x => x.OverrideResourcesWhen(
+    r => r.Resource.Comments = $"This is the {r.Resource.Name.ToLower()} resource.", 
+    r => r.Resource.Comments.IsNullOrEmpty())...);
 ```
 
 Another example is adding common status codes to every `POST` and `PUT` endpoint.
 
-```csharpconfiguration.EnableSwank(x => x.OverrideEndpointsWhen(
-    e => e.StatusCodes.Add(new StatusCode { Code = 201, Comments = "..." }), 
-    e => e.HttpMethod == "POST" || e.HttpMethod == "PUT")...);
+```csharpconfiguration.Swank(x => x.OverrideEndpointsWhen(
+    e => e.Endpoint.StatusCodes.Add(new StatusCode { Code = 201, Comments = "..." }), 
+    e => e.Endpoint.HttpMethod == "POST" || e.Endpoint.HttpMethod == "PUT")...);
 ```
 
-Many overrides will also pass `ApiDescription`, `ApiParameterDescription`, `Type`, `PropertyInfo` and `FieldOnfo` if they are related so you can use information from these.
+Swank also has a convenience extension methods under `Swank.Extensions` that determine if a type or property is of a certain type. These methods check for the type and its nullable counterpart if it has one.
 
-Overrides are available for everything in the spec, the configuration DSL methods follow the convention of `Override[thing]` and `Override[thing]When`.
+```csharpconfiguration.Swank(x => x.OverrideTypesWhen(
+    t => t.DataType.Comments = "...", 
+    t => t.Type.IsUInt64())...);
+configuration.Swank(x => x.OverrideMembersWhen(
+    m => m.Member.Comments = "...", 
+    m => m.Property.IsDateTime())...);
+```
 
-- Modules
-- Resources
-- Endpoints
-- Url Parameters
-- Querystring
-- Parameters (Both url parameters and querystring)
-- Status Codes
-- Request Headers
-- Response Headers
-- Headers (Both request and response headers)
-- Request
-- Response
-- Message (Both request and response)
-- Types
-- Members
-- Options (Enums)
+Override functions are passed a context that includes the final specification, the original description (`Description` property) and other information that describes that specific part of the specification. You will want to update the specification object (see below) as this is what will be used to generate documentation or returned from the specification endpoint.
+
+Overrides are available for every part of the spec. The configuration DSL methods follow the convention of `Override[thing]` and `Override[thing]When` for conditional overrides.
+
+|----|----|
+| Configuration DSL | Specification Property | Description Properties | Comments |
+|----|----|----|
+| `OverrideModules` | `Module` |  `Description` | |
+| `OverrideResources` | `Resource` |  `Description` | |
+| `OverrideEndpoints` | `Endpoint` |  `Description`, `ApiDescription` | |
+| `OverrideParameters` | `Parameter` |  `Description`, `ApiDescription` | Both url and querystring parameters. |
+| `OverrideUrlParameters` | `UrlParameter` |  `Description`, `ApiDescription` | |
+| `OverrideQuerystring` | `Querystring` |  `Description`, `ApiDescription` | |
+| `OverrideStatusCodes` | `StatusCode` |  `Description`, `ApiDescription` | |
+| `OverrideHeaders` | `Header` |  `Description`, `ApiDescription` | Both request and response headers. |
+| `OverrideRequestHeaders` | `Header` |  `Description`, `ApiDescription` |  |
+| `OverrideResponseHeaders` | `Header` |  `Description`, `ApiDescription` |  |
+| `OverrideMessage` | `Message` |  `Description`, `ApiDescription` | Both request and response messages. |
+| `OverrideRequest` | `Message` |  `Description`, `ApiDescription` |  |
+| `OverrideResponse` | `Message` |  `Description`, `ApiDescription` |  |
+| `OverrideTypes` | `DataType` |  `Description`, `ApiDescription`, `Type`, `IsRequest` | |
+| `OverrideMembers` | `Member` |  `Description`, `ApiDescription`, `Property`, `IsRequest` | |
+| `OverrideOptions` | `Option` |  `Description`, `ApiDescription`, `Field`, `IsRequest` | |
+|----|----|
 
 #### Conventions
 
@@ -555,7 +573,7 @@ public class FileStatusCodeConvention : StatusCodeConvention
 
 This convention would then be set in the configuration.
 
-```csharpconfiguration.EnableSwank(x => x.WithStatusCodeConvention<FileStatusCodeConvention>()...);
+```csharpconfiguration.Swank(x => x.WithStatusCodeConvention<FileStatusCodeConvention>()...);
 ```
 
 You can also pass configuration which is then injected into the constructor. The config must have a parameterless constructor.
@@ -575,7 +593,7 @@ public class SomeConvention : StatusCodeConvention
         _config = config;
     }
         public override List<StatusCodeDescription> GetDescription(ApiDescription endpoint)    {        if (_config.Flag)...;    }}
-configuration.EnableSwank(x => x
+configuration.Swank(x => x
     .WithStatusCodeConvention<SomeConvention, SomeConfig>(x => x.Flag == true)...);
 ```
 
@@ -604,7 +622,7 @@ There are a couple of ways to integrate Swank with other processes.
 
 Swank exposes an endpoint that returns the specification as json which can be consumed by other process to generate additional documentation or bindings. The default url for this is `api/spec`. You can change this url with the following configuration.
 
-```csharpconfiguration.EnableSwank(x => WithSpecificationAtUrl("myapi/spec")...);
+```csharpconfiguration.Swank(x => WithSpecificationAtUrl("myapi/spec")...);
 ```
 
 The specification model returned is `List<Swank.Specification.Module>` found [here](https://github.com/mikeobrien/swank/blob/master/src/Swank/Specification/Specification.cs).
@@ -614,25 +632,25 @@ The specification model returned is `List<Swank.Specification.Module>` found [he
 Swank also allows you to generate your own content with templates. For example you could generate html documentation or bindings in different languages that could be consumed by other processes. Swank supports Razor and mustache templates which can be loaded from a file, a virtual path, embedded resource or by passing the template in directly. These are then exposed at a url you specify.
 
 ```csharp
-// Embedded resource, only the file name is required.configuration.EnableSwank(x => x
+// Embedded resource, only the file name is required.configuration.Swank(x => x
     .WithTemplateResource(
         "Fsharp.cshtml",
         "bindings/fsharp", 
         "text/plain")...);
         
-// Virtual pathconfiguration.EnableSwank(x => x
+// Virtual pathconfiguration.Swank(x => x
     .WithTemplateFromVirtualPath(
         "~/Templates/FSharp.cshtml", 
         "bindings/fsharp", 
         "text/plain")...);
 
-// Directly passed mustache templateconfiguration.EnableSwank(x => x
+// Directly passed mustache templateconfiguration.Swank(x => x
     .WithMustacheTemplate(
         "bindings/fsharp", 
         "text/plain", 
         "let model = new...")...);
 
-// Directly passed Razor templateconfiguration.EnableSwank(x => x
+// Directly passed Razor templateconfiguration.Swank(x => x
     .WithRazorTemplate(
         "bindings/fsharp", 
         "text/plain", 
@@ -658,15 +676,15 @@ With the base url `code` and under the `/Templates` virtual path would be at the
 Periods are converted to underscores to prevent IIS from loading them as static files. All files under the resource namespace or virtual path with a `.cshtml` or `.mustache` extension will be loaded using the following configuration.
 
 ```csharp
-// Embedded resourcesconfiguration.EnableSwank(x => x.WithTemplateResources("MyApp.Assets.Templates")...);
+// Embedded resourcesconfiguration.Swank(x => x.WithTemplateResources("MyApp.Assets.Templates")...);
         
-// Virtual pathconfiguration.EnableSwank(x => x.WithTemplatesInVirtualPath("~/Templates")...);
+// Virtual pathconfiguration.Swank(x => x.WithTemplatesInVirtualPath("~/Templates")...);
 ``` 
 You can turn on debugging, where errors are displayed instead of the rendered template, with the following configuration.
 
 ```csharp
-// Enable debug modeconfiguration.EnableSwank(x => x.IsInDebugMode()...);
+// Enable debug modeconfiguration.Swank(x => x.IsInDebugMode()...);
         
 // Enable debug mode when calling assembly is in debug mode
-configuration.EnableSwank(x => x.IsInDebugModeWhenAppIsInDebugMode()...);
+configuration.Swank(x => x.IsInDebugModeWhenAppIsInDebugMode()...);
 ``` 

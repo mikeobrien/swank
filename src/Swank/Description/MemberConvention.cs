@@ -42,8 +42,10 @@ namespace Swank.Description
                 SampleValue = property.GetCustomAttribute<SampleValueAttribute>()
                     .WhenNotNull(x => x.Value.ToSampleValueString(_configuration))
                     .Otherwise(property.PropertyType.GetSampleValue(_configuration)),
-                Optional = property.HasAttribute<OptionalAttribute>() || 
-                    property.PropertyType.IsNullable(),
+                Optional = property.GetOptionalScope() ?? 
+                    (property.PropertyType.IsNullable() || 
+                     property.PropertyType.IsClass ?
+                        OptionalScope.All : OptionalScope.None),
                 Hidden = property.PropertyType.HasAttribute<HideAttribute>() ||
                     property.HasAttribute<HideAttribute>() ||
                     property.HasAttribute<XmlIgnoreAttribute>(),
@@ -63,6 +65,20 @@ namespace Swank.Description
                     ValueComments = dictionaryDescription.WhenNotNull(x => x.ValueComments).OtherwiseDefault()
                 }
             };
+        }
+    }
+
+    public static class MemberConventionExtensions
+    {
+        public static OptionalScope? GetOptionalScope(this PropertyInfo property)
+        {
+            if (property.HasAttribute<RequiredAttribute>()) return OptionalScope.None;
+            if (property.HasAttribute<OptionalAttribute>()) return OptionalScope.All;
+            if (property.HasAttribute<OptionalForPostAttribute>()) return OptionalScope.Post;
+            if (property.HasAttribute<OptionalForPutAttribute>()) return OptionalScope.Put;
+            if (property.HasAttribute<RequiredForPutAttribute>()) return OptionalScope.AllButPut;
+            if (property.HasAttribute<RequiredForPostAttribute>()) return OptionalScope.AllButPost;
+            return null;
         }
     }
 }
