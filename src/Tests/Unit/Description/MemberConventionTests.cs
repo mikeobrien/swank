@@ -60,8 +60,29 @@ namespace Tests.Unit.Description
             [SampleValue("This is a sample.")]
             public string WithSampleValue { get; set; }
 
+            public string OptionalReference { get; set; }
+
+            public int? OptionalNullable { get; set; }
+            
+            public int RequiredNonNullable { get; set; }
+
             [Optional]
             public string Optional { get; set; }
+
+            [Required]
+            public string Required { get; set; }
+
+            [OptionalForPost]
+            public string OptionalForPost { get; set; }
+
+            [RequiredForPost]
+            public string RequiredForPost { get; set; }
+
+            [OptionalForPut]
+            public string OptionalForPut { get; set; }
+
+            [RequiredForPut]
+            public string RequiredForPut { get; set; }
 
             public int? Nullable { get; set; }
 
@@ -171,21 +192,57 @@ namespace Tests.Unit.Description
         }
 
         [Test]
-        public void should_return_required_if_not_specified()
+        public void should_return_optional_if_not_specified_and_reference()
         {
-            GetDescription(x => x.NoDescription).Optional.ShouldBeFalse();
+            GetDescription(x => x.OptionalReference).Optional.ShouldEqual(OptionalScope.All);
+        }
+
+        [Test]
+        public void should_return_optional_if_not_specified_and_nullable()
+        {
+            GetDescription(x => x.OptionalNullable).Optional.ShouldEqual(OptionalScope.All);
+        }
+
+        [Test]
+        public void should_return_required_if_not_specified_and_not_nullable()
+        {
+            GetDescription(x => x.RequiredNonNullable).Optional.ShouldEqual(OptionalScope.None);
         }
 
         [Test]
         public void should_return_optional_if_specified()
         {
-            GetDescription(x => x.Optional).Optional.ShouldBeTrue();
+            GetDescription(x => x.Optional).Optional.ShouldEqual(OptionalScope.All);
         }
 
         [Test]
-        public void should_return_optional_if_nullable()
+        public void should_return_required_if_specified()
         {
-            GetDescription(x => x.Nullable).Optional.ShouldBeTrue();
+            GetDescription(x => x.Required).Optional.ShouldEqual(OptionalScope.None);
+        }
+
+        [Test]
+        public void should_return_optional_for_post_if_specified()
+        {
+            GetDescription(x => x.OptionalForPost).Optional.ShouldEqual(OptionalScope.Post);
+        }
+
+        [Test]
+        public void should_return_required_for_post_if_specified()
+        {
+            GetDescription(x => x.RequiredForPost).Optional.ShouldEqual(OptionalScope.AllButPost);
+        }
+
+        [Test]
+        public void should_return_optional_for_put_if_specified()
+        {
+            GetDescription(x => x.OptionalForPut).Optional.ShouldEqual(OptionalScope.Put);
+        }
+
+        [Test]
+        public void should_return_required_for_put_if_specified()
+        {
+            GetDescription(x => x.RequiredForPut).Optional.ShouldEqual(OptionalScope.AllButPut);
         }
 
         [Test]

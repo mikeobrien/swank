@@ -29,6 +29,12 @@ namespace Swank.Extensions
                     configuration.Services.GetService(type) : null);
         }
 
+        public static bool HasParameter<T>(this ApiDescription description)
+        {
+            return description.ParameterDescriptions
+                .Any(p => p.ParameterDescriptor.ParameterType == typeof(T));
+        }
+
         public static MethodInfo GetMethodInfo(this ApiParameterDescription description)
         {
             return description.ParameterDescriptor.ActionDescriptor.GetMethodInfo();
@@ -235,7 +241,7 @@ namespace Swank.Extensions
 
         public static string NormalizePathSlashes(this string url)
         {
-            return url.Replace("/", "\\").Trim();
+            return url?.Replace("/", "\\").Trim();
         }
 
         public static string MapTempPath(this string path, string url)
@@ -257,14 +263,16 @@ namespace Swank.Extensions
                 .Select(x => x.NormalizeUrlSlashes().Trim('/'))
                 .Join("/");
         }
-
-        public static string MakeAbsolute(this string url)
+        
+        public static string EnsureLeadingSlash(this string url)
         {
+            if (url.IsNullOrEmpty()) return url;
             return "/" + url.TrimStart('/');
         }
 
         public static string EnsureTrailingSlash(this string url)
         {
+            if (url.IsNullOrEmpty()) return url;
             return url.TrimEnd('/') + "/";
         }
 
@@ -304,6 +312,31 @@ namespace Swank.Extensions
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
                 }
             );
+        }
+
+        public static bool IsGet(this HttpMethod method)
+        {
+            return method == HttpMethod.Get;
+        }
+
+        public static bool IsPost(this HttpMethod method)
+        {
+            return method == HttpMethod.Post;
+        }
+
+        public static bool IsPut(this HttpMethod method)
+        {
+            return method == HttpMethod.Put;
+        }
+
+        public static bool IsPostOrPut(this HttpMethod method)
+        {
+            return method.IsPost() || method.IsPut();
+        }
+
+        public static bool IsDelete(this HttpMethod method)
+        {
+            return method == HttpMethod.Delete;
         }
     }
 }
