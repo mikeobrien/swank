@@ -88,7 +88,7 @@ namespace Swank.Web.Assets
 
         public static LazyUrl ToLazyUrl(this WebAsset asset, Configuration.Configuration configuration)
         {
-            return new LazyUrl(() => asset.GetUrl(configuration).MakeAbsolute(),
+            return new LazyUrl(() => asset.GetUrl(configuration).EnsureLeadingSlash(),
                 asset.Filename, asset.MimeType);
         }
     }

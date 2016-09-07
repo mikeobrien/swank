@@ -224,6 +224,10 @@ pre {
 /* Endpoints */
 
 .swank-endpoint-description {
+    margin-bottom: 20px;
+}
+
+.swank-message-description {
     margin-bottom: 15px;
 }
 
@@ -415,30 +419,19 @@ pre {
 }
 
 .swank-endpoint-name {
-    font-weight: bold;
-}
-
-.swank-endpoint-name {
     float: right;
     margin: 6px 10px 0 0;
     max-width: 200px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    font-weight: bold;
 }
 
 /* Endpoint content */
 
 .swank-endpoint-body {
     padding: 20px;
-}
-
-.swank-endpoint-description {
-    margin-bottom: 20px;
-}
-
-.swank-message-description {
-    margin-bottom: 15px;;
 }
 
 .swank-endpoint h4, 
@@ -462,6 +455,14 @@ pre {
 .swank-endpoint td .alert:not(:last-child),
 .swank-endpoint td .panel:not(:last-child) {
     margin-bottom: 10px;
+}
+
+.swank-required {
+    background-color: #c15757;
+}
+
+.swank-optional {
+    background-color: #466eab;
 }
 
 /* Endpoint tabs */
@@ -598,7 +599,6 @@ th.swank-sample-data-selector-container {
 .swank-code-example {
     padding: 0;
     border: #c1c1c1 1px solid;
-    font-weight: bold;
 }
 
 .swank-code-example-copy {

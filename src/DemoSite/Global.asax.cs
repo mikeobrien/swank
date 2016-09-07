@@ -31,69 +31,69 @@ namespace DemoSite
                 //.WithNumericEnum()
                 .AddXmlComments()
                 .WithDefaultDictionaryKeyName("key")
-                .OverrideResources(r => r.Comments = HipsterIpsum.Generate(2))
-                .OverrideEndpoints((a, e) =>
+                .OverrideResources(r => r.Resource.Comments = HipsterIpsum.Generate(2))
+                .OverrideEndpoints(e =>
                 {
-                    e.Secure = true;
-                    e.Comments = HipsterIpsum.Generate(2);
-                    e.Request.Headers.Add(new Header { Name = "authorization", Comments = HipsterIpsum.Generate(2) });
-                    e.Response.Headers.Add(new Header { Name = "x-xss-protection", Comments = HipsterIpsum.Generate(2) });
-                    e.StatusCodes.Add(new StatusCode { Code = 401, Name = "Unauthorized", Comments = HipsterIpsum.Generate(2) });
-                    e.StatusCodes.Add(new StatusCode { Code = 403, Name = "Forbidden", Comments = HipsterIpsum.Generate(2) });
-                    e.StatusCodes.Add(new StatusCode { Code = 418, Name = "I'm a teapot", Comments = HipsterIpsum.Generate(2) });
-                    e.Response.Comments = HipsterIpsum.Generate(5);
+                    e.Endpoint.Secure = true;
+                    e.Endpoint.Comments = HipsterIpsum.Generate(2);
+                    e.Endpoint.Request.Headers.Add(new Header { Name = "authorization", Comments = HipsterIpsum.Generate(2) });
+                    e.Endpoint.Response.Headers.Add(new Header { Name = "x-xss-protection", Comments = HipsterIpsum.Generate(2) });
+                    e.Endpoint.StatusCodes.Add(new StatusCode { Code = 401, Name = "Unauthorized", Comments = HipsterIpsum.Generate(2) });
+                    e.Endpoint.StatusCodes.Add(new StatusCode { Code = 403, Name = "Forbidden", Comments = HipsterIpsum.Generate(2) });
+                    e.Endpoint.StatusCodes.Add(new StatusCode { Code = 418, Name = "I'm a teapot", Comments = HipsterIpsum.Generate(2) });
+                    e.Endpoint.Response.Comments = HipsterIpsum.Generate(5);
                 })
-                .OverrideEndpointsWhen((a, e) =>
+                .OverrideEndpointsWhen(e =>
                 {
-                    e.Request.Comments = HipsterIpsum.Generate(5);
-                }, (a, e) => e.Method != "DELETE")
-                .OverrideEndpointsWhen((a, e) =>
+                    e.Endpoint.Request.Comments = HipsterIpsum.Generate(5);
+                }, e => e.Endpoint.Method != "DELETE")
+                .OverrideEndpointsWhen(e =>
                 {
-                    e.Request.Headers.Add(new Header { Name = "content-type", Comments = HipsterIpsum.Generate(2) });
-                    e.Request.Headers.Add(new Header { Name = "accept", Comments = HipsterIpsum.Generate(2) });
-                    e.Response.Headers.Add(new Header { Name = "content-type", Comments = HipsterIpsum.Generate(2) });
+                    e.Endpoint.Request.Headers.Add(new Header { Name = "content-type", Comments = HipsterIpsum.Generate(2) });
+                    e.Endpoint.Request.Headers.Add(new Header { Name = "accept", Comments = HipsterIpsum.Generate(2) });
+                    e.Endpoint.Response.Headers.Add(new Header { Name = "content-type", Comments = HipsterIpsum.Generate(2) });
                     
-                }, (a, e) => e.Method != "GET")
-                .OverrideEndpointsWhen((a, e) =>
+                }, e => e.Endpoint.Method != "GET")
+                .OverrideEndpointsWhen(e =>
                 {
-                    e.StatusCodes.Add(new StatusCode { Code = 201, Name = "Created", Comments = HipsterIpsum.Generate(2) });
-                }, (a, e) => e.Method == "POST")
-                .OverrideUrlParameters((a, p, u) => u.Comments = HipsterIpsum.Generate(2))
-                .OverrideQuerystring((a, p, q) => q.Comments = HipsterIpsum.Generate(2))
-                .OverrideQuerystringWhen((a, p, q) => q.Required = false, (a, p, q) => q.Name.Contains("optional"))
-                .OverrideQuerystringWhen((a, p, q) => q.Required = true, (a, p, q) => !q.Name.Contains("optional"))
-                .OverrideQuerystringWhen((a, p, q) => q.MultipleAllowed = true, (a, p, q) => !q.Name.Contains("Multiple"))
-                .OverrideQuerystringWhen((a, p, q) => q.DefaultValue = "5", (a, p, q) => !q.Name.Contains("Default"))
-                .OverrideTypes((t, d) => d.Comments = HipsterIpsum.Generate(2))
-                .OverrideMembers((p, m) => m.Comments = HipsterIpsum.Generate(2))
-                .OverrideMembersWhen((p, m) => m.Optional = true, (p, m) => m.Name.Contains("Optional"))
-                .OverrideMembersWhen((p, m) => m.DefaultValue = "fark", (p, m) => m.Name.Contains("Default"))
-                .OverrideMembersWhen((p, m) =>
+                    e.Endpoint.StatusCodes.Add(new StatusCode { Code = 201, Name = "Created", Comments = HipsterIpsum.Generate(2) });
+                }, e => e.Endpoint.Method == "POST")
+                .OverrideUrlParameters(u => u.UrlParameter.Comments = HipsterIpsum.Generate(2))
+                .OverrideQuerystring(q => q.Querystring.Comments = HipsterIpsum.Generate(2))
+                .OverrideQuerystringWhen(q => q.Querystring.Required = false, q => q.Querystring.Name.Contains("optional"))
+                .OverrideQuerystringWhen(q => q.Querystring.Required = true, q => !q.Querystring.Name.Contains("optional"))
+                .OverrideQuerystringWhen(q => q.Querystring.MultipleAllowed = true, q => !q.Querystring.Name.Contains("Multiple"))
+                .OverrideQuerystringWhen(q => q.Querystring.DefaultValue = "5", q => !q.Querystring.Name.Contains("Default"))
+                .OverrideTypes(d => d.DataType.Comments = HipsterIpsum.Generate(2))
+                .OverrideMembers(m => m.Member.Comments = HipsterIpsum.Generate(2))
+                .OverrideMembersWhen(m => m.Member.Optional = true, m => m.Member.Name.Contains("Optional"))
+                .OverrideMembersWhen(m => m.Member.DefaultValue = "fark", m => m.Member.Name.Contains("Default"))
+                .OverrideMembersWhen(m =>
                 {
-                    m.Deprecated = true;
-                    m.DeprecationMessage = HipsterIpsum.Generate(2);
-                }, (p, m) => m.Name.Contains("Depricated"))
-                .OverrideMembersWhen((p, m) =>
+                    m.Member.Deprecated = true;
+                    m.Member.DeprecationMessage = HipsterIpsum.Generate(2);
+                }, m => m.Member.Name.Contains("Depricated"))
+                .OverrideMembersWhen(m =>
                 {
-                    m.Comments = HipsterIpsum.Generate(2);
-                    m.Type.ArrayItem.Comments = HipsterIpsum.Generate(2);
-                }, (p, m) => m.Type.IsArray)
-                .OverrideMembersWhen((p, m) =>
+                    m.Member.Comments = HipsterIpsum.Generate(2);
+                    m.Member.Type.ArrayItem.Comments = HipsterIpsum.Generate(2);
+                }, m => m.Member.Type.IsArray)
+                .OverrideMembersWhen(m =>
                 {
-                    m.Comments = HipsterIpsum.Generate(2);
-                    m.Type.DictionaryEntry.KeyComments = HipsterIpsum.Generate(2);
-                    m.Type.DictionaryEntry.ValueComments = HipsterIpsum.Generate(2);
-                }, (p, m) => m.Type.IsDictionary)
-                .OverrideOptions((p, o) => o.Comments = HipsterIpsum.Generate(2))
+                    m.Member.Comments = HipsterIpsum.Generate(2);
+                    m.Member.Type.DictionaryEntry.KeyComments = HipsterIpsum.Generate(2);
+                    m.Member.Type.DictionaryEntry.ValueComments = HipsterIpsum.Generate(2);
+                }, m => m.Member.Type.IsDictionary)
+                .OverrideOptions(o => o.Option.Comments = HipsterIpsum.Generate(2))
                 //.HideXmlData()
                 //.HideJsonData()
                 .IsInDebugModeWhenAppIsInDebugMode()
                 .OverrideRequestWhen(
-                    (a, d) => { d.Type = null; d.IsBinary = true; }, 
-                    (a, d) => a.GetRequestType() == typeof(Stream))
+                    r => { r.Message.Type = null; r.Message.IsBinary = true; }, 
+                    r => r.ApiDescription.GetRequestType() == typeof(Stream))
                 .OverrideResponseWhen(
-                    (a, d) => { d.Type = null; d.IsBinary = true; },
-                    (a, d) => a.GetResponseType() == typeof(Stream)));
+                    r => { r.Message.Type = null; r.Message.IsBinary = true; },
+                    r => r.ApiDescription.GetResponseType() == typeof(Stream)));
 
             configuration.MapHttpAttributeRoutes();
 

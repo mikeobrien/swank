@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Web.Http.Description;
 using Swank.Configuration;
 using Swank.Description;
 using Swank.Extensions;
@@ -11,19 +12,19 @@ namespace Swank.Specification
     {
         private readonly Configuration.Configuration _configuration;
         private readonly IDescriptionConvention<Type, EnumDescription> _enumConvention;
-        private readonly IDescriptionConvention<FieldInfo, EnumOptionDescription> _optionConvention;
+        private readonly IDescriptionConvention<FieldInfo, OptionDescription> _optionConvention;
 
         public OptionFactory(
             Configuration.Configuration configuration,
             IDescriptionConvention<Type, EnumDescription> enumConvention,
-            IDescriptionConvention<FieldInfo, EnumOptionDescription> optionConvention)
+            IDescriptionConvention<FieldInfo, OptionDescription> optionConvention)
         {
             _configuration = configuration;
             _enumConvention = enumConvention;
             _optionConvention = optionConvention;
         }
 
-        public Enumeration BuildOptions(Type type)
+        public Enumeration BuildOptions(Type type, ApiDescription endpoint, bool request)
         {
             type = type.GetNullableUnderlyingType();
             if (!type.IsEnum) return null;
@@ -40,13 +41,20 @@ namespace Swank.Specification
                     })
                     .Where(x => !x.Description.Hidden)
                     .Select(x =>
-                        _configuration.OptionOverrides.Apply(x.Option, new Option
+                        _configuration.OptionOverrides.Apply(new OptionOverrideContext
                         {
-                            Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
-                            Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
-                            Value = _configuration.EnumFormat == EnumFormat.AsString ? 
-                                x.Option.Name : x.Option.GetRawConstantValue().ToString()
-                        }))
+                            IsRequest = request,
+                            Description = x.Description,
+                            ApiDescription = endpoint,
+                            Field = x.Option,
+                            Option = new Option
+                            {
+                                Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
+                                Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
+                                Value = _configuration.EnumFormat == EnumFormat.AsString ? 
+                                    x.Option.Name : x.Option.GetRawConstantValue().ToString()
+                            }
+                        }).Option)
                     .OrderBy(x => x.Name).ToList()
             };
         }
