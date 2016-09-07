@@ -33,8 +33,9 @@ namespace Swank.Description
                     parameter.GetAttribute<CommentsAttribute>().WhenNotNull(x => x.Comments)
                         .OtherwiseDefault() ?? parameter.Documentation ??
                         xmlComments?.Parameters.TryGetValue(parameter.Name),
-                DefaultValue = parameter.GetAttribute<DefaultValueAttribute>()
-                    .WhenNotNull(x => x.Value.ToSampleValueString(_configuration))
+                DefaultValue = (parameter.GetAttribute<DefaultValueAttribute>()?.Value ?? 
+                        parameter.ParameterDescriptor.DefaultValue)
+                    .WhenNotNull(x => x.ToSampleValueString(_configuration))
                     .OtherwiseDefault(),
                 SampleValue = parameter.GetAttribute<SampleValueAttribute>()
                     .WhenNotNull(x => x.Value.ToSampleValueString(_configuration))

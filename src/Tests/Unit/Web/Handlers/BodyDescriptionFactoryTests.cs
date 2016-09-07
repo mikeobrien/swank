@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Web.Http.Description;
 using System.Xml.Serialization;
 using NUnit.Framework;
 using Should;
@@ -24,7 +26,7 @@ namespace Tests.Unit.Web.Handlers
             configure?.Invoke(configuration);
             return new BodyDescriptionFactory(configuration)
                 .Create(Builder.BuildTypeGraphFactory(configuration: configuration)
-                    .BuildGraph(type, requestGraph));
+                    .BuildGraph(type, requestGraph, new ApiDescription()));
         }
 
         public List<BodyDefinition> BuildDescription<T>(
@@ -133,7 +135,7 @@ namespace Tests.Unit.Web.Handlers
         {
             [Optional]
             public string OptionalMember { get; set; }
-            public string RequiredMember { get; set; }
+            public int RequiredMember { get; set; }
         }
         
         [Test]
@@ -151,7 +153,7 @@ namespace Tests.Unit.Web.Handlers
                 x => x.Optional());
 
             description[2].ShouldBeSimpleTypeMember("RequiredMember",
-                "string", 1, "", x => x.IsString(),
+                "int", 1, "0", x => x.IsNumeric(),
                 x => x.Required().IsLastMember());
 
             description[3].ShouldBeComplexType("ComplexTypeWithOptionalMember", 0,

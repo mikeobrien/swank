@@ -14,7 +14,7 @@ namespace TestHarness
         {
             var configuration = GlobalConfiguration.Configuration;
             //configuration.EnableSwank();
-            configuration.EnableSwank(x => x
+            configuration.Swank(x => x
                 //.WithAppAt("")
                 .WithFavIconAt("/img/favicon.png")
                 .WithPageTitle("Setec Astronomy")
@@ -34,11 +34,11 @@ namespace TestHarness
                 //.HideJsonData()
                 .IsInDebugModeWhenAppIsInDebugMode()
                 .OverrideRequestWhen(
-                    (a, d) => { d.Type = null; d.IsBinary = true; }, 
-                    (a, d) => a.GetRequestType() == typeof(Stream))
+                    r => { r.Message.Type = null; r.Message.IsBinary = true; }, 
+                    r => r.ApiDescription.GetRequestType() == typeof(Stream))
                 .OverrideResponseWhen(
-                    (a, d) => { d.Type = null; d.IsBinary = true; },
-                    (a, d) => a.GetResponseType() == typeof(Stream)));
+                    r => { r.Message.Type = null; r.Message.IsBinary = true; },
+                    r => r.ApiDescription.GetRequestType() == typeof(Stream)));
 
             configuration.MapHttpAttributeRoutes();
 
