@@ -45,6 +45,7 @@ namespace Tests.Unit.Description
             /// <param name="value2">value 2 comments</param>
             public object XmlCommentsValue(int value1, int value2) { return null; }
             public object DefaultValue([DefaultValue(5)] int value) { return null; }
+            public object DefaultForOptionalValue(int? value = 8) { return null; }
             public object SampleValue([SampleValue(5)] int value) { return null; }
             public object OptionalNullableValue(int? value = null) { return null; }
             public object OptionalValue([Optional] int value) { return null; }
@@ -107,6 +108,12 @@ namespace Tests.Unit.Description
         public void should_not_specify_default_value_by_default()
         {
             GetDescription(x => x.Value(0)).DefaultValue.ShouldBeNull();
+        }
+
+        [Test]
+        public void should_specify_default_value_if_default_value_specified()
+        {
+            GetDescription(x => x.DefaultForOptionalValue(0)).DefaultValue.ShouldEqual("8");
         }
 
         [Test]

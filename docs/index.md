@@ -2,7 +2,7 @@
 layout: site
 ---
 
-Swank is an ASP.NET Web API 2 library that documents RESTful services. You can take a look at a sample [here](http://www.mikeobrien.net/swank/sample). 
+Swank is an ASP.NET Web API 2 library that documents RESTful services. You can take a look at a sample of the documentation it generates [here](http://www.mikeobrien.net/swank/sample). 
 
 ## Features
 
@@ -12,7 +12,7 @@ Swank is an ASP.NET Web API 2 library that documents RESTful services. You can t
 - Optional [custom [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) main page](#main-page).
 - Supports [XML comments](#xml-comments-1).
 - Custom [code examples](#code-examples) from Razor or Mustache templates.
-- [Conventions](#conventions) and [overrides](#overrides) allow you to customize every aspect of spec generation.
+- [Overrides](#overrides) and [conventions](#conventions) allow you to customize every aspect of spec generation.
 - Custom [templates](#templates) that allow generation of code or documentation.
 
 ## Getting Started
@@ -283,7 +283,11 @@ The following are all the built in attributes.
 | `SampleValue` | Sets the sample value which is displayed in the XML and json samples. Used on members and action parameters. |
 | `DefaultValue` | Specifies a default value, used on members and querystring action parameters. |
 | `Optional` | Indicates that something is optional, used on members and querystring action parameters. |
-| `Required` | Indicates that a querystring action parameter is required. |
+| `OptionalForPost` | Indicates that something is optional for `POST` otherwise required, used on members and querystring action parameters. |
+| `OptionalForPut` | Indicates that something is optional for `PUT` otherwise required, used on members and querystring action parameters. |
+| `Required` | Indicates that a member or querystring action parameter is required. |
+| `RequiredForPost` | Indicates that a member or querystring action parameter is required for `POST` otherwise optional. |
+| `RequiredForPut` | Indicates that a member or querystring action parameter is required for `PUT` otherwise optional. |
 | `Multiple` | Indicates that multiple querystring action parameters are allowed. |
 | `ArrayDescription` | Describes list types and members. You can set the name and comments as well as the item name and comments. |
 | `DictionaryDescription` | Describes dictionary types and members. You can set the name and comments as well as the key name and, key and value comments. |
@@ -485,46 +489,50 @@ There are a few options to control how the specification is generated.
 
 #### Overrides
 
-If you want to modify the spec *after* it's been created you can override it. Lets say for example you wanted to generate all the resource comments instead of manually filling them in. 
+If you want to modify the spec *after* it's been generated you can override it. Lets say for example you wanted to generate all the resource comments instead of manually filling them in. 
 
 ```csharpconfiguration.EnableSwank(x => x.OverrideResources(
-    r => r.Comments = $"This is the {r.Name.ToLower()} resource.")...);
+    r => r.Resource.Comments = $"This is the {r.Resource.Name.ToLower()} resource.")...);
 ```
 
 This will set the comments for every resource. But what if you only wanted to do it for resources that don't have comments, you can pass a predicate.
 
 ```csharpconfiguration.EnableSwank(x => x.OverrideResourcesWhen(
-    r => r.Comments = $"This is the {r.Name.ToLower()} resource.", 
-    r => r.Comments.IsNullOrEmpty())...);
+    r => r.Resource.Comments = $"This is the {r.Resource.Name.ToLower()} resource.", 
+    r => r.Resource.Comments.IsNullOrEmpty())...);
 ```
 
 Another example is adding common status codes to every `POST` and `PUT` endpoint.
 
 ```csharpconfiguration.EnableSwank(x => x.OverrideEndpointsWhen(
-    e => e.StatusCodes.Add(new StatusCode { Code = 201, Comments = "..." }), 
-    e => e.HttpMethod == "POST" || e.HttpMethod == "PUT")...);
+    e => e.Endpoint.StatusCodes.Add(new StatusCode { Code = 201, Comments = "..." }), 
+    e => e.Endpoint.HttpMethod == "POST" || e.Endpoint.HttpMethod == "PUT")...);
 ```
 
-Many overrides will also pass `ApiDescription`, `ApiParameterDescription`, `Type`, `PropertyInfo` and `FieldOnfo` if they are related so you can use information from these.
+Override functions are passed a context that includes the final specification, the original description (`Description` property) and other information that describes that specific part of the specification. You will want to update the specification object (see below) as this is what will be used to generate documentation or returned from the specification endpoint.
 
-Overrides are available for everything in the spec, the configuration DSL methods follow the convention of `Override[thing]` and `Override[thing]When`.
+Overrides are available for every part of the spec. The configuration DSL methods follow the convention of `Override[thing]` and `Override[thing]When` for conditional overrides.
 
-- Modules
-- Resources
-- Endpoints
-- Url Parameters
-- Querystring
-- Parameters (Both url parameters and querystring)
-- Status Codes
-- Request Headers
-- Response Headers
-- Headers (Both request and response headers)
-- Request
-- Response
-- Message (Both request and response)
-- Types
-- Members
-- Options (Enums)
+|----|----|
+| Configuration DSL | Specification Property | Description Properties | Comments |
+|----|----|----|
+| `OverrideModules` | `Module` |  `Description` | |
+| `OverrideResources` | `Resource` |  `Description` | |
+| `OverrideEndpoints` | `Endpoint` |  `Description`, `ApiDescription` | |
+| `OverrideParameters` | `Parameter` |  `Description`, `ApiDescription` | Both url and querystring parameters. |
+| `OverrideUrlParameters` | `UrlParameter` |  `Description`, `ApiDescription` | |
+| `OverrideQuerystring` | `Querystring` |  `Description`, `ApiDescription` | |
+| `OverrideStatusCodes` | `StatusCode` |  `Description`, `ApiDescription` | |
+| `OverrideHeaders` | `Header` |  `Description`, `ApiDescription` | Both request and response headers. |
+| `OverrideRequestHeaders` | `Header` |  `Description`, `ApiDescription` |  |
+| `OverrideResponseHeaders` | `Header` |  `Description`, `ApiDescription` |  |
+| `OverrideMessage` | `Message` |  `Description`, `ApiDescription` | Both request and response messages. |
+| `OverrideRequest` | `Message` |  `Description`, `ApiDescription` |  |
+| `OverrideResponse` | `Message` |  `Description`, `ApiDescription` |  |
+| `OverrideTypes` | `DataType` |  `Description`, `Type`, `IsRequest` | |
+| `OverrideMembers` | `Member` |  `Description`, `Property`, `IsRequest` | |
+| `OverrideOptions` | `Option` |  `Description`, `Field`, `IsRequest` | |
+|----|----|
 
 #### Conventions
 

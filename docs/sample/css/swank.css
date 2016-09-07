@@ -597,7 +597,6 @@ th.swank-sample-data-selector-container {
 .swank-code-example {
     padding: 0;
     border: #c1c1c1 1px solid;
-    font-weight: bold;
 }
 
 .swank-code-example-copy {
