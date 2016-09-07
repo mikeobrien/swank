@@ -87,7 +87,7 @@ namespace Tests.Unit.Web.Assets
                 _path1.GetFileNameWithoutExtension(),
                 _path1.GetExtension()).Select(x => x.Path);
 
-            results.Count().ShouldEqual(1);
+            results.Count().ShouldBeGreaterThanOrEqualTo(1);
             results.ShouldContain(_path1);
         }
     }

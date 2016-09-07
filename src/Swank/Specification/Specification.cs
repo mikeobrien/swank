@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Swank.Extensions;
 
 namespace Swank.Specification
 {
@@ -71,8 +72,8 @@ namespace Swank.Specification
         public string Comments { get; set; }
         public bool Optional { get; set; }
         public bool Required { get; set; }
-        public bool IsContentType { get; set; }
-        public bool IsAccept { get; set; }
+        public bool IsContentType => Name.EqualsIgnoreCase("content-type");
+        public bool IsAccept => Name.EqualsIgnoreCase("accept");
     }
 
     public class Message

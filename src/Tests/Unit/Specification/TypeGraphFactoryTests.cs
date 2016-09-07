@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Web.Http.Description;
 using Swank.Description;
 using Swank.Specification;
 using NUnit.Framework;
 using Should;
 using Swank.Configuration;
+using Tests.Common;
 
 namespace Tests.Unit.Specification
 {
@@ -18,7 +21,7 @@ namespace Tests.Unit.Specification
         public void should_create_type_without_comments()
         {
             var type = Builder.BuildTypeGraphFactory().BuildGraph(
-                typeof(TypeWithoutComments), false);
+                typeof(TypeWithoutComments), false, null);
 
             type.Name.ShouldEqual("TypeWithoutComments");
             type.Comments.ShouldBeNull();
@@ -31,7 +34,7 @@ namespace Tests.Unit.Specification
         public void should_create_type_with_comments()
         {
             var type = Builder.BuildTypeGraphFactory().BuildGraph(
-                typeof(TypeWithComments), false);
+                typeof(TypeWithComments), false, null);
 
             type.Name.ShouldEqual("TypeWithComments");
             type.Comments.ShouldEqual("This is **a** type.");
@@ -40,10 +43,10 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_override_type()
         {
-            var type = Builder.BuildTypeGraphFactory(x => x.TypeOverrides.Add((t, d) =>
+            var type = Builder.BuildTypeGraphFactory(x => x.TypeOverrides.Add(t =>
             {
-                d.Name += t.Name;
-                d.Comments += t.Name;
+                t.DataType.Name += t.Type.Name;
+                t.DataType.Comments += t.Type.Name;
             })).BuildGraph<TypeWithComments>();
 
             type.Name.ShouldEqual("TypeWithCommentsTypeWithComments");
@@ -59,10 +62,10 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_override_type_members()
         {
-            var type = Builder.BuildTypeGraphFactory(x => x.MemberOverrides.Add((p, m) =>
+            var type = Builder.BuildTypeGraphFactory(x => x.MemberOverrides.Add(m =>
             {
-                m.Name += p.Name;
-                m.Comments += p.Name;
+                m.Member.Name += m.Property.Name;
+                m.Member.Comments += m.Property.Name;
             })).BuildGraph<TypeWithOverrodeMember>();
 
             var member = type.Members.Single();
@@ -83,7 +86,7 @@ namespace Tests.Unit.Specification
         public void should_create_simple_type(Type type, string name)
         {
             should_be_simple_type(Builder.BuildTypeGraphFactory()
-                .BuildGraph(type, false), name);
+                .BuildGraph(type, false, null), name);
         }
 
         public class SimpleTypeMember
@@ -95,7 +98,7 @@ namespace Tests.Unit.Specification
         public void should_create_simple_type_member()
         {
             should_be_simple_type(Builder.BuildTypeGraphFactory().BuildGraph(
-                typeof(SimpleTypeMember), false).Members.Single().Type, "int");
+                typeof(SimpleTypeMember), false, null).Members.Single().Type, "int");
         }
 
         public void should_be_simple_type(DataType type, string name)
@@ -132,7 +135,7 @@ namespace Tests.Unit.Specification
             Type type, EnumFormat format, string dataTypeName, string value1, string value2)
         {
             var dataType = Builder.BuildTypeGraphFactory(x => x.EnumFormat = format)
-                .BuildGraph(type, false);
+                .BuildGraph(type, false, null);
 
             dataType.Name.ShouldEqual(dataTypeName);
             dataType.IsSimple.ShouldBeTrue();
@@ -155,7 +158,7 @@ namespace Tests.Unit.Specification
         {
             var dataType = Builder.BuildTypeGraphFactory(
                     x => x.EnumFormat = EnumFormat.AsString)
-                .BuildGraph(type, false);
+                .BuildGraph(type, false, null);
 
             dataType.Name.ShouldEqual("string");
             dataType.IsSimple.ShouldBeTrue();
@@ -182,7 +185,7 @@ namespace Tests.Unit.Specification
         public void should_create_array(Type type)
         {
             should_be_array_type(Builder.BuildTypeGraphFactory()
-                .BuildGraph(type, false));
+                .BuildGraph(type, false, null));
         }
 
         [Comments("This *is* an array.")]
@@ -267,7 +270,7 @@ namespace Tests.Unit.Specification
         public void should_create_dictionary(Type type)
         {
             should_be_dictionary_type(Builder.BuildTypeGraphFactory()
-                .BuildGraph(type, false), "DictionaryOfInt");
+                .BuildGraph(type, false, null), "DictionaryOfInt");
         }
 
         [Comments("This is *a* dictionary.")]
@@ -365,7 +368,7 @@ namespace Tests.Unit.Specification
         public void should_create_complex_type_and_members()
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphFactory()
-                .BuildGraph(typeof(ComplexType), false), 2).Members;
+                .BuildGraph(typeof(ComplexType), false, null), 2).Members;
 
             should_match_member(members[0], "Member1", sampleValue: "",
                 type: x => should_be_simple_type(x, "string"));
@@ -383,7 +386,7 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_comments()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphFactory()
-                .BuildGraph(typeof(ComplexTypeWithMemberComments), false), 1)
+                .BuildGraph(typeof(ComplexTypeWithMemberComments), false, null), 1)
                 .Members.Single();
 
             should_match_member(member, "Member", "This is *a* member.", sampleValue: "",
@@ -400,7 +403,7 @@ namespace Tests.Unit.Specification
         public void should_not_return_complex_type_member_default_value_for_output_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphFactory()
-                .BuildGraph(typeof(ComplexTypeWithDefaultValue), false), 1)
+                .BuildGraph(typeof(ComplexTypeWithDefaultValue), false, null), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -412,7 +415,7 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_default_value_for_input_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphFactory()
-                .BuildGraph(typeof(ComplexTypeWithDefaultValue), true), 1)
+                .BuildGraph(typeof(ComplexTypeWithDefaultValue), true, new ApiDescription()), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -425,7 +428,7 @@ namespace Tests.Unit.Specification
         {
             var member = should_be_complex_type(Builder
                 .BuildTypeGraphFactory(x => x.SampleRealFormat = "0.0")
-                .BuildGraph(typeof(ComplexTypeWithDefaultValue), true), 1)
+                .BuildGraph(typeof(ComplexTypeWithDefaultValue), true, new ApiDescription()), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -443,7 +446,7 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_sample_value_for_output_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphFactory()
-                .BuildGraph(typeof(ComplexTypeWithSampleValue), false), 1)
+                .BuildGraph(typeof(ComplexTypeWithSampleValue), false, null), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -455,7 +458,7 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_sample_value_for_input_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphFactory()
-                .BuildGraph(typeof(ComplexTypeWithSampleValue), true), 1)
+                .BuildGraph(typeof(ComplexTypeWithSampleValue), true, new ApiDescription()), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -469,7 +472,7 @@ namespace Tests.Unit.Specification
         {
             var member = should_be_complex_type(Builder
                 .BuildTypeGraphFactory(x => x.SampleRealFormat = "0.0")
-                .BuildGraph(typeof(ComplexTypeWithSampleValue), true), 1)
+                .BuildGraph(typeof(ComplexTypeWithSampleValue), true, new ApiDescription()), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -480,81 +483,79 @@ namespace Tests.Unit.Specification
 
         public class ComplexTypeWithOptionalMember
         {
+            public string OptionalReference { get; set; }
+            public int? OptionalNullable { get; set; }
+            public int RequiredNonNullable { get; set; }
+
             [Optional]
-            public string OptionalMember { get; set; }
-            public int? NullableMember { get; set; }
-            public string RequiredMember { get; set; }
-            public ComplexTypeChildWithOptionalMember Child { get; set; }
+            public string Optional { get; set; }
+
+            [Required]
+            public string Required { get; set; }
+
+            [OptionalForPost]
+            public string OptionalForPost { get; set; }
+
+            [OptionalForPut]
+            public string OptionalForPut { get; set; }
+
+            [RequiredForPost]
+            public string RequiredForPost { get; set; }
+
+            [RequiredForPut]
+            public string RequiredForPut { get; set; }
         }
 
-        public class ComplexTypeChildWithOptionalMember
+        private static readonly object[][] OptionalMemberTestCases = TestCaseSource.Create(x => x
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalReference), true, false, "string", "", null)
+
+            .Add(nameof(ComplexTypeWithOptionalMember.Optional), true, false, "string", "", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.Required), false, true, "string", "", null)
+
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalNullable), true, false, "int", "0", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredNonNullable), false, true, "int", "0", null)
+
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPost), true, false, "string", "", HttpMethod.Post)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPost), false, true, "string", "", HttpMethod.Post)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPost), false, true, "string", "", HttpMethod.Put)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPost), true, false, "string", "", HttpMethod.Put)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPost), false, true, "string", "", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPost), true, false, "string", "", null)
+
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPut), true, false, "string", "", HttpMethod.Put)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPut), false, true, "string", "", HttpMethod.Put)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPut), false, true, "string", "", HttpMethod.Post)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPut), true, false, "string", "", HttpMethod.Post)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPut), false, true, "string", "", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPut), true, false, "string", "", null));
+
+        [Test]
+        [TestCaseSource(nameof(OptionalMemberTestCases))]
+        public void should_return_complex_type_optional_member_when_input(
+            string property, bool optional, bool required, string dataType, 
+                string sampleValue, HttpMethod method)
         {
-            [Optional]
-            public string OptionalMember { get; set; }
-            public int? NullableMember { get; set; }
-            public string RequiredMember { get; set; }
+            var apiDescription = new ApiDescription { HttpMethod = method };
+            var members = should_be_complex_type(Builder.BuildTypeGraphFactory()
+                .BuildGraph(typeof(ComplexTypeWithOptionalMember), true, apiDescription), 9).Members;
+
+            should_match_member(members.First(x => x.Name == property), property,
+                required: required, sampleValue: sampleValue, optional: optional,
+                type: x => should_be_simple_type(x, dataType));
         }
 
         [Test]
-        public void should_return_complex_type_optional_member_when_input()
+        [TestCaseSource(nameof(OptionalMemberTestCases))]
+        public void should_not_return_complex_type_optional_member_when_output(
+            string property, bool optional, bool required, string dataType,
+                string sampleValue, HttpMethod method)
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphFactory()
-                .BuildGraph(typeof(ComplexTypeWithOptionalMember), true), 4).Members;
+                .BuildGraph(typeof(ComplexTypeWithOptionalMember), false, null), 9).Members;
 
-            should_match_member(members[0], "OptionalMember",
-                required: false, sampleValue: "", optional: true,
-                type: x => should_be_simple_type(x, "string"));
-
-            should_match_member(members[1], "NullableMember",
-                required: false, sampleValue: "0", optional: true,
-                type: x => should_be_simple_type(x, "int"));
-
-            should_match_member(members[2], "RequiredMember",
-                required: true, sampleValue: "", optional: false,
-                type: x => should_be_simple_type(x, "string"));
-
-            should_match_member(members[3].Type.Members[0], "OptionalMember",
-                required: false, sampleValue: "", optional: true,
-                type: x => should_be_simple_type(x, "string"));
-
-            should_match_member(members[3].Type.Members[1], "NullableMember",
-                required: false, sampleValue: "0", optional: true,
-                type: x => should_be_simple_type(x, "int"));
-
-            should_match_member(members[3].Type.Members[2], "RequiredMember",
-                required: true, sampleValue: "", optional: false,
-                type: x => should_be_simple_type(x, "string"));
-        }
-
-        [Test]
-        public void should_not_return_complex_type_optional_member_when_output()
-        {
-            var members = should_be_complex_type(Builder.BuildTypeGraphFactory()
-                .BuildGraph(typeof(ComplexTypeWithOptionalMember), false), 4).Members;
-
-            should_match_member(members[0], "OptionalMember",
-                required: false, sampleValue: "", optional: false,
-                type: x => should_be_simple_type(x, "string"));
-
-            should_match_member(members[1], "NullableMember",
-                required: false, sampleValue: "0", optional: false,
-                type: x => should_be_simple_type(x, "int"));
-
-            should_match_member(members[2], "RequiredMember",
-                required: false, sampleValue: "", optional: false,
-                type: x => should_be_simple_type(x, "string"));
-
-            should_match_member(members[3].Type.Members[0], "OptionalMember",
-                required: false, sampleValue: "", optional: false,
-                type: x => should_be_simple_type(x, "string"));
-
-            should_match_member(members[3].Type.Members[1], "NullableMember",
-                required: false, sampleValue: "0", optional: false,
-                type: x => should_be_simple_type(x, "int"));
-
-            should_match_member(members[3].Type.Members[2], "RequiredMember",
-                required: false, sampleValue: "", optional: false,
-                type: x => should_be_simple_type(x, "string"));
+            should_match_member(members.First(x => x.Name == property), property,
+                required: false, sampleValue: sampleValue, optional: false,
+                type: x => should_be_simple_type(x, dataType));
         }
 
         public class CyclicModel
@@ -609,7 +610,7 @@ namespace Tests.Unit.Specification
         public void should_exclude_a_member_if_it_is_hidden()
         {
             Builder.BuildTypeGraphFactory().BuildGraph(
-                typeof(ComplexTypeWithHiddenMember), false)
+                typeof(ComplexTypeWithHiddenMember), false, null)
                 .Members.Any(x => x.Name == "HiddenMember").ShouldBeFalse();
         }
 
@@ -625,7 +626,7 @@ namespace Tests.Unit.Specification
         public void should_exclude_a_member_if_its_type_is_hidden()
         {
             Builder.BuildTypeGraphFactory().BuildGraph(
-                typeof(ComplexTypeWithHiddenTypeMember), false)
+                typeof(ComplexTypeWithHiddenTypeMember), false, null)
                 .Members.Any(x => x.Name == "HiddenTypeMember").ShouldBeFalse();
         }
 
@@ -643,7 +644,7 @@ namespace Tests.Unit.Specification
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphFactory()
                 .BuildGraph(typeof(ComplexTypeWithDeprecatedMembers), 
-                    false), 2).Members;
+                    false, null), 2).Members;
 
             should_match_member(members[0], "DeprecatedMember",
                 deprecated: true, sampleValue: "",
@@ -655,7 +656,7 @@ namespace Tests.Unit.Specification
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphFactory()
                 .BuildGraph(typeof(ComplexTypeWithDeprecatedMembers), 
-                    false), 2).Members;
+                    false, null), 2).Members;
 
             should_match_member(members[1], "DeprecatedMemberWithMessage",
                 deprecated: true, sampleValue: "",
@@ -797,7 +798,7 @@ namespace Tests.Unit.Specification
     {
         public static DataType BuildGraph<T>(this TypeGraphFactory factory)
         {
-            return factory.BuildGraph(typeof(T), false);
+            return factory.BuildGraph(typeof(T), false, null);
         }
 
         public static Member Member(this List<Member> members, string name)
