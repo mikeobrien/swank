@@ -12,7 +12,7 @@ namespace Swank
 {
     public static class Bootstrap
     {
-        public static void EnableSwank(this HttpConfiguration httpConfiguration,
+        public static void Swank(this HttpConfiguration httpConfiguration,
             Action<ConfigurationDsl> configure = null)
         {
             var configuration = new Configuration
@@ -41,7 +41,7 @@ namespace Swank
                 .Register<IDescriptionConvention<Type,
                     EnumDescription>, EnumConvention>()
                 .Register<IDescriptionConvention<FieldInfo,
-                    EnumOptionDescription>, OptionConvention>());
+                    OptionDescription>, OptionConvention>());
 
             configuration.Assets.ForEach(x =>
             {

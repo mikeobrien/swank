@@ -34,7 +34,7 @@ namespace Tests.Unit.Specification
             configure?.Invoke(configuration);
             return new OptionFactory(configuration, 
                 new EnumConvention(_comments), 
-                new OptionConvention(_comments)).BuildOptions(type);
+                new OptionConvention(_comments)).BuildOptions(type, null, true);
         }
 
         public enum EnumWithoutComments { }
@@ -109,11 +109,11 @@ namespace Tests.Unit.Specification
         public void should_override()
         {
             var options = GetOptions<EnumOverride>(
-                x => x.OptionOverrides.Add((f, o) =>
+                x => x.OptionOverrides.Add(o =>
                     {
-                        o.Name += f.Name;
-                        o.Value += f.Name;
-                        o.Comments += f.Name;
+                        o.Option.Name += o.Field.Name;
+                        o.Option.Value += o.Field.Name;
+                        o.Option.Comments += o.Field.Name;
                     })).Options;
 
             var option = options.Single();

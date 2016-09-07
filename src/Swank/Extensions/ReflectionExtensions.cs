@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Swank.Extensions
 {
-    internal static class ReflectionExtensions
+    public static class ReflectionExtensions
     {
         public static bool IsInDebugMode(this Assembly assembly)
         {
