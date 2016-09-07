@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
+using System.Web.Http.Description;
 using Swank.Description;
 using Swank.Extensions;
 
@@ -26,9 +28,9 @@ namespace Swank.Specification
             _typeConvention = typeConvention;
         }
 
-        public DataType BuildGraph(Type type, bool requestGraph)
+        public DataType BuildGraph(Type type, bool requestGraph, ApiDescription endpoint)
         {
-            var dataType = BuildGraph(null, type, requestGraph, null);
+            var dataType = BuildGraph(null, type, requestGraph, endpoint, null);
             GenerateShortNamespaces(dataType);
             return dataType;
         }
@@ -37,6 +39,7 @@ namespace Swank.Specification
             DataType parent,
             Type type,
             bool requestGraph,
+            ApiDescription endpoint,
             IEnumerable<Type> ancestors,
             MemberDescription memberDescription = null)
         {
@@ -54,14 +57,21 @@ namespace Swank.Specification
 
             if (type.IsDictionary())
                 BuildDictionary(dataType, type, description, 
-                    requestGraph, ancestors, memberDescription);
+                    requestGraph, endpoint, ancestors, memberDescription);
             else if (type.IsArray || type.IsList())
                 BuildArray(dataType, type, description, requestGraph, 
-                    ancestors, memberDescription);
-            else if (type.IsSimpleType()) BuildSimpleType(dataType, type);
-            else BuildComplexType(dataType, type, requestGraph, ancestors);
+                    endpoint, ancestors, memberDescription);
+            else if (type.IsSimpleType()) BuildSimpleType(dataType, type, requestGraph);
+            else BuildComplexType(dataType, type, requestGraph, endpoint, ancestors);
 
-            return _configuration.TypeOverrides.Apply(type, dataType);
+            return _configuration.TypeOverrides.Apply(new TypeOverrideContext
+            {
+                Type = type,
+                DataType = dataType,
+                ApiDescription = endpoint,
+                Description = description,
+                IsRequest = requestGraph
+            }).DataType;
         }
 
         private void BuildDictionary(
@@ -69,6 +79,7 @@ namespace Swank.Specification
             Type type,
             TypeDescription typeDescription,
             bool requestGraph,
+            ApiDescription endpoint,
             IEnumerable<Type> ancestors,
             MemberDescription memberDescription)
         {
@@ -84,11 +95,11 @@ namespace Swank.Specification
                 KeyComments = memberDescription
                     .WhenNotNull(x => x.DictionaryEntry.KeyComments).OtherwiseDefault() ??
                     typeDescription.WhenNotNull(x => x.DictionaryEntry.KeyComments).OtherwiseDefault(),
-                KeyType = BuildGraph(dataType, types.Key, requestGraph, ancestors),
+                KeyType = BuildGraph(dataType, types.Key, requestGraph, endpoint, ancestors),
                 ValueComments = memberDescription
                     .WhenNotNull(x => x.DictionaryEntry.ValueComments).OtherwiseDefault() ??
                     typeDescription.WhenNotNull(x => x.DictionaryEntry.ValueComments).OtherwiseDefault(),
-                ValueType = BuildGraph(dataType, types.Value, requestGraph, ancestors)
+                ValueType = BuildGraph(dataType, types.Value, requestGraph, endpoint, ancestors)
             };
         }
 
@@ -97,6 +108,7 @@ namespace Swank.Specification
             Type type,
             TypeDescription typeDescription,
             bool requestGraph,
+            ApiDescription endpoint,
             IEnumerable<Type> ancestors,
             MemberDescription memberDescription)
         {
@@ -104,7 +116,7 @@ namespace Swank.Specification
             dataType.Comments = memberDescription.WhenNotNull(x => x.Comments)
                 .OtherwiseDefault() ?? dataType.Comments;
             var itemType = BuildGraph(dataType, type.GetListElementType(), 
-                requestGraph, ancestors);
+                requestGraph, endpoint, ancestors);
             dataType.ArrayItem = new ArrayItem
             {
                 Name = memberDescription
@@ -118,19 +130,20 @@ namespace Swank.Specification
             };
         }
 
-        private void BuildSimpleType(DataType dataType, Type type)
+        private void BuildSimpleType(DataType dataType, Type type, bool requestGraph)
         {
             dataType.IsSimple = true;
             dataType.LongNamespace.Clear();
             dataType.ShortNamespace.Clear();
             if (type.GetNullableUnderlyingType().IsEnum)
-                dataType.Options = _optionFactory.BuildOptions(type);
+                dataType.Options = _optionFactory.BuildOptions(type, null, requestGraph);
         }
 
         private void BuildComplexType(
             DataType dataType,
             Type type,
             bool requestGraph,
+            ApiDescription endpoint,
             IEnumerable<Type> ancestors)
         {
             dataType.IsComplex = true;
@@ -143,29 +156,35 @@ namespace Swank.Specification
                     UnwrappedType = x.PropertyType.UnwrapType(),
                     Description = _memberConvention.GetDescription(x)
                 })
-                .Where(x => x.Ancestors.All(y => y != x.UnwrappedType) &&
-                            !x.Description.Hidden)
-                .Select(x => _configuration.MemberOverrides.Apply(x.Property, new Member
+                .Where(x => x.Ancestors.All(y => y != x.UnwrappedType) && !x.Description.Hidden)
+                .Select(x => _configuration.MemberOverrides.Apply(new MemberOverrideContext
                 {
-                    Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
-                    Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
-                    DefaultValue = requestGraph ? 
-                        x.Description.WhenNotNull(y => y.DefaultValue)
+                    Description = x.Description,
+                    Property = x.Property,
+                    ApiDescription = endpoint,
+                    IsRequest = requestGraph,
+                    Member = new Member
+                    {
+                        Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
+                        Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
+                        DefaultValue = requestGraph ? x.Description
+                            .WhenNotNull(y => y.DefaultValue)
                             .OtherwiseDefault() : null,
-                    SampleValue = x.Description
-                        .WhenNotNull(y => y.SampleValue)
+                        SampleValue = x.Description
+                            .WhenNotNull(y => y.SampleValue)
+                                .OtherwiseDefault(),
+                        Required = requestGraph && x.Description
+                            .WhenNotNull(y => y.Optional.IsRequired(endpoint.HttpMethod))
                             .OtherwiseDefault(),
-                    Required = requestGraph && !x.Type.IsNullable() && 
-                        x.Description.WhenNotNull(y => !y.Optional)
+                        Optional = requestGraph && x.Description
+                            .WhenNotNull(y => y.Optional.IsOptional(endpoint.HttpMethod))
                             .OtherwiseDefault(),
-                    Optional = requestGraph && (x.Type.IsNullable() || 
-                        x.Description.WhenNotNull(y => y.Optional)
-                            .OtherwiseDefault()),
-                    Deprecated = x.Description.Deprecated,
-                    DeprecationMessage = x.Description.DeprecationMessage,
-                    Type = BuildGraph(dataType, x.Type, requestGraph, 
-                        x.Ancestors, x.Description)
-                })).ToList();
+                        Deprecated = x.Description.Deprecated,
+                        DeprecationMessage = x.Description.DeprecationMessage,
+                        Type = BuildGraph(dataType, x.Type, requestGraph, endpoint,
+                            x.Ancestors, x.Description)
+                    }
+                }).Member).ToList();
         }
 
         private static void GenerateShortNamespaces(DataType type)
@@ -188,6 +207,27 @@ namespace Swank.Specification
                 yield return type.DictionaryEntry.KeyType;
                 yield return type.DictionaryEntry.ValueType;
             }
+        }
+    }
+
+    public static class TypeGraphFactoryExtensions
+    {
+        public static bool IsRequired(this OptionalScope optional, HttpMethod method)
+        {
+            return optional == OptionalScope.None ||
+                (optional == OptionalScope.Post && method != HttpMethod.Post) ||
+                (optional == OptionalScope.Put && method != HttpMethod.Put) ||
+                (optional == OptionalScope.AllButPost && method == HttpMethod.Post) ||
+                (optional == OptionalScope.AllButPut && method == HttpMethod.Put);
+        }
+
+        public static bool IsOptional(this OptionalScope optional, HttpMethod method)
+        {
+            return optional == OptionalScope.All ||
+                (optional == OptionalScope.Post && method == HttpMethod.Post) ||
+                (optional == OptionalScope.Put && method == HttpMethod.Put) ||
+                (optional == OptionalScope.AllButPost && method != HttpMethod.Post) ||
+                (optional == OptionalScope.AllButPut && method != HttpMethod.Put);
         }
     }
 }
