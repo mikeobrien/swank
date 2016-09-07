@@ -3,7 +3,7 @@ using Swank.Extensions;
 
 namespace Swank.Description
 {
-    public class OptionConvention : IDescriptionConvention<FieldInfo, EnumOptionDescription>
+    public class OptionConvention : IDescriptionConvention<FieldInfo, OptionDescription>
     {
         private readonly XmlComments _xmlComments;
 
@@ -12,11 +12,11 @@ namespace Swank.Description
             _xmlComments = xmlComments;
         }
 
-        public virtual EnumOptionDescription GetDescription(FieldInfo field)
+        public virtual OptionDescription GetDescription(FieldInfo field)
         {
             var description = field.GetCustomAttribute<DescriptionAttribute>();
             var xmlComments = _xmlComments.GetField(field);
-            return new EnumOptionDescription {
+            return new OptionDescription {
                 Name = description.WhenNotNull(x => x.Name).Otherwise(field.Name),
                 Comments = description.WhenNotNull(x => x.Comments)
                     .Otherwise(field.GetCustomAttribute<CommentsAttribute>()
