@@ -41,7 +41,7 @@ namespace Swank
                 .Register<IDescriptionConvention<Type,
                     EnumDescription>, EnumConvention>()
                 .Register<IDescriptionConvention<FieldInfo,
-                    EnumOptionDescription>, OptionConvention>());
+                    OptionDescription>, OptionConvention>());
 
             configuration.Assets.ForEach(x =>
             {

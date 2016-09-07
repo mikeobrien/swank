@@ -723,7 +723,7 @@ namespace Swank.Configuration
         /// Sets the enum option convention.
         /// </summary>
         public ConfigurationDsl WithEnumOptionConvention<T>() where T :
-            IDescriptionConvention<FieldInfo, EnumOptionDescription>
+            IDescriptionConvention<FieldInfo, OptionDescription>
         {
             return WithEnumOptionConvention<T, object>(null);
         }
@@ -732,7 +732,7 @@ namespace Swank.Configuration
         /// Sets the enum option convention.
         /// </summary>
         public ConfigurationDsl WithEnumOptionConvention<T, TConfig>(Action<TConfig> configure)
-            where T : IDescriptionConvention<FieldInfo, EnumOptionDescription>
+            where T : IDescriptionConvention<FieldInfo, OptionDescription>
             where TConfig : class, new()
         {
             _configuration.EnumOptionConvention.Type = typeof(T);
@@ -858,7 +858,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides modules.
         /// </summary>
-        public ConfigurationDsl OverrideModules(Action<Specification.Module> @override)
+        public ConfigurationDsl OverrideModules(Action<ModuleOverrideContext> @override)
         {
             _configuration.ModuleOverrides.Add(@override);
             return this;
@@ -867,8 +867,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides modules when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideModulesWhen(Action<Specification.Module> @override,
-            Func<Specification.Module, bool> when)
+        public ConfigurationDsl OverrideModulesWhen(Action<ModuleOverrideContext> @override,
+            Func<ModuleOverrideContext, bool> when)
         {
             _configuration.ModuleOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -877,7 +877,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides resources.
         /// </summary>
-        public ConfigurationDsl OverrideResources(Action<Resource> @override)
+        public ConfigurationDsl OverrideResources(Action<ResourceOverrideContext> @override)
         {
             _configuration.ResourceOverrides.Add(@override);
             return this;
@@ -886,8 +886,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides resources when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideResourcesWhen(Action<Resource> @override,
-            Func<Resource, bool> when)
+        public ConfigurationDsl OverrideResourcesWhen(Action<ResourceOverrideContext> @override,
+            Func<ResourceOverrideContext, bool> when)
         {
             _configuration.ResourceOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -896,7 +896,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides endpoints.
         /// </summary>
-        public ConfigurationDsl OverrideEndpoints(Action<ApiDescription, Endpoint> @override)
+        public ConfigurationDsl OverrideEndpoints(Action<EndpointOverrideContext> @override)
         {
             _configuration.EndpointOverrides.Add(@override);
             return this;
@@ -905,8 +905,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides endpoints when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideEndpointsWhen(Action<ApiDescription, Endpoint> @override,
-            Func<ApiDescription, Endpoint, bool> when)
+        public ConfigurationDsl OverrideEndpointsWhen(Action<EndpointOverrideContext> @override,
+            Func<EndpointOverrideContext, bool> when)
         {
             _configuration.EndpointOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -915,8 +915,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides url parameters.
         /// </summary>
-        public ConfigurationDsl OverrideUrlParameters(Action<ApiDescription,
-            ApiParameterDescription, UrlParameter> @override)
+        public ConfigurationDsl OverrideUrlParameters(Action<UrlParameterOverrideContext> @override)
         {
             _configuration.UrlParameterOverrides.Add(@override);
             return this;
@@ -925,9 +924,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides url parameters when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideUrlParametersWhen(Action<ApiDescription,
-            ApiParameterDescription, UrlParameter> @override,
-            Func<ApiDescription, ApiParameterDescription, UrlParameter, bool> when)
+        public ConfigurationDsl OverrideUrlParametersWhen(Action<UrlParameterOverrideContext> @override,
+            Func<UrlParameterOverrideContext, bool> when)
         {
             _configuration.UrlParameterOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -936,8 +934,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides querystrings.
         /// </summary>
-        public ConfigurationDsl OverrideQuerystring(Action<ApiDescription,
-            ApiParameterDescription, QuerystringParameter> @override)
+        public ConfigurationDsl OverrideQuerystring(Action<QuerystringOverrideContext> @override)
         {
             _configuration.QuerystringOverrides.Add(@override);
             return this;
@@ -946,9 +943,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides querystrings when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideQuerystringWhen(Action<ApiDescription,
-            ApiParameterDescription, QuerystringParameter> @override,
-            Func<ApiDescription, ApiParameterDescription, QuerystringParameter, bool> when)
+        public ConfigurationDsl OverrideQuerystringWhen(Action<QuerystringOverrideContext> @override,
+            Func<QuerystringOverrideContext, bool> when)
         {
             _configuration.QuerystringOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -959,10 +955,10 @@ namespace Swank.Configuration
         /// and querystring parameters.
         /// </summary>
         public ConfigurationDsl OverrideParameters(
-            Action<ApiParameterDescription, IDescription> @override)
+            Action<IParameterOverrideContext> @override)
         {
-            return OverrideQuerystring((x, y, z) => @override(y, z))
-                .OverrideUrlParameters((x, y, z) => @override(y, z));
+            return OverrideQuerystring(@override)
+                .OverrideUrlParameters(@override);
         }
 
         /// <summary>
@@ -970,20 +966,18 @@ namespace Swank.Configuration
         /// url parameters and querystring parameters.
         /// </summary>
         public ConfigurationDsl OverrideParametersWhen(
-            Action<ApiParameterDescription, IDescription> @override,
-            Func<ApiParameterDescription, IDescription, bool> when)
+            Action<IParameterOverrideContext> @override,
+            Func<IParameterOverrideContext, bool> when)
         {
-            return OverrideQuerystringWhen((x, y, z) =>
-                    @override(y, z), (x, y, z) => when(y, z))
-                .OverrideUrlParametersWhen((x, y, z) =>
-                    @override(y, z), (x, y, z) => when(y, z));
+            return OverrideQuerystringWhen(@override, when)
+                .OverrideUrlParametersWhen(@override, when);
         }
 
         /// <summary>
         /// Overrides status codes.
         /// </summary>
         public ConfigurationDsl OverrideStatusCodes(
-            Action<ApiDescription, StatusCode> @override)
+            Action<StatusCodeOverrideContext> @override)
         {
             _configuration.StatusCodeOverrides.Add(@override);
             return this;
@@ -993,8 +987,8 @@ namespace Swank.Configuration
         /// Overrides status codes when a condition is met.
         /// </summary>
         public ConfigurationDsl OverrideStatusCodesWhen(
-            Action<ApiDescription, StatusCode> @override,
-            Func<ApiDescription, StatusCode, bool> when)
+            Action<StatusCodeOverrideContext> @override,
+            Func<StatusCodeOverrideContext, bool> when)
         {
             _configuration.StatusCodeOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -1003,7 +997,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides headers.
         /// </summary>
-        public ConfigurationDsl OverrideHeaders(Action<ApiDescription, Header> @override)
+        public ConfigurationDsl OverrideHeaders(Action<HeaderOverrideContext> @override)
         {
             _configuration.RequestHeaderOverrides.Add(@override);
             _configuration.ResponseHeaderOverrides.Add(@override);
@@ -1013,8 +1007,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides headers when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideHeadersWhen(Action<ApiDescription, Header> @override,
-            Func<ApiDescription, Header, bool> when)
+        public ConfigurationDsl OverrideHeadersWhen(Action<HeaderOverrideContext> @override,
+            Func<HeaderOverrideContext, bool> when)
         {
             _configuration.RequestHeaderOverrides.Add(OverrideWhen(@override, when));
             _configuration.ResponseHeaderOverrides.Add(OverrideWhen(@override, when));
@@ -1024,7 +1018,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides request headers.
         /// </summary>
-        public ConfigurationDsl OverrideRequestHeaders(Action<ApiDescription, Header> @override)
+        public ConfigurationDsl OverrideRequestHeaders(Action<HeaderOverrideContext> @override)
         {
             _configuration.RequestHeaderOverrides.Add(@override);
             return this;
@@ -1034,8 +1028,8 @@ namespace Swank.Configuration
         /// Overrides request headers when a condition is met.
         /// </summary>
         public ConfigurationDsl OverrideRequestHeadersWhen(
-            Action<ApiDescription, Header> @override,
-            Func<ApiDescription, Header, bool> when)
+            Action<HeaderOverrideContext> @override,
+            Func<HeaderOverrideContext, bool> when)
         {
             _configuration.RequestHeaderOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -1045,7 +1039,7 @@ namespace Swank.Configuration
         /// Overrides response headers.
         /// </summary>
         public ConfigurationDsl OverrideResponseHeaders(
-            Action<ApiDescription, Header> @override)
+            Action<HeaderOverrideContext> @override)
         {
             _configuration.ResponseHeaderOverrides.Add(@override);
             return this;
@@ -1055,8 +1049,8 @@ namespace Swank.Configuration
         /// Overrides response headers when a condition is met.
         /// </summary>
         public ConfigurationDsl OverrideResponseHeadersWhen(
-            Action<ApiDescription, Header> @override,
-            Func<ApiDescription, Header, bool> when)
+            Action<HeaderOverrideContext> @override,
+            Func<HeaderOverrideContext, bool> when)
         {
             _configuration.ResponseHeaderOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -1065,7 +1059,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides requests.
         /// </summary>
-        public ConfigurationDsl OverrideRequest(Action<ApiDescription, Message> @override)
+        public ConfigurationDsl OverrideRequest(Action<MessageOverrideContext> @override)
         {
             _configuration.RequestOverrides.Add(@override);
             return this;
@@ -1074,8 +1068,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides requests when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideRequestWhen(Action<ApiDescription, Message> @override,
-            Func<ApiDescription, Message, bool> when)
+        public ConfigurationDsl OverrideRequestWhen(Action<MessageOverrideContext> @override,
+            Func<MessageOverrideContext, bool> when)
         {
             _configuration.RequestOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -1084,7 +1078,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides responses.
         /// </summary>
-        public ConfigurationDsl OverrideResponse(Action<ApiDescription, Message> @override)
+        public ConfigurationDsl OverrideResponse(Action<MessageOverrideContext> @override)
         {
             _configuration.ResponseOverrides.Add(@override);
             return this;
@@ -1093,8 +1087,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides responses when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideResponseWhen(Action<ApiDescription, Message> @override,
-            Func<ApiDescription, Message, bool> when)
+        public ConfigurationDsl OverrideResponseWhen(Action<MessageOverrideContext> @override,
+            Func<MessageOverrideContext, bool> when)
         {
             _configuration.ResponseOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -1103,7 +1097,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides both requests and responses.
         /// </summary>
-        public ConfigurationDsl OverrideMessage(Action<ApiDescription, Message> @override)
+        public ConfigurationDsl OverrideMessage(Action<MessageOverrideContext> @override)
         {
             return OverrideRequest(@override).OverrideResponse(@override);
         }
@@ -1111,8 +1105,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides both requests and responses when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideMessageWhen(Action<ApiDescription, Message> @override,
-            Func<ApiDescription, Message, bool> when)
+        public ConfigurationDsl OverrideMessageWhen(Action<MessageOverrideContext> @override,
+            Func<MessageOverrideContext, bool> when)
         {
             return OverrideRequestWhen(@override, when).OverrideResponseWhen(@override, when);
         }
@@ -1120,7 +1114,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides types.
         /// </summary>
-        public ConfigurationDsl OverrideTypes(Action<Type, DataType> @override)
+        public ConfigurationDsl OverrideTypes(Action<TypeOverrideContext> @override)
         {
             _configuration.TypeOverrides.Add(@override);
             return this;
@@ -1129,8 +1123,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides types when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideTypesWhen(Action<Type, DataType> @override,
-            Func<Type, DataType, bool> when)
+        public ConfigurationDsl OverrideTypesWhen(Action<TypeOverrideContext> @override,
+            Func<TypeOverrideContext, bool> when)
         {
             _configuration.TypeOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -1139,7 +1133,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides members.
         /// </summary>
-        public ConfigurationDsl OverrideMembers(Action<PropertyInfo, Member> @override)
+        public ConfigurationDsl OverrideMembers(Action<MemberOverrideContext> @override)
         {
             _configuration.MemberOverrides.Add(@override);
             return this;
@@ -1148,8 +1142,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides members when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideMembersWhen(Action<PropertyInfo, Member> @override,
-            Func<PropertyInfo, Member, bool> when)
+        public ConfigurationDsl OverrideMembersWhen(Action<MemberOverrideContext> @override,
+            Func<MemberOverrideContext, bool> when)
         {
             _configuration.MemberOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -1158,7 +1152,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides options.
         /// </summary>
-        public ConfigurationDsl OverrideOptions(Action<FieldInfo, Option> @override)
+        public ConfigurationDsl OverrideOptions(Action<OptionOverrideContext> @override)
         {
             _configuration.OptionOverrides.Add(@override);
             return this;
@@ -1167,8 +1161,8 @@ namespace Swank.Configuration
         /// <summary>
         /// Overrides options when a condition is met.
         /// </summary>
-        public ConfigurationDsl OverrideOptionsWhen(Action<FieldInfo, Option> @override,
-            Func<FieldInfo, Option, bool> when)
+        public ConfigurationDsl OverrideOptionsWhen(Action<OptionOverrideContext> @override,
+            Func<OptionOverrideContext, bool> when)
         {
             _configuration.OptionOverrides.Add(OverrideWhen(@override, when));
             return this;
@@ -1177,18 +1171,6 @@ namespace Swank.Configuration
         private static Action<T> OverrideWhen<T>(Action<T> @override, Func<T, bool> when)
         {
             return x => { if (when(x)) @override(x); };
-        }
-
-        private static Action<T1, T2> OverrideWhen<T1, T2>(
-            Action<T1, T2> @override, Func<T1, T2, bool> when)
-        {
-            return (x, y) => { if (when(x, y)) @override(x, y); };
-        }
-
-        private static Action<T1, T2, T3> OverrideWhen<T1, T2, T3>(
-            Action<T1, T2, T3> @override, Func<T1, T2, T3, bool> when)
-        {
-            return (x, y, z) => { if (when(x, y, z)) @override(x, y, z); };
         }
     }
 }
