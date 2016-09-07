@@ -56,7 +56,7 @@
 
     public class EnumDescription : Description { }
 
-    public class EnumOptionDescription : Description
+    public class OptionDescription : Description
     {
         public bool Hidden { get; set; }
     }
