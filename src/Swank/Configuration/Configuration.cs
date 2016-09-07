@@ -126,7 +126,7 @@ namespace Swank.Configuration
             EnumConvention = new Service<IDescriptionConvention<Type, 
                 EnumDescription>> { Type = typeof(EnumConvention) };
             EnumOptionConvention = new Service<IDescriptionConvention<FieldInfo, 
-                EnumOptionDescription>> { Type = typeof(OptionConvention) };
+                OptionDescription>> { Type = typeof(OptionConvention) };
             StatusCodeConvention = new Service<IDescriptionConvention<ApiDescription, 
                 List<StatusCodeDescription>>> { Type = typeof(StatusCodeConvention) };
             HeaderConvention = new Service<IDescriptionConvention<ApiDescription, 
@@ -134,21 +134,19 @@ namespace Swank.Configuration
             TypeConvention = new Service<IDescriptionConvention<Type, 
                 TypeDescription>> { Type = typeof(TypeConvention) };
 
-            ModuleOverrides = new List<Action<Module>>();
-            ResourceOverrides = new List<Action<Resource>>();
-            EndpointOverrides = new List<Action<ApiDescription, Endpoint>>();
-            UrlParameterOverrides = new List<Action<ApiDescription, 
-                ApiParameterDescription, UrlParameter>>();
-            QuerystringOverrides = new List<Action<ApiDescription, 
-                ApiParameterDescription, QuerystringParameter>>();
-            StatusCodeOverrides = new List<Action<ApiDescription, StatusCode>>();
-            RequestHeaderOverrides = new List<Action<ApiDescription, Header>>();
-            ResponseHeaderOverrides = new List<Action<ApiDescription, Header>>();
-            RequestOverrides = new List<Action<ApiDescription, Message>>();
-            ResponseOverrides = new List<Action<ApiDescription, Message>>();
-            TypeOverrides = new List<Action<Type, DataType>>();
-            MemberOverrides = new List<Action<PropertyInfo, Member>>();
-            OptionOverrides = new List<Action<FieldInfo, Option>>();
+            ModuleOverrides = new List<Action<ModuleOverrideContext>>();
+            ResourceOverrides = new List<Action<ResourceOverrideContext>>();
+            EndpointOverrides = new List<Action<EndpointOverrideContext>>();
+            UrlParameterOverrides = new List<Action<UrlParameterOverrideContext>>();
+            QuerystringOverrides = new List<Action<QuerystringOverrideContext>>();
+            StatusCodeOverrides = new List<Action<StatusCodeOverrideContext>>();
+            RequestHeaderOverrides = new List<Action<HeaderOverrideContext>>();
+            ResponseHeaderOverrides = new List<Action<HeaderOverrideContext>>();
+            RequestOverrides = new List<Action<MessageOverrideContext>>();
+            ResponseOverrides = new List<Action<MessageOverrideContext>>();
+            TypeOverrides = new List<Action<TypeOverrideContext>>();
+            MemberOverrides = new List<Action<MemberOverrideContext>>();
+            OptionOverrides = new List<Action<OptionOverrideContext>>();
         }
 
         public bool DebugMode { get; set; }
@@ -218,22 +216,20 @@ namespace Swank.Configuration
         public Service<IDescriptionConvention<Type, EnumDescription>> 
             EnumConvention { get; }
         public Service<IDescriptionConvention<FieldInfo, 
-            EnumOptionDescription>> EnumOptionConvention { get; }
+            OptionDescription>> EnumOptionConvention { get; }
 
-        public List<Action<Module>> ModuleOverrides { get; }
-        public List<Action<Resource>> ResourceOverrides { get; }
-        public List<Action<ApiDescription, Endpoint>> EndpointOverrides { get; }
-        public List<Action<ApiDescription, ApiParameterDescription, 
-            UrlParameter>> UrlParameterOverrides { get; }
-        public List<Action<ApiDescription, ApiParameterDescription, 
-            QuerystringParameter>> QuerystringOverrides { get; }
-        public List<Action<ApiDescription, StatusCode>> StatusCodeOverrides { get; }
-        public List<Action<ApiDescription, Header>> RequestHeaderOverrides { get; }
-        public List<Action<ApiDescription, Header>> ResponseHeaderOverrides { get; }
-        public List<Action<ApiDescription, Message>> RequestOverrides { get; }
-        public List<Action<ApiDescription, Message>> ResponseOverrides { get; }
-        public List<Action<Type, DataType>> TypeOverrides { get; }
-        public List<Action<PropertyInfo, Member>> MemberOverrides { get; }
-        public List<Action<FieldInfo, Option>> OptionOverrides { get; }
+        public List<Action<ModuleOverrideContext>> ModuleOverrides { get; }
+        public List<Action<ResourceOverrideContext>> ResourceOverrides { get; }
+        public List<Action<EndpointOverrideContext>> EndpointOverrides { get; }
+        public List<Action<UrlParameterOverrideContext>> UrlParameterOverrides { get; }
+        public List<Action<QuerystringOverrideContext>> QuerystringOverrides { get; }
+        public List<Action<StatusCodeOverrideContext>> StatusCodeOverrides { get; }
+        public List<Action<HeaderOverrideContext>> RequestHeaderOverrides { get; }
+        public List<Action<HeaderOverrideContext>> ResponseHeaderOverrides { get; }
+        public List<Action<MessageOverrideContext>> RequestOverrides { get; }
+        public List<Action<MessageOverrideContext>> ResponseOverrides { get; }
+        public List<Action<TypeOverrideContext>> TypeOverrides { get; }
+        public List<Action<MemberOverrideContext>> MemberOverrides { get; }
+        public List<Action<OptionOverrideContext>> OptionOverrides { get; }
     }
 }
