@@ -23,6 +23,11 @@
         public bool BinaryResponse { get; set; }
     }
 
+    public enum OptionalScope
+    {
+        All, None, Post, Put, AllButPost, AllButPut
+    }
+
     public class ParameterDescription : Description
     {
         public string Type { get; set; }
@@ -39,7 +44,7 @@
     {
         public string SampleValue { get; set; }
         public string DefaultValue { get; set; }
-        public bool Optional { get; set; }
+        public OptionalScope Optional { get; set; }
         public bool Hidden { get; set; }
         public bool Deprecated { get; set; }
         public string DeprecationMessage { get; set; }
@@ -56,7 +61,7 @@
 
     public class EnumDescription : Description { }
 
-    public class EnumOptionDescription : Description
+    public class OptionDescription : Description
     {
         public bool Hidden { get; set; }
     }

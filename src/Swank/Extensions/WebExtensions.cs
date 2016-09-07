@@ -235,7 +235,7 @@ namespace Swank.Extensions
 
         public static string NormalizePathSlashes(this string url)
         {
-            return url.Replace("/", "\\").Trim();
+            return url?.Replace("/", "\\").Trim();
         }
 
         public static string MapTempPath(this string path, string url)
@@ -257,14 +257,16 @@ namespace Swank.Extensions
                 .Select(x => x.NormalizeUrlSlashes().Trim('/'))
                 .Join("/");
         }
-
-        public static string MakeAbsolute(this string url)
+        
+        public static string EnsureLeadingSlash(this string url)
         {
+            if (url.IsNullOrEmpty()) return url;
             return "/" + url.TrimStart('/');
         }
 
         public static string EnsureTrailingSlash(this string url)
         {
+            if (url.IsNullOrEmpty()) return url;
             return url.TrimEnd('/') + "/";
         }
 

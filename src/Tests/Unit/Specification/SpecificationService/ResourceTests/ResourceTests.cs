@@ -1,4 +1,5 @@
-﻿using Swank.Description;
+﻿using System.Linq;
+using Swank.Description;
 using Swank.Specification;
 using NUnit.Framework;
 using Should;
