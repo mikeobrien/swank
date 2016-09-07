@@ -145,12 +145,16 @@ namespace Swank.Specification
         {
             return mappings
                 .GroupBy(x => x.Module)
-                .Select(x => _configuration.ModuleOverrides.Apply(new Module
+                .Select(x => _configuration.ModuleOverrides.Apply(new ModuleOverrideContext
                 {
-                    Name = x.Key.Name,
-                    Comments = x.Key.Comments,
-                    Resources = GetResources(x.Select(y => y).ToList())
-                }))
+                    Description = x.Key,
+                    Module = new Module
+                    {
+                        Name = x.Key.Name,
+                        Comments = x.Key.Comments,
+                        Resources = GetResources(x.Select(y => y).ToList())
+                    }
+                }).Module)
                 .OrderBy(x => x.Name).ToList();
         }
 
@@ -158,12 +162,16 @@ namespace Swank.Specification
         {
             return mappings
                 .GroupBy(x => x.Resource)
-                .Select(x => _configuration.ResourceOverrides.Apply(new Resource
+                .Select(x => _configuration.ResourceOverrides.Apply(new ResourceOverrideContext
                 {
-                    Name = x.Key.Name,
-                    Comments = x.Key.Comments,
-                    Endpoints = GetEndpoints(x.Select(y => y.Endpoint))
-                }))
+                    Description = x.Key,
+                    Resource = new Resource
+                    {
+                        Name = x.Key.Name,
+                        Comments = x.Key.Comments,
+                        Endpoints = GetEndpoints(x.Select(y => y.Endpoint))
+                    }
+                }).Resource)
                 .OrderBy(x => x.Name).ToList();
         }
 
@@ -173,21 +181,27 @@ namespace Swank.Specification
                 .Select(endpoint =>
                 {
                     var description = _endpointConvention.GetDescription(endpoint);
-                    return _configuration.EndpointOverrides.Apply(endpoint, new Endpoint
+                    return _configuration.EndpointOverrides.Apply(new EndpointOverrideContext
                     {
-                        Id = endpoint.ID.Hash(),
-                        Name = description.WhenNotNull(y => y.Name).OtherwiseDefault(),
-                        Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
-                        UrlTemplate = endpoint.RelativePath,
-                        Method = endpoint.HttpMethod.Method,
-                        UrlParameters = GetUrlParameters(endpoint),
-                        QuerystringParameters = GetQuerystringParameters(endpoint),
-                        Secure = description.Secure,
-                        StatusCodes = GetStatusCodes(endpoint),
-                        Request = GetRequest(endpoint, description),
-                        Response = GetResponse(endpoint, description)
-                    });
-                }).OrderBy(x => x.UrlTemplate.Split('?').First())
+                        ApiDescription = endpoint,
+                        Description = description,
+                        Endpoint = new Endpoint
+                        {
+                            Id = endpoint.ID.Hash(),
+                            Name = description.WhenNotNull(y => y.Name).OtherwiseDefault(),
+                            Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
+                            UrlTemplate = endpoint.RelativePath,
+                            Method = endpoint.HttpMethod.Method,
+                            UrlParameters = GetUrlParameters(endpoint),
+                            QuerystringParameters = GetQuerystringParameters(endpoint),
+                            Secure = description.Secure,
+                            StatusCodes = GetStatusCodes(endpoint),
+                            Request = GetRequest(endpoint, description),
+                            Response = GetResponse(endpoint, description)
+                        }
+                    }).Endpoint;
+                })
+                .OrderBy(x => x.UrlTemplate.Split('?').First())
                 .ThenBy(x => HttpVerbRank(x.Method)).ToList();
         }
 
@@ -198,14 +212,20 @@ namespace Swank.Specification
                 .Select(x =>
                 {
                     var description = _parameterConvention.GetDescription(x);
-                    return _configuration.UrlParameterOverrides.Apply(endpoint, x, new UrlParameter
+                    return _configuration.UrlParameterOverrides.Apply(new UrlParameterOverrideContext
                     {
-                        Name = description.WhenNotNull(y => y.Name).OtherwiseDefault(),
-                        Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
-                        Type = description.WhenNotNull(y => y.Type).OtherwiseDefault(),
-                        Options = _optionFactory.BuildOptions(x.ParameterDescriptor.ParameterType),
-                        SampleValue = description.WhenNotNull(y => y.SampleValue).OtherwiseDefault()
-                    });
+                        ApiDescription = endpoint,
+                        Description = description,
+                        UrlParameter = new UrlParameter
+                        {
+                            Name = description.WhenNotNull(y => y.Name).OtherwiseDefault(),
+                            Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
+                            Type = description.WhenNotNull(y => y.Type).OtherwiseDefault(),
+                            Options = _optionFactory.BuildOptions(x.ParameterDescriptor
+                                .ParameterType, endpoint, true),
+                            SampleValue = description.WhenNotNull(y => y.SampleValue).OtherwiseDefault()
+                        }
+                    }).UrlParameter;
                 }).ToList();
         }
 
@@ -222,19 +242,23 @@ namespace Swank.Specification
                 .Select(x =>
                 {
                     var type = x.Parameter.ParameterDescriptor.ParameterType;
-                    return _configuration.QuerystringOverrides.Apply(
-                        endpoint, x.Parameter, new QuerystringParameter
+                    return _configuration.QuerystringOverrides.Apply(new QuerystringOverrideContext
+                    {
+                        ApiDescription = endpoint,
+                        Description = x.Description,
+                        Querystring = new QuerystringParameter
                         {
                             Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
                             Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
                             Type = x.Description.WhenNotNull(y => y.Type).OtherwiseDefault(),
-                            Options = _optionFactory.BuildOptions(type),
+                            Options = _optionFactory.BuildOptions(type, endpoint, true),
                             DefaultValue = x.Description.DefaultValue.WhenNotNull(y => y
                                 .ToSampleValueString(_configuration)).OtherwiseDefault(),
                             SampleValue = x.Description.WhenNotNull(y => y.SampleValue).OtherwiseDefault(),
                             MultipleAllowed = x.Description.MultipleAllowed,
                             Required = !x.Description.Optional
-                        });
+                        }
+                    }).Querystring;
                 }).ToList();
         }
 
@@ -249,14 +273,19 @@ namespace Swank.Specification
                 endpoint.HttpMethod == HttpMethod.Delete))
             {
                 data.Type = _typeGraphFactory.BuildGraph(requestDescription
-                    .ParameterDescriptor.ParameterType, true);
+                    .ParameterDescriptor.ParameterType, true, endpoint);
             }
 
             data.Comments = description.RequestComments;
             data.Headers = GetHeaders(endpoint, HttpDirection.Request);
             data.IsBinary = description.BinaryRequest;
 
-            return _configuration.RequestOverrides.Apply(endpoint, data);
+            return _configuration.RequestOverrides.Apply(new MessageOverrideContext
+            {
+                ApiDescription = endpoint,
+                Description = description,
+                Message = data
+            }).Message;
         }
 
         private Message GetResponse(ApiDescription endpoint, EndpointDescription description)
@@ -267,25 +296,37 @@ namespace Swank.Specification
 
             if (responseType != null)
             {
-                data.Type = _typeGraphFactory.BuildGraph(responseType, false);
+                data.Type = _typeGraphFactory.BuildGraph(
+                    responseType, false, endpoint);
             }
 
             data.Comments = description.ResponseComments;
             data.Headers = GetHeaders(endpoint, HttpDirection.Response);
             data.IsBinary = description.BinaryResponse;
 
-            return _configuration.ResponseOverrides.Apply(endpoint, data);
+            return _configuration.ResponseOverrides.Apply(new MessageOverrideContext
+            {
+                ApiDescription = endpoint,
+                Description = description,
+                Message = data
+            }).Message;
         }
 
         private List<StatusCode> GetStatusCodes(ApiDescription endpoint)
         {
             return _statusCodeConvention.GetDescription(endpoint)
-                .Select(x => _configuration.StatusCodeOverrides.Apply(endpoint, new StatusCode
+                .Select(x => _configuration.StatusCodeOverrides.Apply(new StatusCodeOverrideContext
                 {
-                    Code = x.Code,
-                    Name = x.Name,
-                    Comments = x.Comments
-                })).OrderBy(x => x.Code).ToList();
+                    ApiDescription = endpoint,
+                    Description = x,
+                    StatusCode = new StatusCode
+                    {
+                        Code = x.Code,
+                        Name = x.Name,
+                        Comments = x.Comments
+                    }
+                }).StatusCode)
+                .OrderBy(x => x.Code).ToList();
         }
 
         private List<Header> GetHeaders(ApiDescription endpoint, HttpDirection direction)
@@ -295,15 +336,21 @@ namespace Swank.Specification
                 : _configuration.ResponseHeaderOverrides;
             return _headerConvention.GetDescription(endpoint)
                 .Where(x => x.Direction == direction)
-                .Select(x => overrides.Apply(endpoint, new Header
+                .Select(x => overrides.Apply(new HeaderOverrideContext
                 {
-                    Name = x.Name,
-                    Comments = x.Comments,
-                    Optional = direction == HttpDirection.Request && x.Optional,
-                    Required = direction == HttpDirection.Request && !x.Optional,
-                    IsAccept = x.Name.Equals("accept", StringComparison.OrdinalIgnoreCase),
-                    IsContentType = x.Name.Equals("content-type", StringComparison.OrdinalIgnoreCase)
-                })).OrderBy(x => x.Name).ToList();
+                    ApiDescription = endpoint,
+                    Description = x,
+                    Header = new Header
+                    {
+                        Name = x.Name,
+                        Comments = x.Comments,
+                        Optional = direction == HttpDirection.Request && x.Optional,
+                        Required = direction == HttpDirection.Request && !x.Optional,
+                        IsAccept = x.Name.Equals("accept", StringComparison.OrdinalIgnoreCase),
+                        IsContentType = x.Name.Equals("content-type", StringComparison.OrdinalIgnoreCase)
+                    }
+                }).Header)
+                .OrderBy(x => x.Name).ToList();
         }
     }
 }
