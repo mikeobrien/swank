@@ -247,8 +247,8 @@
                     <td class="value"><strong>{{name}}</strong></td>
                     <td>
                         <p><code>{{type}}</code>
-                        {{#required}}<span class="badge">Required</span>{{/required}}
-                        {{^required}}<span class="badge">Optional</span>{{/required}}
+                        {{#required}}<span class="badge swank-required">Required</span>{{/required}}
+                        {{^required}}<span class="badge swank-optional">Optional</span>{{/required}}
                         {{#multipleAllowed}}<span class="badge">Multiple Allowed</span>{{/multipleAllowed}}
                         {{^required}}
                         {{#if defaultValue}}
@@ -274,8 +274,8 @@
                     <td class="value"><strong>{{name}}</strong></td>
                     <td>
                         <p>
-                        {{#optional}}<span class="badge">Optional</span>{{/optional}}
-                        {{#required}}<span class="badge">Required</span>{{/required}}
+                        {{#optional}}<span class="badge swank-optional">Optional</span>{{/optional}}
+                        {{#required}}<span class="badge swank-required">Required</span>{{/required}}
                         {{{comments}}}</p>
                     </td>
                 </tr>
@@ -339,8 +339,8 @@
                     {{#isDictionary}}<span class="badge">Dictionary</span>{{/isDictionary}}
                     {{#isArray}}<span class="badge">Array</span>{{/isArray}}
                     {{#isMember}}
-                        {{#required}}<span class="badge">Required</span>{{/required}}
-                        {{#optional}}<span class="badge">Optional</span>{{/optional}}
+                        {{#required}}<span class="badge swank-required">Required</span>{{/required}}
+                        {{#optional}}<span class="badge swank-optional">Optional</span>{{/optional}}
                         {{#if defaultValue}}
                             <span class="badge badge-inverse">Default: <code>{{defaultValue}}</code></span>
                         {{/if}}
