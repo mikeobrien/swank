@@ -3,7 +3,7 @@ Swank
 
 [![Nuget](http://img.shields.io/nuget/v/Swank.svg?style=flat)](http://www.nuget.org/packages/Swank/) [![TeamCity Build Status](https://img.shields.io/teamcity/http/build.mikeobrien.net/s/swank.svg?style=flat)](http://build.mikeobrien.net/viewType.html?buildTypeId=swank&guest=1)
 
-Swank is an ASP.NET Web API 2 library that documents RESTful services. You can take a look at a sample [here](http://www.mikeobrien.net/swank/sample). 
+Swank is an ASP.NET Web API 2 library that documents RESTful services. You can take a look at a sample of the documentation it generates [here](http://www.mikeobrien.net/swank/sample) and Swank documentation [here](http://www.mikeobrien.net/swank/). 
 
 ## Features
 
