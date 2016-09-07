@@ -57,7 +57,7 @@ namespace Tests.Unit.Specification
                     .Register<IDescriptionConvention<Type,
                         EnumDescription>, EnumConvention>()
                     .Register<IDescriptionConvention<FieldInfo,
-                        EnumOptionDescription>, OptionConvention>())
+                        OptionDescription>, OptionConvention>())
                 .GetInstance<Swank.Specification.SpecificationService>().Generate();
         }
 
@@ -72,7 +72,7 @@ namespace Tests.Unit.Specification
                 .Register<IDescriptionConvention<Type, TypeDescription>, TypeConvention>()
                 .Register<IDescriptionConvention<PropertyInfo, MemberDescription>, MemberConvention>()
                 .Register<IDescriptionConvention<Type, EnumDescription>, EnumConvention>()
-                .Register<IDescriptionConvention<FieldInfo, EnumOptionDescription>, OptionConvention>())
+                .Register<IDescriptionConvention<FieldInfo, OptionDescription>, OptionConvention>())
                 .GetInstance<TypeGraphFactory>();
         }
     }
