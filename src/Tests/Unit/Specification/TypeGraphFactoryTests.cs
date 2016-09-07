@@ -40,10 +40,10 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_override_type()
         {
-            var type = Builder.BuildTypeGraphFactory(x => x.TypeOverrides.Add((t, d) =>
+            var type = Builder.BuildTypeGraphFactory(x => x.TypeOverrides.Add(t =>
             {
-                d.Name += t.Name;
-                d.Comments += t.Name;
+                t.DataType.Name += t.Type.Name;
+                t.DataType.Comments += t.Type.Name;
             })).BuildGraph<TypeWithComments>();
 
             type.Name.ShouldEqual("TypeWithCommentsTypeWithComments");
@@ -59,10 +59,10 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_override_type_members()
         {
-            var type = Builder.BuildTypeGraphFactory(x => x.MemberOverrides.Add((p, m) =>
+            var type = Builder.BuildTypeGraphFactory(x => x.MemberOverrides.Add(m =>
             {
-                m.Name += p.Name;
-                m.Comments += p.Name;
+                m.Member.Name += m.PropertyInfo.Name;
+                m.Member.Comments += m.PropertyInfo.Name;
             })).BuildGraph<TypeWithOverrodeMember>();
 
             var member = type.Members.Single();

@@ -128,6 +128,7 @@
     <Compile Include="Extensions\Xml.cs" />
     <Compile Include="Extensions\WebExtensions.cs" />
     <Compile Include="Specification\Markdown.cs" />
+    <Compile Include="Specification\OverrideContexts.cs" />
     <Compile Include="Web\Handlers\AppResourceHandler.cs" />
     <Compile Include="Web\Handlers\AppResourceModels.cs" />
     <Compile Include="Web\Handlers\TemplateHandler.cs" />

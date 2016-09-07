@@ -58,10 +58,16 @@ namespace Swank.Specification
             else if (type.IsArray || type.IsList())
                 BuildArray(dataType, type, description, requestGraph, 
                     ancestors, memberDescription);
-            else if (type.IsSimpleType()) BuildSimpleType(dataType, type);
+            else if (type.IsSimpleType()) BuildSimpleType(dataType, type, requestGraph);
             else BuildComplexType(dataType, type, requestGraph, ancestors);
 
-            return _configuration.TypeOverrides.Apply(type, dataType);
+            return _configuration.TypeOverrides.Apply(new TypeOverrideContext
+            {
+                Type = type,
+                DataType = dataType,
+                Description = description,
+                Request = requestGraph
+            }).DataType;
         }
 
         private void BuildDictionary(
@@ -118,13 +124,13 @@ namespace Swank.Specification
             };
         }
 
-        private void BuildSimpleType(DataType dataType, Type type)
+        private void BuildSimpleType(DataType dataType, Type type, bool requestGraph)
         {
             dataType.IsSimple = true;
             dataType.LongNamespace.Clear();
             dataType.ShortNamespace.Clear();
             if (type.GetNullableUnderlyingType().IsEnum)
-                dataType.Options = _optionFactory.BuildOptions(type);
+                dataType.Options = _optionFactory.BuildOptions(type, requestGraph);
         }
 
         private void BuildComplexType(
@@ -145,27 +151,33 @@ namespace Swank.Specification
                 })
                 .Where(x => x.Ancestors.All(y => y != x.UnwrappedType) &&
                             !x.Description.Hidden)
-                .Select(x => _configuration.MemberOverrides.Apply(x.Property, new Member
+                .Select(x => _configuration.MemberOverrides.Apply(new MemberOverrideContext
                 {
-                    Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
-                    Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
-                    DefaultValue = requestGraph ? 
+                    Description = x.Description,
+                    PropertyInfo = x.Property,
+                    Request = requestGraph,
+                    Member = new Member
+                    {
+                        Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
+                        Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
+                        DefaultValue = requestGraph ?
                         x.Description.WhenNotNull(y => y.DefaultValue)
                             .OtherwiseDefault() : null,
-                    SampleValue = x.Description
+                        SampleValue = x.Description
                         .WhenNotNull(y => y.SampleValue)
                             .OtherwiseDefault(),
-                    Required = requestGraph && !x.Type.IsNullable() && 
+                        Required = requestGraph && !x.Type.IsNullable() &&
                         x.Description.WhenNotNull(y => !y.Optional)
                             .OtherwiseDefault(),
-                    Optional = requestGraph && (x.Type.IsNullable() || 
+                        Optional = requestGraph && (x.Type.IsNullable() ||
                         x.Description.WhenNotNull(y => y.Optional)
                             .OtherwiseDefault()),
-                    Deprecated = x.Description.Deprecated,
-                    DeprecationMessage = x.Description.DeprecationMessage,
-                    Type = BuildGraph(dataType, x.Type, requestGraph, 
+                        Deprecated = x.Description.Deprecated,
+                        DeprecationMessage = x.Description.DeprecationMessage,
+                        Type = BuildGraph(dataType, x.Type, requestGraph,
                         x.Ancestors, x.Description)
-                })).ToList();
+                    }
+                }).Member).ToList();
         }
 
         private static void GenerateShortNamespaces(DataType type)
