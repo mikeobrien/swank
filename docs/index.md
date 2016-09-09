@@ -706,3 +706,7 @@ You can turn on debugging, where errors are displayed instead of the rendered te
 // Enable debug mode when calling assembly is in debug mode
 configuration.Swank(x => x.IsInDebugModeWhenAppIsInDebugMode()...);
 ``` 
+
+## Tools
+
+Swank ships with some tools to help you build your documentation. These are contained in the command line app `SwankUtil.exe`.
