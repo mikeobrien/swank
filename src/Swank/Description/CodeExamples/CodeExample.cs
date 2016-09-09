@@ -35,7 +35,7 @@ namespace Swank.Description.CodeExamples
         public string Language { get; }
         public string Comments => _comments?.ReadString();
 
-        public string Render<T>(T model)
+        public string Render(TemplateModel model)
         {
             return _template.RenderString(model);
         } 

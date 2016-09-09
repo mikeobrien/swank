@@ -423,6 +423,8 @@ You can turn on debugging, where errors are displayed instead of the rendered te
 configuration.Swank(x => x.IsInDebugModeWhenAppIsInDebugMode()...);
 ``` 
 
+Swank ships with a utility that will allow you to render your code example templates during development, using the specification from your API. More on this under [Template Development](#template-development).
+
 ## Customize
 
 ### User Interface
@@ -706,3 +708,13 @@ You can turn on debugging, where errors are displayed instead of the rendered te
 // Enable debug mode when calling assembly is in debug mode
 configuration.Swank(x => x.IsInDebugModeWhenAppIsInDebugMode()...);
 ``` 
+
+Swank ships with a utility that will allow you to render your templates during development, using the specification from your API. More on this under [Template Development](#template-development).
+
+## Tools
+
+Swank ships with some tools to help you build out your documentation. These are contained in the command line app `SwankUtil.exe`. This app is distributed with the Swank library and is in the `packages\Swank.[version]\tools` folder of the Swank Nuget.
+
+### Template Development
+
+To make developing templates easier, `SwankUtil` will render templates and code examples. 
