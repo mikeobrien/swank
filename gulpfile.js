@@ -43,7 +43,8 @@ gulp.task('test', ['build'], function () {
 
 gulp.task('nuget-package', ['test'], function() {
 
-    gulp.src('src/Swank/bin/Release/Swank.*')
+    gulp.src(['src/Swank/bin/Release/Swank.*',
+        'src/SwankUtil/bin/Release/SwankUtil.*'])
         .pipe(gulp.dest('package/lib'));
 
     return Nuget()
