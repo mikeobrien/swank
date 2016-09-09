@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHarness", "TestHarness\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoSite", "DemoSite\DemoSite.csproj", "{F1F1C1CC-9BE2-46E7-B007-894CD9F536B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwankUtil", "SwankUtil\SwankUtil.csproj", "{C6843978-0A4B-4C71-A583-CE5F0FAC190A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F1F1C1CC-9BE2-46E7-B007-894CD9F536B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1F1C1CC-9BE2-46E7-B007-894CD9F536B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1F1C1CC-9BE2-46E7-B007-894CD9F536B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6843978-0A4B-4C71-A583-CE5F0FAC190A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6843978-0A4B-4C71-A583-CE5F0FAC190A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6843978-0A4B-4C71-A583-CE5F0FAC190A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6843978-0A4B-4C71-A583-CE5F0FAC190A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -360,7 +360,16 @@ Currently there is not support for creating different [markdown](https://github.
 
 ### Code Examples
 
-Swank supports code examples that are generated from the specification. This can be done with Razor or Mustache templates. Two examples ship with Swank, [curl](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/curl.cshtml) and [Node.js](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/node.cshtml). You can use these as a starting point for creating your own custom examples. Code example templates are passed a [model](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/TemplateModel.cs) that contains a complete description of the endpoint. Swank uses [Highlight.js](https://highlightjs.org/) to highlight code examples. Swank ships with all the available themes and defaults to GitHub [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet). You can change the theme as follows.
+Swank supports code examples that are generated from the specification. This can be done with Razor or Mustache templates. Two examples ship with Swank, [curl](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/curl.cshtml) and [Node.js](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/node.cshtml). You can use these as a starting point for creating your own custom examples. Code example templates are passed a [model](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/TemplateModel.cs) that contains a complete description of the endpoint. You may also want to include [Swank extension methods](#overrides) in your template.
+
+```
+@model Swank.Description.CodeExamples.TemplateModel
+@using Swank.Extensions;
+
+Name: @name
+```
+
+Swank uses [Highlight.js](https://highlightjs.org/) to highlight code examples. Swank ships with all the available themes and defaults to GitHub [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet). You can change the theme as follows.
 
 ```csharpconfiguration.Swank(x => x.WithCodeExampleTheme(CodeExampleTheme.SolarizedDark)...);
 ``` 
@@ -422,6 +431,8 @@ You can turn on debugging, where errors are displayed instead of the rendered te
 // Enable debug mode when calling assembly is in debug mode
 configuration.Swank(x => x.IsInDebugModeWhenAppIsInDebugMode()...);
 ``` 
+
+Swank ships with a utility that will allow you to render your code example templates during development, using the specification from your API. More on this under [Template Development](#template-development).
 
 ## Customize
 
@@ -647,7 +658,14 @@ The specification model returned is `List<Swank.Specification.Module>` found [he
 
 ### Templates
 
-Swank also allows you to generate your own content with templates. For example you could generate html documentation or bindings in different languages that could be consumed by other processes. Swank supports Razor and mustache templates which can be loaded from a file, a virtual path, embedded resource or by passing the template in directly. These are then exposed at a url you specify.
+Swank also allows you to generate your own content with templates. For example you could generate html documentation or bindings in different languages that could be consumed by other processes. Swank supports Razor and mustache templates which can be loaded from a file, a virtual path, embedded resource or by passing the template in directly. These are then exposed at a url you specify. Templates are past a list of `Model`s as illustrated in the Razor template below.
+
+```
+@model List<Swank.Specification.Module>
+@using Swank.Extensions;
+...
+```
+You can add templates as follows.
 
 ```csharp
 // Embedded resource, only the file name is required.configuration.Swank(x => x
@@ -706,3 +724,53 @@ You can turn on debugging, where errors are displayed instead of the rendered te
 // Enable debug mode when calling assembly is in debug mode
 configuration.Swank(x => x.IsInDebugModeWhenAppIsInDebugMode()...);
 ``` 
+
+Swank ships with a utility that will allow you to render your templates during development, using the specification from your API. More on this under [Template Development](#template-development).
+
+## Tools
+
+Swank ships with some tools to help you build out your documentation. These are contained in the command line app `SwankUtil.exe`. This app is distributed with the Swank library and is in the `packages\Swank.[version]\tools` Nuget folder.
+
+### Template Development
+
+To make developing templates easier, `SwankUtil` will render templates and code examples using your API specification. This is much faster than making a change, starting your app, browsing to an endpoint, rinse, repeat... The utility will try to determine the type of file by looking at its extension (either `.cshtml` for Razor or `.mustache` for Mustache). You can also override this value if desired. 
+
+First you'll need to grab your specification. Assuming Swank is configured, start your app and browse to the Swank page. There will be a little cloud download icon in the upper left hand corner to the right of the logo and/or title. Right-click and save this file, this is your specification, a JSON representation of your API.
+
+Next open a command prompt and you can run `SwankUtil` to render templates.
+
+```bash
+D:\Dev\MyApp\packages\Swank.1.0.71.0\tools\SwankUtil 
+    -c Template 
+    -s D:\Temp\Spec.json
+    -t D:\Dev\MyApp\Templates\SomeTemplate.cshtml 
+    -o D:\Temp\SomeTemplate.txt
+``` 
+
+Code examples are rendered pretty much the same way except you have to pass the id of the endpoint you want to use as the model. To do this, open your specification file and find the endpoint you want to use, you will see it has an `id` field as illustrated below.
+
+```json
+[
+  {
+    "name": "Candidates",
+    "resources": [
+      {
+        "name": "/api/candidates",
+        "endpoints": [
+          {
+            "id": "10e848fd4b5df7728b259d69de40e25d",
+            "name": "Queries candidates",
+```
+
+Once you have the id you can pass that in and your code example will be rendered for that particular endpoint.
+
+```bash
+D:\Dev\MyApp\packages\Swank.1.0.71.0\tools\SwankUtil 
+    -c CodeExample 
+    -s D:\Temp\Spec.json
+    -e 10e848fd4b5df7728b259d69de40e25d
+    -t D:\Dev\MyApp\CodeExamples\Haskell.cshtml 
+    -o D:\Temp\Example.hs
+```
+
+You will probably want to render your code examples for all your verbs and any edge cases.
