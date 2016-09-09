@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -31,99 +32,92 @@ namespace Swank.Web.Handlers
             _bodyDescriptionFactory = bodyDescriptionFactory;
         }
 
-        protected override Task<HttpResponseMessage> Send(HttpRequestMessage request)
+        protected override Task<HttpResponseMessage> Send(HttpRequestMessage message)
         {
-            var url = _configuration.ApiUrl?.ParseUri() ?? request.RequestUri;
-            var resource = JsonConvert.DeserializeObject<Request>(
-                request.Content.ReadAsStringAsync().Result);
+            var url = _configuration.ApiUrl?.ParseUri() ?? message.RequestUri;
+            var request = JsonConvert.DeserializeObject<Request>(
+                message.Content.ReadAsStringAsync().Result);
 
-            var endpoint = _specification.Generate()
+            var resource = _specification.Generate()
                 .SelectMany(x => x.Resources)
-                .Where(x => x.Name.TrimStart('/') == resource.Name)
-                .Select(x => new
-                {
-                    x.Name,
-                    Overview = x.Comments,
-                    Endpoints = x.Endpoints.Select(e => new EndpointModel
-                    {
-                        Id = e.Id,
-                        Name = e.Name,
-                        Comments = e.Comments,
-                        Method = e.Method.ToLower(),
-                        UrlTemplate = e.UrlTemplate,
-                        Secure = e.Secure,
-                        UrlParameters = e.UrlParameters,
-                        QuerystringParameters = e.QuerystringParameters,
-                        StatusCodes = e.StatusCodes,
-                        Request = new MessageModel
-                        {
-                            Comments = e.Request.Comments,
-                            IsBinary = e.Request.IsBinary,
-                            Headers = e.Request.Headers,
-                            Body = e.Request.Type.WhenNotNull(y =>
-                                _bodyDescriptionFactory.Create(y))
-                                    .OtherwiseDefault()
-                        },
-                        Response = new MessageModel
-                        {
-                            Comments = e.Response.Comments,
-                            IsBinary = e.Response.IsBinary,
-                            Headers = e.Response.Headers,
-                            Body = e.Response.Type.WhenNotNull(y =>
-                                _bodyDescriptionFactory.Create(y))
-                                    .OtherwiseDefault()
-                        }
-                    }).ToList()
-                })
+                .Where(x => x.Name.TrimStart('/') == request.Name)
                 .Select(x => new ResourceModel
                 {
                     Name = x.Name,
-                    Overview = x.Overview,
-                    Endpoints = x.Endpoints.Select(e => new EndpointModel
-                    {
-                        Id = e.Id,
-                        Name = e.Name,
-                        Comments = e.Comments,
-                        Method = e.Method,
-                        UrlTemplate = e.UrlTemplate,
-                        Secure = e.Secure,
-                        UrlParameters = e.UrlParameters,
-                        QuerystringParameters = e.QuerystringParameters,
-                        StatusCodes = e.StatusCodes,
-                        Request = e.Request,
-                        Response = e.Response,
-                        CodeExamples = _configuration.CodeExamples
-                            .Select((c, i) => new CodeExampleModel
-                            {
-                                Index = i,
-                                Name = c.Name,
-                                Language = c.Language,
-                                Comments = c.Comments,
-                                Example = c.Render(new TemplateModel
-                                {
-                                    Name = e.Name,
-                                    Comments = e.Comments,
-                                    Method = e.Method,
-                                    Host = url.Host,
-                                    Port = url.Port.ToString(),
-                                    Url = url.GetLeftPart(UriPartial.Authority)
-                                        .CombineUrls(e.UrlTemplate),
-                                    UrlTemplate = e.UrlTemplate,
-                                    Secure = e.Secure,
-                                    UrlParameters = e.UrlParameters,
-                                    QuerystringParameters = e.QuerystringParameters,
-                                    StatusCodes = e.StatusCodes,
-                                    Request = e.Request,
-                                    Response = e.Response
-                                })?.Trim()
-                            }).ToList()
-                    }).ToList()
-                }).FirstOrDefault();
+                    Overview = x.Comments,
+                    Endpoints = x.Endpoints.Select(e => MapEndpoint(url, e,
+                    _configuration.CodeExamples,
+                    _bodyDescriptionFactory)).ToList()
+                })
+                .FirstOrDefault();
 
-            if (endpoint == null) return request
+            if (resource == null) return message
                 .CreateErrorResponseTask(HttpStatusCode.NotFound);
 
-            return endpoint.CreateJsonResponseTask();
+            return resource.CreateJsonResponseTask();
+        }
+
+        public static EndpointModel MapEndpoint(Uri url, Endpoint endpoint,
+            List<CodeExample> codeExamples, BodyDescriptionFactory bodyDescriptionFactory)
+        {
+            var request = new MessageModel
+            {
+                Comments = endpoint.Request.Comments,
+                IsBinary = endpoint.Request.IsBinary,
+                Headers = endpoint.Request.Headers,
+                Body = endpoint.Request.Type
+                    .WhenNotNull(bodyDescriptionFactory.Create)
+                    .OtherwiseDefault()
+            };
+            var response = new MessageModel
+            {
+                Comments = endpoint.Response.Comments,
+                IsBinary = endpoint.Response.IsBinary,
+                Headers = endpoint.Response.Headers,
+                Body = endpoint.Response.Type
+                    .WhenNotNull(bodyDescriptionFactory.Create)
+                    .OtherwiseDefault()
+            };
+            var codeExampleModel = new TemplateModel
+            {
+                Name = endpoint.Name,
+                Comments = endpoint.Comments,
+                Method = endpoint.Method,
+                Host = url.Host,
+                Port = url.Port.ToString(),
+                Url = url.GetLeftPart(UriPartial.Authority)
+                    .CombineUrls(endpoint.UrlTemplate),
+                UrlTemplate = endpoint.UrlTemplate,
+                Secure = endpoint.Secure,
+                UrlParameters = endpoint.UrlParameters,
+                QuerystringParameters = endpoint.QuerystringParameters,
+                StatusCodes = endpoint.StatusCodes,
+                Request = request,
+                Response = response
+            };
+            return new EndpointModel
+            {
+                Id = endpoint.Id,
+                Name = endpoint.Name,
+                Comments = endpoint.Comments,
+                Method = endpoint.Method.ToLower(),
+                UrlTemplate = endpoint.UrlTemplate,
+                Secure = endpoint.Secure,
+                UrlParameters = endpoint.UrlParameters,
+                QuerystringParameters = endpoint.QuerystringParameters,
+                StatusCodes = endpoint.StatusCodes,
+                Request = request,
+                Response = response,
+                CodeExamples = codeExamples
+                    .Select((c, i) => new CodeExampleModel
+                    {
+                        Index = i,
+                        Name = c.Name,
+                        Language = c.Language,
+                        Comments = c.Comments,
+                        Example = c.Render(codeExampleModel)?.Trim()
+                    }).ToList()
+            };
         }
     }
 }
