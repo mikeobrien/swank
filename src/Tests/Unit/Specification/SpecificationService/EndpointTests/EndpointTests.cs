@@ -20,13 +20,16 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
         }
 
         [Test]
-        public void should_not_set_Controller_description_for_endpoint_with_no_description()
+        public void should_set_default_controller_description_for_endpoint_with_no_description()
         {
             var endpoint = Builder.BuildSpecAndGetEndpoint<EndpointDescriptions
                 .NoDescriptionController>(x => x.Get(null));
             endpoint.Name.ShouldEqual("Get");
             endpoint.Comments.ShouldBeNull();
             endpoint.Method.ShouldEqual("GET");
+            endpoint.MethodName.ShouldEqual("Get");
+            endpoint.Namespace.ShouldOnlyContain("Tests", "Unit", "Specification", "SpecificationService", 
+                "EndpointTests", "EndpointDescriptions", "NoDescription");
             endpoint.UrlTemplate.ShouldEqualUrl<EndpointDescriptions
                 .NoDescriptionController>(x => x.Get(null));
         }

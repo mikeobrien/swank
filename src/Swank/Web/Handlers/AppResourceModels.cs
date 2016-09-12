@@ -32,6 +32,7 @@ namespace Swank.Web.Handlers
         public string Id { get; set; }
         public string Name { get; set; }
         public string Comments { get; set; }
+        public List<string> Namespace { get; set; }
         public string Method { get; set; }
         public string UrlTemplate { get; set; }
         public bool Secure { get; set; }
@@ -47,8 +48,7 @@ namespace Swank.Web.Handlers
     {
         public int Index { get; set; }
         public string Name { get; set; }
-        public List<string> LongNamespace { get; set; }
-        public List<string> ShortNamespace { get; set; }
+        public List<string> Namespace { get; set; }
         public string Comments { get; set; }
         public bool? IsFirst { get; set; }
         public bool? IsLast { get; set; }

@@ -3,6 +3,7 @@ using Swank.Extensions;
 using NUnit.Framework;
 using Should;
 using System.Linq;
+using Tests.Common;
 
 namespace Tests.Unit.Extensions
 {
@@ -83,6 +84,16 @@ namespace Tests.Unit.Extensions
         {
             new List<string> { "oh" }.Concat("hai")
                 .ShouldEqual(new List<string> { "oh", "hai" });
+        }
+
+        [Test]
+        [TestCase(null, null)]
+        [TestCase("", "")]
+        [TestCase("fark", "fark")]
+        [TestCase("fark,fark,farker,farker,fark,fark", "fark,farker,fark")]
+        public void should_return_distinct_siblings(string expected, string actual)
+        {
+            expected?.Split(",").DistinctSiblings().ShouldOnlyContain(actual?.Split(","));
         }
 
         [Test]

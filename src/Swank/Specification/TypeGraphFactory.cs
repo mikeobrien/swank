@@ -30,13 +30,11 @@ namespace Swank.Specification
 
         public DataType BuildGraph(Type type, bool requestGraph, ApiDescription endpoint)
         {
-            var dataType = BuildGraph(null, type, requestGraph, endpoint, null);
-            GenerateShortNamespaces(dataType);
+            var dataType = BuildGraph(type, requestGraph, endpoint, null);
             return dataType;
         }
 
         private DataType BuildGraph(
-            DataType parent,
             Type type,
             bool requestGraph,
             ApiDescription endpoint,
@@ -49,9 +47,6 @@ namespace Swank.Specification
             {
                 Name = !type.IsSimpleType() && memberDescription != null ?
                     memberDescription.Name : description.Name,
-                LongNamespace = parent.MapOrDefault(x => x.LongNamespace
-                    .Concat(x.Name).ToList(), new List<string>()),
-                ShortNamespace = new List<string>(),
                 Comments = description.Comments
             };
 
@@ -62,7 +57,11 @@ namespace Swank.Specification
                 BuildArray(dataType, type, description, requestGraph, 
                     endpoint, ancestors, memberDescription);
             else if (type.IsSimpleType()) BuildSimpleType(dataType, type, requestGraph);
-            else BuildComplexType(dataType, type, requestGraph, endpoint, ancestors);
+            else
+            {
+                dataType.Namespace = _configuration.TypeNamespace(type);
+                BuildComplexType(dataType, type, requestGraph, endpoint, ancestors);
+            }
 
             return _configuration.TypeOverrides.Apply(new TypeOverrideContext
             {
@@ -95,11 +94,11 @@ namespace Swank.Specification
                 KeyComments = memberDescription
                     .WhenNotNull(x => x.DictionaryEntry.KeyComments).OtherwiseDefault() ??
                     typeDescription.WhenNotNull(x => x.DictionaryEntry.KeyComments).OtherwiseDefault(),
-                KeyType = BuildGraph(dataType, types.Key, requestGraph, endpoint, ancestors),
+                KeyType = BuildGraph(types.Key, requestGraph, endpoint, ancestors),
                 ValueComments = memberDescription
                     .WhenNotNull(x => x.DictionaryEntry.ValueComments).OtherwiseDefault() ??
                     typeDescription.WhenNotNull(x => x.DictionaryEntry.ValueComments).OtherwiseDefault(),
-                ValueType = BuildGraph(dataType, types.Value, requestGraph, endpoint, ancestors)
+                ValueType = BuildGraph(types.Value, requestGraph, endpoint, ancestors)
             };
         }
 
@@ -115,7 +114,7 @@ namespace Swank.Specification
             dataType.IsArray = true;
             dataType.Comments = memberDescription.WhenNotNull(x => x.Comments)
                 .OtherwiseDefault() ?? dataType.Comments;
-            var itemType = BuildGraph(dataType, type.GetListElementType(), 
+            var itemType = BuildGraph(type.GetListElementType(), 
                 requestGraph, endpoint, ancestors);
             dataType.ArrayItem = new ArrayItem
             {
@@ -133,8 +132,6 @@ namespace Swank.Specification
         private void BuildSimpleType(DataType dataType, Type type, bool requestGraph)
         {
             dataType.IsSimple = true;
-            dataType.LongNamespace.Clear();
-            dataType.ShortNamespace.Clear();
             if (type.GetNullableUnderlyingType().IsEnum)
                 dataType.Options = _optionFactory.BuildOptions(type, null, requestGraph);
         }
@@ -181,32 +178,10 @@ namespace Swank.Specification
                             .OtherwiseDefault(),
                         Deprecated = x.Description.Deprecated,
                         DeprecationMessage = x.Description.DeprecationMessage,
-                        Type = BuildGraph(dataType, x.Type, requestGraph, endpoint,
+                        Type = BuildGraph(x.Type, requestGraph, endpoint,
                             x.Ancestors, x.Description)
                     }
                 }).Member).ToList();
-        }
-
-        private static void GenerateShortNamespaces(DataType type)
-        {
-            type.TraverseMany(GetTypeChildTypes)
-                .GroupBy(x => x.Name)
-                .Where(x => x.Count() > 1)
-                .ForEach(x => x.ShrinkMultipartKeyRight(y => y.LongNamespace, (t, k) =>
-                    t.ShortNamespace = k.EndsWith(t.Name) ? k.Shorten(1).ToList() : k));
-        }
-
-        private static IEnumerable<DataType> GetTypeChildTypes(DataType type)
-        {
-            if (type.Members != null)
-                foreach (var childType in type.Members.Select(y => y.Type))
-                    yield return childType;
-            if (type.ArrayItem != null) yield return type.ArrayItem.Type;
-            if (type.DictionaryEntry != null)
-            {
-                yield return type.DictionaryEntry.KeyType;
-                yield return type.DictionaryEntry.ValueType;
-            }
         }
     }
 

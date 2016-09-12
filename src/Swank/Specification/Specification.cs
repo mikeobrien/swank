@@ -28,6 +28,8 @@ namespace Swank.Specification
         public string Id { get; set; }
         public string Name { get; set; }
         public string Comments { get; set; }
+        public string MethodName { get; set; }
+        public List<string> Namespace { get; set; }
         public string UrlTemplate { get; set; }
         public string Method { get; set; }
         public List<UrlParameter> UrlParameters { get; set; }
@@ -88,8 +90,7 @@ namespace Swank.Specification
     public class DataType : IDescription
     {
         public string Name { get; set; }
-        public List<string> LongNamespace { get; set; }
-        public List<string> ShortNamespace { get; set; }
+        public List<string> Namespace { get; set; }
         public string Comments { get; set; }
 
         public bool IsSimple { get; set; }
