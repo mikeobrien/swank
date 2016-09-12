@@ -10,10 +10,12 @@ namespace Swank.Description
         public const string ResponseCommentsExtension = ".response";
 
         private readonly XmlComments _xmlComments;
+        private readonly Configuration.Configuration _configuration;
 
-        public EndpointConvention(XmlComments xmlComments)
+        public EndpointConvention(XmlComments xmlComments, Configuration.Configuration configuration)
         {
             _xmlComments = xmlComments;
+            _configuration = configuration;
         }
 
         public virtual EndpointDescription GetDescription(ApiDescription endpoint)
@@ -26,6 +28,7 @@ namespace Swank.Description
                 Name = attribute?.Name ?? xmlComments?.Summary ?? 
                     endpoint.ActionDescriptor.ActionName,
                 Comments = GetEndpointComments(endpoint, attribute, xmlComments),
+                Namespace = _configuration.ActionNamespace(endpoint),
                 Secure = endpoint.HasControllerOrActionAttribute<SecureAttribute>(),
                 BinaryRequest = endpoint.HasControllerOrActionAttribute<BinaryRequestAttribute>(),
                 BinaryResponse = endpoint.HasControllerOrActionAttribute<BinaryResponseAttribute>(),

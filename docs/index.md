@@ -716,7 +716,19 @@ Periods are converted to underscores to prevent IIS from loading them as static 
         
 // Virtual pathconfiguration.Swank(x => x.WithTemplatesInVirtualPath("~/Templates")...);
 ``` 
-You can turn on debugging, where errors are displayed instead of the rendered template, with the following configuration.
+
+The specification includes namespaces for endpoints and types that can be used for generating wrappers. The namespace is a list of strings that can be joined by the appropriate character in your wrapper. By default the namespace of the type and the namespace of the controller, controller name and method name make up the type and action namespaces respectively. This can be easily overridden with a custom implementation as follows.
+
+```csharp
+configuration.Swank(x => x
+    .WithTypeNamespaceConvention(x => Configuration
+        .DefaultTypeNamespace(x).Skip(2).ToList())
+    .WithActionNamespaceConvention(x => Configuration
+        .DefaultActionNamespace(x).Skip(2).ToList())...);
+``` 
+The example above uses the stock convention but also removes the first two levels of the namespace. So you can tweak the stock convention or replace it entirely.
+
+You can also turn on debugging, where errors are displayed instead of the rendered template, with the following configuration.
 
 ```csharp
 // Enable debug modeconfiguration.Swank(x => x.IsInDebugMode()...);

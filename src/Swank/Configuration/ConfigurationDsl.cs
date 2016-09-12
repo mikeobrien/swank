@@ -378,7 +378,27 @@ namespace Swank.Configuration
         }
 
         /// <summary>
-        /// Specifies and action filter.
+        /// Specifies a convention for generating the namespace of types.
+        /// </summary>
+        public ConfigurationDsl WithTypeNamespaceConvention(
+            Func<Type, List<string>> @namespace)
+        {
+            _configuration.TypeNamespace = @namespace;
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies a convention for generating the namespace of actions.
+        /// </summary>
+        public ConfigurationDsl WithActionNamespaceConvention(
+            Func<ApiDescription, List<string>> @namespace)
+        {
+            _configuration.ActionNamespace = @namespace;
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies an action filter.
         /// </summary>
         public ConfigurationDsl Where(Func<ApiDescription, bool> filter)
         {

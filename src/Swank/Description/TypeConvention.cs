@@ -41,6 +41,7 @@ namespace Swank.Description
                         .WhenNotNull(x => x.Comments).OtherwiseDefault() ??
                     description.WhenNotNull(x => x.Comments).OtherwiseDefault() ??
                     xmlComments?.Summary ?? xmlComments?.Remarks,
+                Namespace = _configuration.TypeNamespace(type),
                 ArrayItem = new Description
                 {
                     Name = arrayDescription.WhenNotNull(x => x.ItemName).OtherwiseDefault(),

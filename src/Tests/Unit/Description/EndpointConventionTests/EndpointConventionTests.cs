@@ -4,6 +4,7 @@ using Should;
 using Swank.Description;
 using Tests.Common;
 using Swank.Extensions;
+using Tests.Unit.Description.EndpointConventionTests.EndpointDescriptions;
 
 namespace Tests.Unit.Description.EndpointConventionTests
 {
@@ -12,6 +13,7 @@ namespace Tests.Unit.Description.EndpointConventionTests
     {
         private EndpointConvention _endpointConvention;
         private XmlComments _comments;
+        private Swank.Configuration.Configuration _configuration;
 
         [OneTimeSetUp]
         public void OneTimeSetup()
@@ -23,7 +25,8 @@ namespace Tests.Unit.Description.EndpointConventionTests
         [SetUp]
         public void Setup()
         {
-            _endpointConvention = new EndpointConvention(_comments);
+            _configuration = new Swank.Configuration.Configuration();
+            _endpointConvention = new EndpointConvention(_comments, _configuration);
         }
 
         [Test]
@@ -230,6 +233,17 @@ namespace Tests.Unit.Description.EndpointConventionTests
                 BinaryDescription.BinaryResponseController>.ForAction(x => x.Get(null)));
             description.BinaryRequest.ShouldBeFalse();
             description.BinaryResponse.ShouldBeTrue();
+        }
+
+        [Test]
+        public void should_get_type_namespace()
+        {
+            var description = _endpointConvention.GetDescription(
+                ApiDescription<NoDescriptionController>
+                    .ForAction(x => x.Get(null)));
+
+            description.Namespace.ShouldOnlyContain("Tests", "Unit", "Description",
+                "EndpointConventionTests", "EndpointDescriptions", "NoDescription", "Get");
         }
     }
 }
