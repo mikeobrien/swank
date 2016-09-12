@@ -190,6 +190,8 @@ namespace Swank.Specification
                             Id = endpoint.ID.Hash(),
                             Name = description.WhenNotNull(y => y.Name).OtherwiseDefault(),
                             Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
+                            Namespace = description.Namespace,
+                            MethodName = description.MethodName,
                             UrlTemplate = endpoint.RelativePath,
                             Method = endpoint.HttpMethod.Method,
                             UrlParameters = GetUrlParameters(endpoint),

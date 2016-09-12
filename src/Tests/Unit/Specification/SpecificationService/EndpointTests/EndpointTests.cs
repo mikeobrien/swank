@@ -20,13 +20,16 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
         }
 
         [Test]
-        public void should_not_set_Controller_description_for_endpoint_with_no_description()
+        public void should_set_default_controller_description_for_endpoint_with_no_description()
         {
             var endpoint = Builder.BuildSpecAndGetEndpoint<EndpointDescriptions
                 .NoDescriptionController>(x => x.Get(null));
             endpoint.Name.ShouldEqual("Get");
             endpoint.Comments.ShouldBeNull();
             endpoint.Method.ShouldEqual("GET");
+            endpoint.MethodName.ShouldEqual("Get");
+            endpoint.Namespace.ShouldOnlyContain("Tests", "Unit", "Specification", "SpecificationService", 
+                "EndpointTests", "EndpointDescriptions", "NoDescription");
             endpoint.UrlTemplate.ShouldEqualUrl<EndpointDescriptions
                 .NoDescriptionController>(x => x.Get(null));
         }
@@ -49,13 +52,16 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
         }
 
         [Test]
-        public void should_set_Controller_description_for_get_endpoint()
+        public void should_set_controller_description_for_get_endpoint()
         {
             var endpoint = Builder.BuildSpecAndGetEndpoint<EndpointDescriptions
                 .ControllerDescription.Controller>(x => x.Get(null));
             endpoint.Name.ShouldEqual("Some get Controller name");
             endpoint.Comments.ShouldEqual("<p>Some get <strong>Controller</strong> description</p>");
             endpoint.Method.ShouldEqual("GET");
+            endpoint.MethodName.ShouldEqual("Get");
+            endpoint.Namespace.ShouldOnlyContain("Tests", "Unit", "Specification", "SpecificationService",
+                "EndpointTests", "EndpointDescriptions", "ControllerDescription");
             endpoint.UrlTemplate.ShouldEqualUrl<EndpointDescriptions
                 .ControllerDescription.Controller>(x => x.Get(null));
         }

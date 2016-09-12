@@ -127,8 +127,7 @@ namespace Swank.Web.Handlers
             var arrayOpening = new BodyDefinition
             {
                 Name = type.Name,
-                LongNamespace = type.LongNamespace,
-                ShortNamespace = type.ShortNamespace,
+                Namespace = type.Namespace,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,
@@ -173,8 +172,7 @@ namespace Swank.Web.Handlers
             var dictionaryOpening = new BodyDefinition
             {
                 Name = type.Name,
-                LongNamespace = type.LongNamespace,
-                ShortNamespace = type.ShortNamespace,
+                Namespace = type.Namespace,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,
@@ -227,8 +225,7 @@ namespace Swank.Web.Handlers
             var complexOpening = new BodyDefinition
             {
                 Name = type.Name,
-                LongNamespace = type.LongNamespace,
-                ShortNamespace = type.ShortNamespace,
+                Namespace = type.Namespace,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,
