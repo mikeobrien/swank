@@ -735,7 +735,7 @@ Swank ships with some tools to help you build out your documentation. These are 
 
 To make developing templates easier, `SwankUtil` will render templates and code examples using your API specification. This is much faster than making a change, starting your app, browsing to an endpoint, rinse, repeat... The utility will try to determine the type of file by looking at its extension (either `.cshtml` for Razor or `.mustache` for Mustache). You can also override this value if desired. 
 
-First you'll need to grab your specification. Assuming Swank is configured, start your app and browse to the Swank page. There will be a little cloud download icon in the upper left hand corner to the right of the logo and/or title. Right-click and save this file, this is your specification, a JSON representation of your API.
+First you'll need to grab your specification. Assuming Swank is configured, start your app and browse to the Swank page. There will be a little cloud download icon in the upper left hand corner to the right of the logo and/or title. Right-click and save this file, this is your specification, a JSON representation of your API. Additionally you may want test your template against the [sample specification](http://www.mikeobrien.net/swank/sample/spec.json) as it contains every built-in variation of the specification.
 
 Next, open a command prompt and you can run `SwankUtil` to render templates. *Note: The caret's in the command below allow multiple lines in the Windows command prompt and are not part of the SwankUtil arguments.*
 
