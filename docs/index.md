@@ -737,13 +737,13 @@ To make developing templates easier, `SwankUtil` will render templates and code 
 
 First you'll need to grab your specification. Assuming Swank is configured, start your app and browse to the Swank page. There will be a little cloud download icon in the upper left hand corner to the right of the logo and/or title. Right-click and save this file, this is your specification, a JSON representation of your API.
 
-Next open a command prompt and you can run `SwankUtil` to render templates.
+Next, open a command prompt and you can run `SwankUtil` to render templates. *Note: The caret's in the command below allow multiple lines in the Windows command prompt and are not part of the SwankUtil arguments.*
 
 ```bash
-D:\Dev\MyApp\packages\Swank.1.0.71.0\tools\SwankUtil 
-    -c Template 
-    -s D:\Temp\Spec.json
-    -t D:\Dev\MyApp\Templates\SomeTemplate.cshtml 
+D:\Dev\MyApp\packages\Swank.1.0.71.0\tools\SwankUtil ^
+    -c Template ^
+    -s D:\Temp\Spec.json ^
+    -t D:\Dev\MyApp\Templates\SomeTemplate.cshtml ^
     -o D:\Temp\SomeTemplate.txt
 ``` 
 
@@ -765,11 +765,11 @@ Code examples are rendered pretty much the same way except you have to pass the 
 Once you have the id you can pass that in and your code example will be rendered for that particular endpoint.
 
 ```bash
-D:\Dev\MyApp\packages\Swank.1.0.71.0\tools\SwankUtil 
-    -c CodeExample 
-    -s D:\Temp\Spec.json
-    -e 10e848fd4b5df7728b259d69de40e25d
-    -t D:\Dev\MyApp\CodeExamples\Haskell.cshtml 
+D:\Dev\MyApp\packages\Swank.1.0.71.0\tools\SwankUtil ^
+    -c CodeExample ^
+    -s D:\Temp\Spec.json ^
+    -e 10e848fd4b5df7728b259d69de40e25d ^
+    -t D:\Dev\MyApp\CodeExamples\Haskell.cshtml ^
     -o D:\Temp\Example.hs
 ```
 
