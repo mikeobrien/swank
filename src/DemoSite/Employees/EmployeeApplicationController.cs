@@ -75,9 +75,8 @@ namespace DemoSite.Employees
 
         [Route("employees/applications/{id}")]
         [Description("Deletes a Department")]
-        public OutputModel Delete(InputModel model, Guid id)
+        public void Delete(InputModel model, Guid id)
         {
-            return null;
         }
     }
 }

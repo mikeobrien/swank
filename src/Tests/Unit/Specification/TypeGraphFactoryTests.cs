@@ -706,7 +706,7 @@ namespace Tests.Unit.Specification
 
         // Namespaces
 
-        public class NamespacedRoot
+        public class Namespace
         {
             public NamespacedChild Child { get; set; }
             public List<NamespacedChild> ChildList { get; set; }
@@ -718,79 +718,30 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_have_complex_type_member_namespace()
         {
-            var type = Builder.BuildTypeGraphFactory().BuildGraph<NamespacedRoot>();
-            type.LongNamespace.ShouldBeEmpty();
-            type.Members.Member("Child").Type.LongNamespace.ToArray()
-                .ShouldEqual(new List<string> { "NamespacedRoot" }.ToArray());
+            var type = Builder.BuildTypeGraphFactory().BuildGraph<Namespace>();
+            type.Namespace.ShouldOnlyContain("Tests", "Unit", "Specification");
         }
 
         [Test]
         public void should_have_list_member_namespace()
         {
-            var type = Builder.BuildTypeGraphFactory().BuildGraph<NamespacedRoot>();
-            type.LongNamespace.ShouldBeEmpty();
-            var member = type.Members.Member("ChildList");
+            var type = Builder.BuildTypeGraphFactory().BuildGraph<Namespace>();
 
-            member.Type.LongNamespace.ToArray()
-                .ShouldEqual(new List<string> { "NamespacedRoot" }.ToArray());
+            var member = type.Members.Member(nameof(Namespace.ChildList));
 
-            member.Type.ArrayItem.Type.LongNamespace.ToArray()
-                .ShouldEqual(new List<string> { "NamespacedRoot", "ChildList" }.ToArray());
+            member.Type.ArrayItem.Type.Namespace
+                .ShouldOnlyContain("Tests", "Unit", "Specification");
         }
 
         [Test]
         public void should_have_dictionary_member_namespace()
         {
-            var type = Builder.BuildTypeGraphFactory().BuildGraph<NamespacedRoot>();
-            type.LongNamespace.ShouldBeEmpty();
-            var member = type.Members.Member("ChildHash");
+            var type = Builder.BuildTypeGraphFactory().BuildGraph<Namespace>();
 
-            member.Type.LongNamespace.ToArray()
-                .ShouldEqual(new List<string> { "NamespacedRoot" }.ToArray());
+            var member = type.Members.Member(nameof(Namespace.ChildHash));
 
-            member.Type.DictionaryEntry.ValueType.LongNamespace.ToArray()
-                .ShouldEqual(new List<string> { "NamespacedRoot", "ChildHash" }.ToArray());
-        }
-
-        public class ShortNamespaceRoot
-        {
-            public ShortNamespaceComplexType Conflict { get; set; }
-            public string SimpleType { get; set; }
-        }
-
-        public class ShortNamespaceComplexType
-        {
-            public ShortNamespaceList Conflict { get; set; }
-        }
-
-        public class ShortNamespaceList : List<string> { }
-
-        [Test]
-        public void should_not_create_short_namespace_on_simple_types()
-        {
-            var type = Builder.BuildTypeGraphFactory()
-                .BuildGraph<ShortNamespaceRoot>();
-            type.ShortNamespace.ShouldBeEmpty();
-            var member = type.Members.Member("SimpleType");
-
-            member.Type.LongNamespace.ShouldBeEmpty();
-            member.Type.ShortNamespace.ShouldBeEmpty();
-        }
-
-        [Test]
-        public void should_create_unique_short_namespace()
-        {
-            var type = Builder.BuildTypeGraphFactory()
-                .BuildGraph<ShortNamespaceRoot>();
-            type.ShortNamespace.ShouldBeEmpty();
-            var member = type.Members.Member("Conflict");
-
-            member.Type.ShortNamespace.ToArray()
-                .ShouldEqual(new List<string> { "ShortNamespaceRoot" }.ToArray());
-
-            member = member.Type.Members.Member("Conflict");
-
-            member.Type.ShortNamespace.ToArray().ShouldBeEmpty();
+            member.Type.DictionaryEntry.ValueType.Namespace
+                .ShouldOnlyContain("Tests", "Unit", "Specification");
         }
     }
 

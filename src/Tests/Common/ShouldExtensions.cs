@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Should;
+using Swank.Extensions;
 
 namespace Tests.Common
 {
@@ -30,6 +31,10 @@ namespace Tests.Common
         public static void ShouldOnlyContain<T>(
             this IEnumerable<T> actual, params T[] expected)
         {
+            if (actual == null && expected == null) return;
+            var expectedText = expected == null ? "(null)" : 
+                $"{{ {expected.Select(x => x.ToString()).Join(", ")} }}";
+            actual.ShouldNotBeNull($"Expected: {expectedText}\r\nActual: (null)\r\n");
             actual.ToArray().ShouldEqual(expected);
         }
     }

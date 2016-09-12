@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Fclp;
 
 namespace SwankUtil
@@ -31,7 +32,6 @@ namespace SwankUtil
 
     public class Program
     {
-
         static void Main(string[] args)
         {
             Console.WriteLine();

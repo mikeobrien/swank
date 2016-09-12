@@ -1,4 +1,6 @@
-﻿namespace Swank.Description
+﻿using System.Collections.Generic;
+
+namespace Swank.Description
 {
     public class ModuleDescription : Description
     {
@@ -17,6 +19,8 @@
     public class EndpointDescription : Description
     {
         public bool Secure { get; set; }
+        public List<string> Namespace { get; set; }
+        public string MethodName { get; set; }
         public string RequestComments { get; set; }
         public string ResponseComments { get; set; }
         public bool BinaryRequest { get; set; }
@@ -81,6 +85,7 @@
 
     public class TypeDescription : Description
     {
+        public List<string> Namespace { get; set; }
         public Description ArrayItem { get; set; }
         public DictionaryDescription DictionaryEntry { get; set; }
     }
