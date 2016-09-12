@@ -1,4 +1,9 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Bender;
+using NUnit.Framework;
+using Swank.Extensions;
+using Swank.Specification;
 
 namespace Tests.Unit
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Web.Http.Description;
 using Swank.Description;
@@ -20,6 +21,15 @@ namespace Swank.Configuration
         public const string AppStylesheet = "swank.css";
         public const string DefaultCodeExampleTheme = "github-gist.css";
         public const string DefaultDefaultModuleName = "Resources"; // yo dawg I heard you like defaults...
+
+        public static readonly Func<Type, List<string>> DefaultTypeNamespace = 
+            x => x.Namespace.Split(".").DistinctSiblings().ToList();
+        public static readonly Func<ApiDescription, List<string>> DefaultActionNamespace =
+            x => x.GetControllerType().Namespace.Split(".")
+                .Concat(x.GetControllerType().Name.Replace("Controller", ""))
+                .Where(y => y.IsNotNullOrEmpty())
+                .DistinctSiblings().ToList();
+        public static readonly Func<ApiDescription, string> DefaultActionName = x => x.GetMethodInfo().Name;
 
         public class OverviewLink
         {
@@ -92,6 +102,10 @@ namespace Swank.Configuration
             DefaultDictionaryKeyName = "key";
             EnumFormat = EnumFormat.AsString;
             OverviewLinks = new List<OverviewLink>();
+
+            TypeNamespace = DefaultTypeNamespace;
+            ActionNamespace = DefaultActionNamespace;
+            ActionName = DefaultActionName;
 
             CodeExamples = new List<CodeExample>
             {
@@ -172,6 +186,9 @@ namespace Swank.Configuration
         public bool DisplayXmlData { get; set; }
         public List<Assembly> AppliesToAssemblies { get; }
         public Func<ApiDescription, bool> Filter { get; set; }
+        public Func<Type, List<string>> TypeNamespace { get; set; }
+        public Func<ApiDescription, List<string>> ActionNamespace { get; set; }
+        public Func<ApiDescription, string> ActionName { get; set; }
 
         public OrphanedEndpoints OrphanedModuleEndpoint { get; set; }
         public OrphanedEndpoints OrphanedResourceEndpoint { get; set; }

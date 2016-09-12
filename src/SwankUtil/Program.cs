@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Fclp;
 
 namespace SwankUtil
@@ -31,9 +32,11 @@ namespace SwankUtil
 
     public class Program
     {
-
         static void Main(string[] args)
         {
+            // Force loading of the following assemblies
+            typeof(System.Web.HttpApplication).ToString();
+
             Console.WriteLine();
 
             var arguments = new FluentCommandLineParser<Arguments>();

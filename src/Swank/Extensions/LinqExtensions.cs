@@ -38,6 +38,19 @@ namespace Swank.Extensions
             return source != null ? new List<T>(source) { item } : item.AsList();
         }
 
+        public static IEnumerable<T> DistinctSiblings<T>(this IEnumerable<T> source)
+        {
+            if (source != null)
+            {
+                var lastItem = default(T);
+                foreach (var item in source)
+                {
+                    if (!item.Equals(lastItem)) yield return item;
+                    lastItem = item;
+                }
+            }
+        }
+
         public static List<T> AsList<T>(this T item)
         {
             return new List<T> { item };
