@@ -251,14 +251,13 @@ namespace TestHarness.Default
         [StatusCode(HttpStatusCode.Created, "Status code 1. Vegan excepteur butcher vice lomo. :trollface:")]
         [StatusCode(HttpStatusCode.BadGateway, "Status code 2. Raw denim aesthetic synth nesciunt. :trollface:")]
 
-        public Model Delete(Model model,
+        public void Delete(Model model,
             Guid id,
             Options option,
             [Required] Options requiredOption,
             [Required, Multiple] int requiredMultiple,
             [DefaultValue(5)] int? optionalDefault = null)
         {
-            return null;
         }
 
         [BinaryRequest, BinaryResponse]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Bender;
 using RazorEngine;
 using RazorEngine.Templating;
@@ -17,7 +18,7 @@ namespace SwankUtil
 {
     public static class Renderer
     {
-        public static void RenderTemplate(string templatePath, 
+        public static void RenderTemplate(string templatePath,
             string specPath, string outputPath,
             RenderingEngine? renderingEngine)
         {
@@ -25,8 +26,9 @@ namespace SwankUtil
             Console.WriteLine("Loading spec...");
             var spec = Deserialize.JsonFile<List<Module>>(specPath,
                 x => x.Deserialization(d => d.IgnoreNameCase()));
-            if (spec == null || !spec.Any()) throw new ValidationException(
-                $"Could not load spec {specPath}.");
+            if (spec == null || !spec.Any())
+                throw new ValidationException(
+                    $"Could not load spec {specPath}.");
             Console.WriteLine("Loading template...");
             var template = File.ReadAllText(templatePath);
             string result = null;
@@ -34,8 +36,8 @@ namespace SwankUtil
             {
                 case RenderingEngine.Razor:
                     Console.WriteLine("Rendering Razor template...");
-                    result = Engine.Razor.RunCompile(template, template.Hash(), 
-                        typeof(List<Module>), spec); break;
+                    result = FormatRazorError(() => Engine.Razor.RunCompile(template, 
+                        template.Hash(), typeof(List<Module>), spec)); break;
                 case RenderingEngine.Mustache:
                     Console.WriteLine("Rendering mustache template...");
                     result = template.RenderMustache(spec); break;
@@ -84,9 +86,9 @@ namespace SwankUtil
             if (endpoint == null) throw new ValidationException(
                 $"Could not find endpoint id {endpointId}.");
             template.CompileRazor<TemplateModel>();
-            var result = AppResourceHandler.MapEndpoint(url, 
-                    endpoint, codeExamples, bodyDescriptionFactory)
-                .CodeExamples.First().Example;
+            var result = FormatRazorError(() => AppResourceHandler.MapEndpoint(
+                    url, endpoint, codeExamples, bodyDescriptionFactory)
+                .CodeExamples.First().Example);
             Console.WriteLine("Saving results...");
             File.WriteAllText(outputPath, result);
             Console.WriteLine("Successfully rendered!");
@@ -103,6 +105,23 @@ namespace SwankUtil
                 return RenderingEngine.Mustache;
             throw new ValidationException("Could not determine " +
                 "the rendering engine for your template.");
+        }
+
+        private static string FormatRazorError(Func<string> action)
+        {
+            try
+            {
+                return action();
+            }
+            catch (Exception exception)
+            {
+                var templateError = Regex.Match(exception.Message, "the error:([\\s\\S]*?)Temporary files");
+                if (templateError.Length > 0)
+                {
+                    throw new Exception(exception.Message + "\r\n\r\n" + templateError.Groups[1].Value, exception);
+                }
+                throw;
+            }
         }
     }
 }
