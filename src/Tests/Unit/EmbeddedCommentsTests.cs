@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Bender;
 using NUnit.Framework;
+using Should;
 using Swank.Extensions;
 using Swank.Specification;
 

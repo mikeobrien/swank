@@ -119,7 +119,10 @@ namespace TestHarness.Module
             [Comments("Option url parameter 2. 3 wolf moon officia aute sunt aliqua. :trollface:")] Options option,
             [Comments("Required, options query string 1. Leggings occaecat craft beer farm-to-table. :trollface:"), Required] Options requiredOption,
             [Comments("Required, multiple querystring 2. Leggings occaecat craft beer farm-to-table. :trollface:"), Required, Multiple] int requiredMultiple,
-            [Comments("Optional, default querystring 3. Raw denim aesthetic synth nesciunt. :trollface:"), DefaultValue(5)] int? optionalDefault = null)
+            [Comments("Option url parameter 2. 3 wolf moon officia aute sunt aliqua. :trollface:")] Options optionalOption = Options.Option1,
+            [Comments("Option url parameter 2. 3 wolf moon officia aute sunt aliqua. :trollface:")] Options? nullableOptionalOption = Options.Option1,
+            [Comments("Optional, default querystring 3. Raw denim aesthetic synth nesciunt. :trollface:"), DefaultValue(5)] int? optionalNumericDefault = null,
+            [Comments("Optional, default querystring 3. Raw denim aesthetic synth nesciunt. :trollface:"), DefaultValue("fark")] string optionalStringDefault = null)
         {
             return null;
         }
@@ -188,7 +191,7 @@ namespace TestHarness.Module
         [StatusCode(HttpStatusCode.BadGateway, "Status code 2. Raw denim aesthetic synth nesciunt. :trollface:")]
 
         [ResponseComments("Response description. Raw denim aesthetic synth nesciunt. :trollface:")]
-        public Model Delete(
+        public void Delete(
             [Comments("Request parameter. Vegan excepteur butcher vice lomo. :trollface:")] Model model,
             [Comments("Url parameter 1. Enim eiusmod high life accusamus. :trollface:")] Guid id,
             [Comments("Option url parameter 2. 3 wolf moon officia aute sunt aliqua. :trollface:")] Options option,
@@ -196,7 +199,6 @@ namespace TestHarness.Module
             [Comments("Required, multiple querystring 2. Leggings occaecat craft beer farm-to-table. :trollface:"), Required, Multiple] int requiredMultiple,
             [Comments("Optional, default querystring 3. Raw denim aesthetic synth nesciunt. :trollface:"), DefaultValue(5)] int? optionalDefault = null)
         {
-            return null;
         }
 
         [BinaryRequest, BinaryResponse]

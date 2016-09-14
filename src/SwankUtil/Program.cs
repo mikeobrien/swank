@@ -102,13 +102,18 @@ namespace SwankUtil
                     default: Console.WriteLine("No command passed."); break;
                 }
             }
+            catch (Renderer.RenderException exception)
+            {
+                Console.WriteLine($"Error:\r\n\r\n{exception}\r\n\r\n");
+                Console.WriteLine($"Render Error:\r\n\r\n{exception.Message}");
+            }
             catch (ValidationException exception)
             {
-                Console.WriteLine($"Error: {exception.Message}");
+                Console.WriteLine($"Error:\r\n\r\n{exception.Message}");
             }
             catch (Exception exception)
             {
-                Console.WriteLine($"Error: {exception}");
+                Console.WriteLine($"Error:\r\n\r\n{exception}");
             }
         }
     }
