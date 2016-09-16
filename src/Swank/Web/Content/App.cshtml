@@ -156,15 +156,19 @@
         <div class="swank-endpoint swank-{{method}}">
 
             <div class="sticky swank-endpoint-header" data-toggle="collapse" data-target="#Endpoint-{{id}}">
-                <div class="swank-endpoint-method">{{method}}</div>
-                <div class="swank-endpoint-url">{{{replace urlTemplate '/(\{.*?\})/g' 
-                    '&lt;span class="swank-endpoint-parameter">$1&lt;/span>'}}}</div>
-                {{#secure}}
-                <div class="swank-endpoint-secure">
+                <!-- Screw it, I'm no longer fighting this troglodytic abomination that is CSS 
+                    to do something that a table does exactly what I want out of the box. -->
+                <table class="swank-endpoint-header-fields"><tr>
+                  <td class="swank-endpoint-method">{{method}}</td>  
+                  <td class="swank-endpoint-url">{{{replace urlTemplate '/(\{.*?\})/g' 
+                    '&lt;span class="swank-endpoint-parameter">$1&lt;/span>'}}}</td>
+                  {{#secure}}  
+                  <td class="swank-endpoint-secure">
                     <span class="glyphicon glyphicon-lock" alt="Secure"></span>
-                </div>
-                {{/secure}}
-                <div class="swank-endpoint-name">{{name}}</div>
+                  </td>  
+                  {{/secure}} 
+                  <td class="swank-endpoint-name">{{name}}</td>  
+                </tr></table>
             </div>
 
             <div id="Endpoint-{{id}}" class="collapse swank-endpoint-body">
