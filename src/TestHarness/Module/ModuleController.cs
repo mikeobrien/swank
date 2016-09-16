@@ -201,11 +201,17 @@ namespace TestHarness.Module
         {
         }
 
-        [BinaryRequest, BinaryResponse]
-        [Route("module/resource/file")]
-        public Stream PostFile(Stream stream)
+        [BinaryResponse]
+        [Route("module/file")]
+        public Stream GetFile()
         {
             return null;
+        }
+
+        [BinaryRequest]
+        [Route("module/file")]
+        public void PostFile(Stream stream)
+        {
         }
     }
 }
