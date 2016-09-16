@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using Swank.Specification;
-using Swank.Web.Handlers;
+using Swank.Web.Handlers.App;
 
 namespace Swank.Description.CodeExamples
 {
-    public class TemplateModel
+    public class CodeExampleModel
     {
         public string Id { get; set; }
         public string Name { get; set; }

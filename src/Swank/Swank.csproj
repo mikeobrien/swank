@@ -82,7 +82,7 @@
     <Compile Include="Description\ArrayDescriptionAttribute.cs" />
     <Compile Include="Description\Assert.cs" />
     <Compile Include="Description\CodeExamples\CodeExample.cs" />
-    <Compile Include="Description\CodeExamples\TemplateModel.cs" />
+    <Compile Include="Description\CodeExamples\CodeExampleModel.cs" />
     <Compile Include="Description\CommentsAttribute.cs" />
     <Compile Include="Description\DefaultValueAttribute.cs" />
     <Compile Include="Description\Description.cs" />
@@ -129,9 +129,10 @@
     <Compile Include="Extensions\WebExtensions.cs" />
     <Compile Include="Specification\Markdown.cs" />
     <Compile Include="Specification\OverrideContexts.cs" />
-    <Compile Include="Web\Handlers\AppResourceHandler.cs" />
-    <Compile Include="Web\Handlers\AppResourceModels.cs" />
-    <Compile Include="Web\Handlers\TemplateHandler.cs" />
+    <Compile Include="Web\Handlers\App\AppResourceHandler.cs" />
+    <Compile Include="Web\Handlers\App\AppResourceModels.cs" />
+    <Compile Include="Web\Handlers\Templates\NamespaceDescriptionService.cs" />
+    <Compile Include="Web\Handlers\Templates\TemplateHandler.cs" />
     <Compile Include="Web\Assets\IAsset.cs" />
     <Compile Include="Web\Assets\FileAsset.cs" />
     <Compile Include="Web\Handlers\CachingHandlerBase.cs" />
@@ -148,13 +149,13 @@
     <Compile Include="Web\Handlers\HandlerBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Web\Handlers\SpecificationHandler.cs" />
-    <Compile Include="Web\Handlers\BodyDescriptionFactory.cs" />
-    <Compile Include="Specification\OptionFactory.cs" />
+    <Compile Include="Web\Handlers\App\BodyDescriptionService.cs" />
+    <Compile Include="Specification\OptionBuilderService.cs" />
     <Compile Include="Specification\OrphanExceptions.cs" />
     <Compile Include="Specification\Specification.cs" />
     <Compile Include="Specification\SpecificationService.cs" />
-    <Compile Include="Web\Handlers\AppHandler.cs" />
-    <Compile Include="Specification\TypeGraphFactory.cs" />
+    <Compile Include="Web\Handlers\App\AppHandler.cs" />
+    <Compile Include="Specification\TypeGraphService.cs" />
     <Compile Include="Web\Templates\WebTemplate.cs" />
   </ItemGroup>
   <ItemGroup>

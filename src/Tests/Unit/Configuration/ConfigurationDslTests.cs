@@ -12,7 +12,6 @@ using Swank.Description.CodeExamples;
 using Swank.Extensions;
 using Swank.Specification;
 using Swank.Web.Assets;
-using Swank.Web.Handlers;
 using Swank.Web.Templates;
 using TestHarness.Module;
 using Tests.Common;
@@ -80,7 +79,7 @@ namespace Tests.Unit.Configuration
             _dsl.WithAppTemplateResource("ConfigurationDslTests/App/razor.cshtml");
 
             _configuration.AppTemplate.RenderString(
-                    new AppModel { Name = "Farker"})
+                    new Swank.Web.Handlers.App.AppModel { Name = "Farker"})
                 .ShouldEqual("Fark Farker");
         }
 
@@ -93,7 +92,7 @@ namespace Tests.Unit.Configuration
                 _dsl.WithAppTemplateFromVirtualPath(relativePath);
 
                 _configuration.AppTemplate.RenderString(
-                    new AppModel { Name = "Farker" })
+                    new Swank.Web.Handlers.App.AppModel { Name = "Farker" })
                     .ShouldEqual("Fark Farker");
             });
         }
@@ -104,7 +103,7 @@ namespace Tests.Unit.Configuration
             _dsl.WithAppTemplate("Fark @Model.Name");
 
             _configuration.AppTemplate.RenderString(
-                    new AppModel { Name = "Farker" })
+                    new Swank.Web.Handlers.App.AppModel { Name = "Farker" })
                 .ShouldEqual("Fark Farker");
         }
 
@@ -432,7 +431,7 @@ namespace Tests.Unit.Configuration
 
             var example = _configuration.CodeExamples.First();
 
-            example.Render(new TemplateModel { Name = "Farker" })
+            example.Render(new CodeExampleModel { Name = "Farker" })
                 .ShouldEqual("Fark Farker");
             example.Language.ShouldEqual("ada");
             example.Comments.ShouldEqual($"<p>{comments}</p>");
@@ -448,7 +447,7 @@ namespace Tests.Unit.Configuration
 
             var example = _configuration.CodeExamples.First();
 
-            example.Render(new TemplateModel { Name = "Farker" })
+            example.Render(new CodeExampleModel { Name = "Farker" })
                 .ShouldEqual("Fark Farker");
             example.Language.ShouldEqual("curl");
             example.Comments.ShouldEqual("<p>Curl</p>");
@@ -456,7 +455,7 @@ namespace Tests.Unit.Configuration
 
             example = _configuration.CodeExamples.Skip(1).First();
 
-            example.Render(new TemplateModel { Name = "Farker" })
+            example.Render(new CodeExampleModel { Name = "Farker" })
                 .ShouldEqual("Fark Farker");
             example.Language.ShouldEqual("csharp");
             example.Comments.ShouldEqual("<p>C#</p>");
@@ -483,7 +482,7 @@ namespace Tests.Unit.Configuration
 
             var example = _configuration.CodeExamples.First();
 
-            example.Render(new TemplateModel { Name = "Farker" })
+            example.Render(new CodeExampleModel { Name = "Farker" })
                 .ShouldEqual("Fark Farker");
             example.Language.ShouldEqual("ada");
             example.Comments.ShouldEqual($"<p>{comments}</p>");
@@ -509,14 +508,14 @@ namespace Tests.Unit.Configuration
 
             var example = _configuration.CodeExamples.First(x => x.Name == "csharp");
 
-            example.Render(new TemplateModel { Name = "Farker" })
+            example.Render(new CodeExampleModel { Name = "Farker" })
                 .ShouldEqual("Fark Farker");
             example.Language.ShouldEqual("csharp");
             example.Comments.ShouldEqual("<p>C#</p>");
 
             example = _configuration.CodeExamples.First(x => x.Name == "curl");
 
-            example.Render(new TemplateModel { Name = "Farker" })
+            example.Render(new CodeExampleModel { Name = "Farker" })
                 .ShouldEqual("Fark Farker");
             example.Language.ShouldEqual("curl");
             example.Comments.ShouldEqual("<p>Curl</p>");
@@ -530,7 +529,7 @@ namespace Tests.Unit.Configuration
 
             var example = _configuration.CodeExamples.First();
 
-            example.Render(new TemplateModel { Name = "Farker" })
+            example.Render(new CodeExampleModel { Name = "Farker" })
                 .ShouldEqual("Fark Farker");
             example.Language.ShouldEqual("ada");
             example.Name.ShouldEqual("name");
@@ -545,7 +544,7 @@ namespace Tests.Unit.Configuration
 
             var example = _configuration.CodeExamples.First();
 
-            example.Render(new TemplateModel { Name = "Farker" })
+            example.Render(new CodeExampleModel { Name = "Farker" })
                 .ShouldEqual("Fark Farker");
             example.Language.ShouldEqual("ada");
             example.Name.ShouldEqual("name");

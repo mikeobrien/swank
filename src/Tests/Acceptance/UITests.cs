@@ -4,6 +4,7 @@ using System.Net;
 using NUnit.Framework;
 using Should;
 using Swank.Web.Handlers;
+using Swank.Web.Handlers.App;
 using Tests.Common;
 
 namespace Tests.Acceptance
@@ -191,7 +192,7 @@ namespace Tests.Acceptance
             bodyLine.IsComplexType.ShouldEqual(true);
             bodyLine.IsFirst.ShouldEqual(true);
             bodyLine.IsOpening.ShouldEqual(true);
-            bodyLine.Namespace.ShouldOnlyContain("TestHarness", "Default");
+            bodyLine.Namespace.ShouldOnlyContain("Get");
             bodyLine.Whitespace.ShouldBeEmpty();
         }
     }

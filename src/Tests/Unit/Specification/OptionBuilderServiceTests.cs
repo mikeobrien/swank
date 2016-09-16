@@ -11,7 +11,7 @@ using DescriptionAttribute = Swank.Description.DescriptionAttribute;
 namespace Tests.Unit.Specification
 {
     [TestFixture]
-    public class OptionFactoryTests
+    public class OptionBuilderServiceTests
     {
         private XmlComments _comments;
 
@@ -32,7 +32,7 @@ namespace Tests.Unit.Specification
         {
             var configuration = new Swank.Configuration.Configuration();
             configure?.Invoke(configuration);
-            return new OptionFactory(configuration, 
+            return new OptionBuilderService(configuration, 
                 new EnumConvention(_comments), 
                 new OptionConvention(_comments)).BuildOptions(type, null, true);
         }

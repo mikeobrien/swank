@@ -90,7 +90,9 @@ namespace Swank.Specification
     public class DataType : IDescription
     {
         public string Name { get; set; }
-        public List<string> Namespace { get; set; }
+        public string LogicalName { get; set; }
+        public string Namespace { get; set; }
+        public List<string> FullNamespace { get; set; }
         public string Comments { get; set; }
 
         public bool IsSimple { get; set; }

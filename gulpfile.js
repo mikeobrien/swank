@@ -43,10 +43,10 @@ gulp.task('test', ['build'], function () {
 
 gulp.task('nuget-package', ['test'], function() {
 
-    gulp.src('src/Swank/bin/Release/Swank.{dll,xml,pdb}')
+    gulp.src('src/Swank/bin/Release/Swank.{dll,pdb,xml}')
         .pipe(gulp.dest('package/lib'));
 
-    gulp.src('src/SwankUtil/bin/Release/*.{exe,dll}')
+    gulp.src('src/SwankUtil/bin/Release/*.{exe,dll,pdb}')
         .pipe(gulp.dest('package/tools'));
 
     return Nuget()

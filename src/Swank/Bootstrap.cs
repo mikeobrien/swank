@@ -7,6 +7,8 @@ using Swank.Configuration;
 using Swank.Description;
 using Swank.Extensions;
 using Swank.Web.Handlers;
+using Swank.Web.Handlers.App;
+using Swank.Web.Handlers.Templates;
 
 namespace Swank
 {

@@ -249,7 +249,7 @@ pre {
 .swank-endpoint :not(pre) > code {
     background-color: #e2e2e2;
     padding: 2px 4px;
-    font-size: 12pt;
+    font-size: 10pt;
     margin: 0 5px;
 }
 

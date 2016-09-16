@@ -1,33 +1,33 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Swank.Extensions;
 using Swank.Specification;
 
-namespace Swank.Web.Handlers
+namespace Swank.Web.Handlers.App
 {
-    public class BodyDescriptionFactory
+    public class BodyDescriptionService
     {
         public const string Whitespace = "    ";
 
         private readonly Configuration.Configuration _configuration;
 
-        public BodyDescriptionFactory(Configuration.Configuration configuration)
+        public BodyDescriptionService(Configuration.Configuration configuration)
         {
             _configuration = configuration;
         }
 
-        public List<BodyDefinition> Create(DataType type)
+        public List<BodyDefinitionModel> Create(DataType type)
         {
-            var data = new List<BodyDefinition>();
+            var data = new List<BodyDefinitionModel>();
             WalkGraph(data, type, 0);
             data.ForEach((x, i) => x.Index = i + 1);
             return data;
         }
 
-        private void WalkGraph(List<BodyDefinition> data, DataType type, int level, 
-            Action<BodyDefinition> opening = null, 
-            Action<BodyDefinition> closing = null)
+        private void WalkGraph(List<BodyDefinitionModel> data, DataType type, int level, 
+            Action<BodyDefinitionModel> opening = null, 
+            Action<BodyDefinitionModel> closing = null)
         {
             if (type.IsSimple) WalkSimpleType(data, type, level, opening);
             else if (type.IsArray) WalkArray(data, type, level, opening, closing);
@@ -41,11 +41,11 @@ namespace Swank.Web.Handlers
         }
 
         private void WalkSimpleType(
-            List<BodyDefinition> description, 
+            List<BodyDefinitionModel> description, 
             DataType type, int level,
-            Action<BodyDefinition> opening)
+            Action<BodyDefinitionModel> opening)
         {
-            var data = new BodyDefinition
+            var data = new BodyDefinitionModel
             {
                 Name = type.Name,
                 TypeName = type.Name,
@@ -120,14 +120,14 @@ namespace Swank.Web.Handlers
             return enumeration;
         }
 
-        private void WalkArray(List<BodyDefinition> data, DataType type, int level,
-            Action<BodyDefinition> opening = null,
-            Action<BodyDefinition> closing = null)
+        private void WalkArray(List<BodyDefinitionModel> data, DataType type, int level,
+            Action<BodyDefinitionModel> opening = null,
+            Action<BodyDefinitionModel> closing = null)
         {
-            var arrayOpening = new BodyDefinition
+            var arrayOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
-                Namespace = type.Namespace,
+                Namespace = type.FullNamespace,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,
@@ -152,7 +152,7 @@ namespace Swank.Web.Handlers
                     if (type.ArrayItem?.Name != null) x.Name = type.ArrayItem.Name;
                 });
 
-            var arrayClosing = new BodyDefinition
+            var arrayClosing = new BodyDefinitionModel
             {
                 Name = type.Name,
                 Whitespace = Whitespace.Repeat(level),
@@ -165,14 +165,14 @@ namespace Swank.Web.Handlers
             data.Add(arrayClosing);
         }
 
-        private void WalkDictionary(List<BodyDefinition> data, DataType type, int level,
-            Action<BodyDefinition> opening = null,
-            Action<BodyDefinition> closing = null)
+        private void WalkDictionary(List<BodyDefinitionModel> data, DataType type, int level,
+            Action<BodyDefinitionModel> opening = null,
+            Action<BodyDefinitionModel> closing = null)
         {
-            var dictionaryOpening = new BodyDefinition
+            var dictionaryOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
-                Namespace = type.Namespace,
+                Namespace = type.FullNamespace,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,
@@ -204,7 +204,7 @@ namespace Swank.Web.Handlers
                     x.IsDictionaryEntry = true;
                 });
 
-            var dictionaryClosing = new BodyDefinition
+            var dictionaryClosing = new BodyDefinitionModel
             {
                 Name = type.Name,
                 Whitespace = Whitespace.Repeat(level),
@@ -217,15 +217,15 @@ namespace Swank.Web.Handlers
             data.Add(dictionaryClosing);
         }
 
-        private void WalkComplexType(List<BodyDefinition> data, 
+        private void WalkComplexType(List<BodyDefinitionModel> data, 
             DataType type, int level,
-            Action<BodyDefinition> opening = null,
-            Action<BodyDefinition> closing = null)
+            Action<BodyDefinitionModel> opening = null,
+            Action<BodyDefinitionModel> closing = null)
         {
-            var complexOpening = new BodyDefinition
+            var complexOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
-                Namespace = type.Namespace,
+                Namespace = type.FullNamespace,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,
@@ -266,7 +266,7 @@ namespace Swank.Web.Handlers
                     });
             }
 
-            var complexClosing = new BodyDefinition
+            var complexClosing = new BodyDefinitionModel
             {
                 Name = type.Name,
                 Whitespace = Whitespace.Repeat(level),

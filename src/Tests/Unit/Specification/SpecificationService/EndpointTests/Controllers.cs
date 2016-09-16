@@ -13,6 +13,11 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
             {
                 return null;
             }
+
+            public object Post(object request)
+            {
+                return null;
+            }
         }
 
         namespace ControllerDescription
