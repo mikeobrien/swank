@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Swank.Specification;
 
-namespace Swank.Web.Handlers
+namespace Swank.Web.Handlers.App
 {
     public class ResourceModel
     {
@@ -15,7 +15,7 @@ namespace Swank.Web.Handlers
         public string Comments { get; set; }
         public bool IsBinary { get; set; }
         public List<Header> Headers { get; set; }
-        public List<BodyDefinition> Body { get; set; }
+        public List<BodyDefinitionModel> Body { get; set; }
     }
 
     public class CodeExampleModel
@@ -44,7 +44,7 @@ namespace Swank.Web.Handlers
         public List<CodeExampleModel> CodeExamples { get; set; }
     }
 
-    public class BodyDefinition
+    public class BodyDefinitionModel
     {
         public int Index { get; set; }
         public string Name { get; set; }

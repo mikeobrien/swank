@@ -40,8 +40,8 @@ namespace Swank.Specification
         private readonly IDescriptionConvention<ApiParameterDescription, ParameterDescription> _parameterConvention;
         private readonly IDescriptionConvention<ApiDescription, List<StatusCodeDescription>> _statusCodeConvention;
         private readonly IDescriptionConvention<ApiDescription, List<HeaderDescription>> _headerConvention;
-        private readonly TypeGraphFactory _typeGraphFactory;
-        private readonly OptionFactory _optionFactory;
+        private readonly TypeGraphService _typeGraphService;
+        private readonly OptionBuilderService _optionBuilderService;
         private readonly Lazy<List<Module>> _specification;
 
         public SpecificationService(
@@ -53,8 +53,8 @@ namespace Swank.Specification
             IDescriptionConvention<ApiParameterDescription, ParameterDescription> parameterConvention,
             IDescriptionConvention<ApiDescription, List<StatusCodeDescription>> statusCodeConvention,
             IDescriptionConvention<ApiDescription, List<HeaderDescription>> headerConvention,
-            TypeGraphFactory typeGraphFactory,
-            OptionFactory optionFactory)
+            TypeGraphService typeGraphService,
+            OptionBuilderService optionBuilderService)
         {
             _configuration = configuration;
             _apiExplorer = apiExplorer;
@@ -63,8 +63,8 @@ namespace Swank.Specification
             _endpointConvention = endpointConvention;
             _parameterConvention = parameterConvention;
             _statusCodeConvention = statusCodeConvention;
-            _typeGraphFactory = typeGraphFactory;
-            _optionFactory = optionFactory;
+            _typeGraphService = typeGraphService;
+            _optionBuilderService = optionBuilderService;
             _headerConvention = headerConvention;
             _specification = new Lazy<List<Module>>(GenerateSpecification);
         }
@@ -223,7 +223,7 @@ namespace Swank.Specification
                             Name = description.WhenNotNull(y => y.Name).OtherwiseDefault(),
                             Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
                             Type = description.WhenNotNull(y => y.Type).OtherwiseDefault(),
-                            Options = _optionFactory.BuildOptions(x.ParameterDescriptor
+                            Options = _optionBuilderService.BuildOptions(x.ParameterDescriptor
                                 .ParameterType, endpoint, true),
                             SampleValue = description.WhenNotNull(y => y.SampleValue).OtherwiseDefault()
                         }
@@ -253,7 +253,7 @@ namespace Swank.Specification
                             Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
                             Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
                             Type = x.Description.WhenNotNull(y => y.Type).OtherwiseDefault(),
-                            Options = _optionFactory.BuildOptions(type, endpoint, true),
+                            Options = _optionBuilderService.BuildOptions(type, endpoint, true),
                             DefaultValue = x.Description.DefaultValue.WhenNotNull(y => y
                                 .ToSampleValueString(_configuration)).OtherwiseDefault(),
                             SampleValue = x.Description.WhenNotNull(y => y.SampleValue).OtherwiseDefault(),
@@ -274,8 +274,9 @@ namespace Swank.Specification
                 endpoint.HttpMethod == HttpMethod.Put ||
                 endpoint.HttpMethod == HttpMethod.Delete))
             {
-                data.Type = _typeGraphFactory.BuildGraph(requestDescription
-                    .ParameterDescriptor.ParameterType, true, endpoint);
+                data.Type = _typeGraphService.BuildGraph(requestDescription
+                    .ParameterDescriptor.ParameterType, endpoint.HttpMethod, 
+                    true, endpoint);
             }
 
             data.Comments = description.RequestComments;
@@ -294,12 +295,11 @@ namespace Swank.Specification
         {
             var data = new Message();
             var responseType = endpoint.GetResponseType();
-            DataType type = null;
 
             if (responseType != null)
             {
-                data.Type = _typeGraphFactory.BuildGraph(
-                    responseType, false, endpoint);
+                data.Type = _typeGraphService.BuildGraph(responseType, 
+                    endpoint.HttpMethod, false, endpoint);
             }
 
             data.Comments = description.ResponseComments;

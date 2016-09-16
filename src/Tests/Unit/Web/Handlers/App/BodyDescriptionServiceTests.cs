@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Web.Http.Description;
 using System.Xml.Serialization;
 using NUnit.Framework;
@@ -9,26 +10,26 @@ using Swank.Configuration;
 using Swank.Description;
 using Swank.Extensions;
 using Swank.Specification;
-using Swank.Web.Handlers;
+using Swank.Web.Handlers.App;
 using Tests.Common;
 using Tests.Unit.Specification;
 
-namespace Tests.Unit.Web.Handlers
+namespace Tests.Unit.Web.Handlers.App
 {
     [TestFixture]
-    public class BodyDescriptionFactoryTests
+    public class BodyDescriptionServiceTests
     {
-        public List<BodyDefinition> BuildDescription(Type type,
+        public List<BodyDefinitionModel> BuildDescription(Type type,
             Action<Swank.Configuration.Configuration> configure = null, bool requestGraph = false)
         {
             var configuration = new Swank.Configuration.Configuration();
             configure?.Invoke(configuration);
-            return new BodyDescriptionFactory(configuration)
-                .Create(Builder.BuildTypeGraphFactory(configuration: configuration)
-                    .BuildGraph(type, requestGraph, new ApiDescription()));
+            return new BodyDescriptionService(configuration)
+                .Create(Builder.BuildTypeGraphService(configuration: configuration)
+                    .BuildGraph(type, HttpMethod.Get, requestGraph, new ApiDescription()));
         }
 
-        public List<BodyDefinition> BuildDescription<T>(
+        public List<BodyDefinitionModel> BuildDescription<T>(
             Action<Swank.Configuration.Configuration> configure = null, bool requestGraph = false)
         {
             return BuildDescription(typeof(T), configure, requestGraph);
@@ -48,7 +49,7 @@ namespace Tests.Unit.Web.Handlers
 
             description[0].ShouldBeComplexType("ComplexTypeWithNoMembers", 0,
                 x => x.First().Opening().Comments("Complex type comments")
-                    .Namespace("Tests", "Unit", "Web", "Handlers"));
+                    .Namespace("Get"));
 
             description[1].ShouldBeComplexType("ComplexTypeWithNoMembers", 0,
                 x => x.Last().Closing());
@@ -72,7 +73,7 @@ namespace Tests.Unit.Web.Handlers
             description.ShouldBeIndexed().ShouldTotal(8);
 
             description[0].ShouldBeComplexType("ComplexTypeWithSimpleMembers", 0,
-                x => x.First().Opening().Namespace("Tests", "Unit", "Web", "Handlers"));
+                x => x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeSimpleTypeMember("StringMember",
                 "string", 1, "", x => x.IsString());
@@ -115,7 +116,7 @@ namespace Tests.Unit.Web.Handlers
             description.ShouldBeIndexed().ShouldTotal(3);
 
             description[0].ShouldBeComplexType("ComplexTypeWithSimpleOptionMember", 0,
-                x => x.First().Opening().Namespace("Tests", "Unit", "Web", "Handlers"));
+                x => x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeSimpleTypeMember("OptionMember", 
                 dataTypeName.ToLower(), 1, value1,
@@ -145,7 +146,7 @@ namespace Tests.Unit.Web.Handlers
             description.ShouldBeIndexed().ShouldTotal(4);
 
             description[0].ShouldBeComplexType("ComplexTypeWithOptionalMember", 0,
-                x => x.First().Opening().Namespace("Tests", "Unit", "Web", "Handlers"));
+                x => x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeSimpleTypeMember("OptionalMember",
                 "string", 1, "", x => x.IsString(),
@@ -173,7 +174,7 @@ namespace Tests.Unit.Web.Handlers
             description.ShouldBeIndexed().ShouldTotal(3);
 
             description[0].ShouldBeComplexType("ComplexTypeWithDeprecatedMember", 0,
-                x => x.First().Opening().Namespace("Tests", "Unit", "Web", "Handlers"));
+                x => x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeSimpleTypeMember("DeprecatedMember",
                 "string", 1, "", x => x.IsString(),
@@ -198,7 +199,7 @@ namespace Tests.Unit.Web.Handlers
             description.ShouldBeIndexed().ShouldTotal(3);
 
             description[0].ShouldBeComplexType("ComplexTypeWithDefaultValueMember", 0,
-                x => x.First().Opening().Namespace("Tests", "Unit", "Web", "Handlers"));
+                x => x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeSimpleTypeMember("DefaultValueMember",
                 "string", 1, "", x => x.IsString(),
@@ -222,7 +223,7 @@ namespace Tests.Unit.Web.Handlers
             description.ShouldBeIndexed().ShouldTotal(3);
 
             description[0].ShouldBeComplexType("ComplexTypeWithSampleValueMember", 0,
-                x => x.First().Opening().Namespace("Tests", "Unit", "Web", "Handlers"));
+                x => x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeSimpleTypeMember("SampleValueMember",
                 "string", 1, "zero", x => x.IsString(), x => x.IsLastMember());
@@ -252,7 +253,7 @@ namespace Tests.Unit.Web.Handlers
 
             description.ShouldBeIndexed().ShouldTotal(5);
             description[0].ShouldBeComplexType(type.Name, 0, x =>
-                x.First().Opening().Namespace("Tests", "Unit", "Web", "Handlers"));
+                x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeArrayMember("ArrayMember", 1,
                 x => x.Opening(), x => x.IsLastMember().SampleValue(""));
@@ -283,7 +284,7 @@ namespace Tests.Unit.Web.Handlers
             description.ShouldBeIndexed().ShouldTotal(5);
 
             description[0].ShouldBeComplexType("ComplexTypeWithDictionaryMember", 0,
-                x => x.First().Opening().Namespace("Tests", "Unit", "Web", "Handlers"));
+                x => x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeDictionaryMember("Entries", 1, x => x.Opening(),
                 x => x.Comments("This is a dictionary.").IsLastMember().SampleValue(""));
@@ -363,8 +364,8 @@ namespace Tests.Unit.Web.Handlers
             description[0].ShouldBeArray("ArrayOfArrayComplexType", 0,
                 x => x.First().Opening());
 
-            description[1].ShouldBeComplexType("ArrayComplexType", 1,
-                x => x.Opening().Namespace("Tests", "Unit", "Web", "Handlers"));
+            description[1].ShouldBeComplexType("ArrayComplexType", 
+                1, x => x.Opening().Namespace("Get"));
 
             description[2].ShouldBeSimpleTypeMember("Member", "string", 2, "",
                 x => x.IsString(), x => x.IsLastMember());
@@ -494,8 +495,8 @@ namespace Tests.Unit.Web.Handlers
             description[0].ShouldBeDictionary("DictionaryOfDictionaryComplexType", 0,
                 x => x.First().Opening());
 
-            description[1].ShouldBeOpeningComplexTypeDictionaryEntry("key", "string", 1,
-                x => x.Namespace("Tests", "Unit", "Web", "Handlers"));
+            description[1].ShouldBeOpeningComplexTypeDictionaryEntry(
+                "key", "string", 1, x => x.Namespace("Get"));
 
             description[2].ShouldBeSimpleTypeMember("Member", "string", 2, "",
                 x => x.IsString(), x => x.IsLastMember());
@@ -552,7 +553,7 @@ namespace Tests.Unit.Web.Handlers
     {
         // Simple type assertions
 
-        public static void ShouldBeSimpleType(this BodyDefinition source,
+        public static void ShouldBeSimpleType(this BodyDefinitionModel source,
             string name, string typeName, int level, string sampleValue,
             Action<SimpleTypeDsl> simpleTypeProperties)
         {
@@ -560,7 +561,7 @@ namespace Tests.Unit.Web.Handlers
                 level, sampleValue, simpleTypeProperties));
         }
 
-        public static void ShouldBeSimpleTypeMember(this BodyDefinition source,
+        public static void ShouldBeSimpleTypeMember(this BodyDefinitionModel source,
             string name, string typeName, int level, string sampleValue,
             Action<SimpleTypeDsl> simpleTypeProperties,
             Action<MemberDsl> memberProperties = null)
@@ -572,7 +573,7 @@ namespace Tests.Unit.Web.Handlers
             source.ShouldMatchLineItem(compare);
         }
 
-        public static void ShouldBeSimpleTypeDictionaryEntry(this BodyDefinition source,
+        public static void ShouldBeSimpleTypeDictionaryEntry(this BodyDefinitionModel source,
             string name, string keyTypeName, string valueTypeName, int level, 
             string sampleValue, Action<SimpleTypeDsl> simpleTypeProperties,
             Action<DictionaryKeyDsl> dictionaryEntryProperties = null)
@@ -585,17 +586,17 @@ namespace Tests.Unit.Web.Handlers
             source.ShouldMatchLineItem(compare);
         }
 
-        private static BodyDefinition CreateSimpleType(
+        private static BodyDefinitionModel CreateSimpleType(
             string name, string typeName, int level, string sampleValue,
             Action<SimpleTypeDsl> simpleTypeProperties)
         {
-            var simpleType = new BodyDefinition
+            var simpleType = new BodyDefinitionModel
             {
                 Name = name,
                 TypeName = typeName,
                 IsSimpleType = true,
                 SampleValue = sampleValue,
-                Whitespace = BodyDescriptionFactory.Whitespace.Repeat(level)
+                Whitespace = BodyDescriptionService.Whitespace.Repeat(level)
             };
             simpleTypeProperties(new SimpleTypeDsl(simpleType));
             return simpleType;
@@ -603,8 +604,8 @@ namespace Tests.Unit.Web.Handlers
 
         public class SimpleTypeDsl
         {
-            private readonly BodyDefinition _body;
-            public SimpleTypeDsl(BodyDefinition body) { _body = body; }
+            private readonly BodyDefinitionModel _body;
+            public SimpleTypeDsl(BodyDefinitionModel body) { _body = body; }
 
             public SimpleTypeDsl Comments(string comments)
             {
@@ -641,14 +642,14 @@ namespace Tests.Unit.Web.Handlers
         // Array assertions
 
         public static void ShouldBeArray(
-            this BodyDefinition source, string name, int level,
+            this BodyDefinitionModel source, string name, int level,
             Action<ArrayDsl> properties)
         {
             source.ShouldMatchLineItem(CreateArray(name, level, properties));
         }
 
         public static void ShouldBeArrayMember(
-            this BodyDefinition source, string name, int level,
+            this BodyDefinitionModel source, string name, int level,
             Action<ArrayDsl> arrayProperties,
             Action<MemberDsl> memberProperties = null)
         {
@@ -659,7 +660,7 @@ namespace Tests.Unit.Web.Handlers
         }
 
         public static void ShouldBeOpeningArrayDictionaryEntry(
-            this BodyDefinition source, string name, string keyTypeName, int level,
+            this BodyDefinitionModel source, string name, string keyTypeName, int level,
             Action<ArrayDsl> arrayProperties = null,
             Action<DictionaryKeyDsl> dictionaryKeyProperties = null)
         {
@@ -672,7 +673,7 @@ namespace Tests.Unit.Web.Handlers
         }
 
         public static void ShouldBeClosingArrayDictionaryEntry(
-            this BodyDefinition source, string name, int level,
+            this BodyDefinitionModel source, string name, int level,
             Action<ArrayDsl> arrayProperties = null)
         {
             var compare = CreateArray(name, level, arrayProperties);
@@ -681,14 +682,14 @@ namespace Tests.Unit.Web.Handlers
             source.ShouldMatchLineItem(compare);
         }
 
-        private static BodyDefinition CreateArray(
+        private static BodyDefinitionModel CreateArray(
             string name, int level, Action<ArrayDsl> properties)
         {
-            var arrayType = new BodyDefinition
+            var arrayType = new BodyDefinitionModel
             {
                 Name = name,
                 IsArray = true,
-                Whitespace = BodyDescriptionFactory.Whitespace.Repeat(level)
+                Whitespace = BodyDescriptionService.Whitespace.Repeat(level)
             };
             properties?.Invoke(new ArrayDsl(arrayType));
             return arrayType;
@@ -696,8 +697,8 @@ namespace Tests.Unit.Web.Handlers
 
         public class ArrayDsl
         {
-            private readonly BodyDefinition _body;
-            public ArrayDsl(BodyDefinition body) { _body = body; }
+            private readonly BodyDefinitionModel _body;
+            public ArrayDsl(BodyDefinitionModel body) { _body = body; }
 
             public ArrayDsl Comments(string comments)
             {
@@ -718,14 +719,14 @@ namespace Tests.Unit.Web.Handlers
         // Dictionary assertions
 
         public static void ShouldBeDictionary(
-            this BodyDefinition source, string name, int level,
+            this BodyDefinitionModel source, string name, int level,
             Action<DictionaryDsl> properties)
         {
             source.ShouldMatchLineItem(CreateDictionary(name, level, properties));
         }
 
         public static void ShouldBeDictionaryMember(
-            this BodyDefinition source, string name, int level,
+            this BodyDefinitionModel source, string name, int level,
             Action<DictionaryDsl> dictionaryProperties,
             Action<MemberDsl> memberProperties = null)
         {
@@ -736,7 +737,7 @@ namespace Tests.Unit.Web.Handlers
         }
 
         public static void ShouldBeDictionaryDictionaryEntry(
-            this BodyDefinition source, string name, string keyTypeName, int level,
+            this BodyDefinitionModel source, string name, string keyTypeName, int level,
             Action<DictionaryDsl> dictionaryProperties,
             Action<DictionaryKeyDsl> dictionaryKeyProperties = null)
         {
@@ -748,7 +749,7 @@ namespace Tests.Unit.Web.Handlers
         }
 
         public static void ShouldBeOpeningDictionaryDictionaryEntry(
-            this BodyDefinition source, string name, string keyTypeName, int level,
+            this BodyDefinitionModel source, string name, string keyTypeName, int level,
             Action<DictionaryDsl> dictionaryProperties = null,
             Action<DictionaryKeyDsl> dictionaryKeyProperties = null)
         {
@@ -761,7 +762,7 @@ namespace Tests.Unit.Web.Handlers
         }
 
         public static void ShouldBeClosingDictionaryDictionaryEntry(
-            this BodyDefinition source, string name, int level,
+            this BodyDefinitionModel source, string name, int level,
             Action<DictionaryDsl> dictionaryKeyProperties = null)
         {
             var compare = CreateDictionary(name, level, dictionaryKeyProperties);
@@ -770,14 +771,14 @@ namespace Tests.Unit.Web.Handlers
             source.ShouldMatchLineItem(compare);
         }
 
-        private static BodyDefinition CreateDictionary(
+        private static BodyDefinitionModel CreateDictionary(
             string name, int level, Action<DictionaryDsl> properties)
         {
-            var dictionaryType = new BodyDefinition
+            var dictionaryType = new BodyDefinitionModel
             {
                 Name = name,
                 IsDictionary = true,
-                Whitespace = BodyDescriptionFactory.Whitespace.Repeat(level)
+                Whitespace = BodyDescriptionService.Whitespace.Repeat(level)
             };
             properties?.Invoke(new DictionaryDsl(dictionaryType));
             return dictionaryType;
@@ -785,8 +786,8 @@ namespace Tests.Unit.Web.Handlers
 
         public class DictionaryDsl
         {
-            private readonly BodyDefinition _body;
-            public DictionaryDsl(BodyDefinition body) { _body = body; }
+            private readonly BodyDefinitionModel _body;
+            public DictionaryDsl(BodyDefinitionModel body) { _body = body; }
 
             public DictionaryDsl Comments(string comments)
             {
@@ -806,14 +807,14 @@ namespace Tests.Unit.Web.Handlers
 
         // Complex type assertions
 
-        public static void ShouldBeComplexType(this BodyDefinition source,
+        public static void ShouldBeComplexType(this BodyDefinitionModel source,
             string name, int level, Action<ComplexTypeDsl> properties)
         {
             source.ShouldMatchLineItem(CreateComplexType(name, level, properties));
         }
 
         public static void ShouldBeComplexTypeMember(
-            this BodyDefinition source, string name, int level,
+            this BodyDefinitionModel source, string name, int level,
             Action<ComplexTypeDsl> complexTypeProperties = null,
             Action<MemberDsl> memberProperties = null)
         {
@@ -824,7 +825,7 @@ namespace Tests.Unit.Web.Handlers
         }
 
         public static void ShouldBeOpeningComplexTypeDictionaryEntry(
-            this BodyDefinition source, string name, string keyTypeName, int level,
+            this BodyDefinitionModel source, string name, string keyTypeName, int level,
             Action<ComplexTypeDsl> complexTypeProperties = null,
             Action<DictionaryKeyDsl> dictionaryKeyProperties = null)
         {
@@ -837,7 +838,7 @@ namespace Tests.Unit.Web.Handlers
         }
 
         public static void ShouldBeClosingComplexTypeDictionaryEntry(
-            this BodyDefinition source, string name, int level,
+            this BodyDefinitionModel source, string name, int level,
             Action<ComplexTypeDsl> complexTypeProperties = null)
         {
             var compare = CreateComplexType(name, level, complexTypeProperties);
@@ -846,14 +847,14 @@ namespace Tests.Unit.Web.Handlers
             source.ShouldMatchLineItem(compare);
         }
 
-        private static BodyDefinition CreateComplexType(
+        private static BodyDefinitionModel CreateComplexType(
             string name, int level, Action<ComplexTypeDsl> properties = null)
         {
-            var complexType = new BodyDefinition
+            var complexType = new BodyDefinitionModel
             {
                 Name = name,
                 IsComplexType = true,
-                Whitespace = BodyDescriptionFactory.Whitespace.Repeat(level)
+                Whitespace = BodyDescriptionService.Whitespace.Repeat(level)
             };
             properties?.Invoke(new ComplexTypeDsl(complexType));
             return complexType;
@@ -861,8 +862,8 @@ namespace Tests.Unit.Web.Handlers
 
         public class ComplexTypeDsl
         {
-            private readonly BodyDefinition _body;
-            public ComplexTypeDsl(BodyDefinition body) { _body = body; }
+            private readonly BodyDefinitionModel _body;
+            public ComplexTypeDsl(BodyDefinitionModel body) { _body = body; }
 
             public ComplexTypeDsl Comments(string comments)
             {
@@ -886,7 +887,7 @@ namespace Tests.Unit.Web.Handlers
         {
             private readonly Key _key;
 
-            public DictionaryKeyDsl(BodyDefinition body)
+            public DictionaryKeyDsl(BodyDefinitionModel body)
             {
                 _key = body.DictionaryKey;
             }
@@ -906,8 +907,8 @@ namespace Tests.Unit.Web.Handlers
 
         public class MemberDsl
         {
-            private readonly BodyDefinition _body;
-            public MemberDsl(BodyDefinition body) { _body = body; }
+            private readonly BodyDefinitionModel _body;
+            public MemberDsl(BodyDefinitionModel body) { _body = body; }
 
             public MemberDsl Comments(string comments)
             {
@@ -966,13 +967,13 @@ namespace Tests.Unit.Web.Handlers
 
         // Common assertions
 
-        public static List<BodyDefinition> ShouldBeIndexed(this List<BodyDefinition> source)
+        public static List<BodyDefinitionModel> ShouldBeIndexed(this List<BodyDefinitionModel> source)
         {
             Enumerable.Range(0, source.Count).ForEach(x => source[x].Index.ShouldEqual(x + 1));
             return source;
         }
 
-        private static void ShouldMatchLineItem(this BodyDefinition source, BodyDefinition compare)
+        private static void ShouldMatchLineItem(this BodyDefinitionModel source, BodyDefinitionModel compare)
         {
             source.Name.ShouldEqual(compare.Name);
             source.Comments.ShouldEqual(compare.Comments);

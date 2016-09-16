@@ -121,9 +121,9 @@
     <Compile Include="Unit\Extensions\TemplateExtensionTests.cs" />
     <Compile Include="Unit\Extensions\XmlTests.cs" />
     <Compile Include="Unit\Extensions\WebExtensionTests.cs" />
-    <Compile Include="Unit\Web\Handlers\BodyDescriptionFactoryTests.cs" />
+    <Compile Include="Unit\Web\Handlers\App\BodyDescriptionServiceTests.cs" />
     <Compile Include="Unit\Specification\Extensions.cs" />
-    <Compile Include="Unit\Specification\OptionFactoryTests.cs" />
+    <Compile Include="Unit\Specification\OptionBuilderServiceTests.cs" />
     <Compile Include="Unit\Specification\OverrideTests\Controllers.cs" />
     <Compile Include="Unit\Specification\OverrideTests\Tests.cs" />
     <Compile Include="Unit\Specification\SpecificationService\EndpointTests\EndpointTests.cs" />
@@ -140,10 +140,11 @@
     <Compile Include="Unit\Specification\SpecificationService\ResourceTests\ResourceTests.cs" />
     <Compile Include="Unit\Specification\SpecificationService\Tests\Controllers.cs" />
     <Compile Include="Unit\Specification\SpecificationService\Tests\Tests.cs" />
-    <Compile Include="Unit\Specification\TypeGraphFactoryTests.cs" />
+    <Compile Include="Unit\Specification\TypeGraphServiceTests.cs" />
     <Compile Include="Unit\Web\Assets\LazyUrlTests.cs" />
     <Compile Include="Unit\Web\Assets\ResourceAssetTests.cs" />
     <Compile Include="Unit\Web\Assets\WebAssetTests.cs" />
+    <Compile Include="Unit\Web\Handlers\Templates\NamespaceDescriptionServiceTests.cs" />
     <Compile Include="Unit\Web\Templates\RazorTemplateTests.cs" />
     <Compile Include="Unit\Web\Templates\MustacheTemplateTests.cs" />
     <Compile Include="Unit\Web\Assets\MarkdownAssetTests.cs" />

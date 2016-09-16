@@ -197,6 +197,13 @@ namespace Swank.Extensions
             return "/" + Regex.Replace(route.RouteTemplate, "/*\\{.*?\\}", "").Trim('/');
         }
 
+        public static List<string> GetNamespaceFromRoute(this IHttpRoute route)
+        {
+            var routeTemplate = route.RouteTemplate.Split('?').First();
+            return routeTemplate.Split(new [] { '/' }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(x => !x.Contains("{") && !x.Contains("}")).ToList();
+        }
+
         public static Type GetRequestType(this ApiDescription endpoint)
         {
             return endpoint.GetRequestDescription()?.ParameterDescriptor?.ParameterType;

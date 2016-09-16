@@ -9,28 +9,31 @@ using Swank.Extensions;
 
 namespace Swank.Specification
 {
-    public class TypeGraphFactory
+    public class TypeGraphService
     {
         private readonly Configuration.Configuration _configuration;
         private readonly IDescriptionConvention<PropertyInfo, MemberDescription> _memberConvention;
-        private readonly OptionFactory _optionFactory;
+        private readonly OptionBuilderService _optionBuilderService;
         private readonly IDescriptionConvention<Type, TypeDescription> _typeConvention;
 
-        public TypeGraphFactory(
+        public TypeGraphService(
             Configuration.Configuration configuration,
             IDescriptionConvention<Type, TypeDescription> typeConvention,
             IDescriptionConvention<PropertyInfo, MemberDescription> memberConvention,
-            OptionFactory optionFactory)
+            OptionBuilderService optionBuilderService)
         {
             _configuration = configuration;
             _memberConvention = memberConvention;
-            _optionFactory = optionFactory;
+            _optionBuilderService = optionBuilderService;
             _typeConvention = typeConvention;
         }
 
-        public DataType BuildGraph(Type type, bool requestGraph, ApiDescription endpoint)
+        public DataType BuildGraph(Type type, HttpMethod method, bool requestGraph, ApiDescription endpoint)
         {
-            var dataType = BuildGraph(type, requestGraph, endpoint, null);
+            var @namespace = method.ToString().ToLower().InitialCase(true);
+            var logicalName = @namespace + (requestGraph ? "Request" : "Response");
+            var dataType = BuildGraph(type, requestGraph, endpoint, 
+                logicalName: logicalName, @namespace: @namespace);
             return dataType;
         }
 
@@ -38,8 +41,11 @@ namespace Swank.Specification
             Type type,
             bool requestGraph,
             ApiDescription endpoint,
-            IEnumerable<Type> ancestors,
-            MemberDescription memberDescription = null)
+            DataType parent = null,
+            IEnumerable<Type> ancestors = null,
+            MemberDescription memberDescription = null,
+            string logicalName = null,
+            string @namespace = null)
         {
             var description = _typeConvention.GetDescription(type);
 
@@ -51,15 +57,20 @@ namespace Swank.Specification
             };
 
             if (type.IsDictionary())
-                BuildDictionary(dataType, type, description, 
-                    requestGraph, endpoint, ancestors, memberDescription);
+                BuildDictionary(dataType, type, description, requestGraph, 
+                    endpoint, ancestors, memberDescription, parent,
+                    logicalName, @namespace);
             else if (type.IsArray || type.IsList())
                 BuildArray(dataType, type, description, requestGraph, 
-                    endpoint, ancestors, memberDescription);
+                    endpoint, ancestors, memberDescription, parent, 
+                    logicalName, @namespace);
             else if (type.IsSimpleType()) BuildSimpleType(dataType, type, requestGraph);
             else
             {
-                dataType.Namespace = _configuration.TypeNamespace(type);
+                dataType.LogicalName = logicalName ?? dataType.Name;
+                dataType.Namespace = @namespace ?? parent.LogicalName + dataType.Name;
+                dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
+                    .Concat(dataType.Namespace).ToList();
                 BuildComplexType(dataType, type, requestGraph, endpoint, ancestors);
             }
 
@@ -80,7 +91,10 @@ namespace Swank.Specification
             bool requestGraph,
             ApiDescription endpoint,
             IEnumerable<Type> ancestors,
-            MemberDescription memberDescription)
+            MemberDescription memberDescription,
+            DataType parent = null,
+            string logicalName = null,
+            string @namespace = null)
         {
             var types = type.GetGenericDictionaryTypes();
             dataType.IsDictionary = true;
@@ -93,12 +107,16 @@ namespace Swank.Specification
                         .DictionaryEntry.KeyName).OtherwiseDefault(),
                 KeyComments = memberDescription
                     .WhenNotNull(x => x.DictionaryEntry.KeyComments).OtherwiseDefault() ??
-                    typeDescription.WhenNotNull(x => x.DictionaryEntry.KeyComments).OtherwiseDefault(),
-                KeyType = BuildGraph(types.Key, requestGraph, endpoint, ancestors),
+                    typeDescription.WhenNotNull(x => x.DictionaryEntry.KeyComments)
+                        .OtherwiseDefault(),
+                KeyType = BuildGraph(types.Key, requestGraph, endpoint, dataType, ancestors),
                 ValueComments = memberDescription
                     .WhenNotNull(x => x.DictionaryEntry.ValueComments).OtherwiseDefault() ??
-                    typeDescription.WhenNotNull(x => x.DictionaryEntry.ValueComments).OtherwiseDefault(),
-                ValueType = BuildGraph(types.Value, requestGraph, endpoint, ancestors)
+                    typeDescription.WhenNotNull(x => x.DictionaryEntry.ValueComments)
+                        .OtherwiseDefault(),
+                ValueType = BuildGraph(types.Value, requestGraph, 
+                    endpoint, parent ?? dataType, ancestors, memberDescription,
+                    logicalName, @namespace)
             };
         }
 
@@ -109,13 +127,17 @@ namespace Swank.Specification
             bool requestGraph,
             ApiDescription endpoint,
             IEnumerable<Type> ancestors,
-            MemberDescription memberDescription)
+            MemberDescription memberDescription,
+            DataType parent = null,
+            string logicalName = null,
+            string @namespace = null)
         {
             dataType.IsArray = true;
             dataType.Comments = memberDescription.WhenNotNull(x => x.Comments)
                 .OtherwiseDefault() ?? dataType.Comments;
-            var itemType = BuildGraph(type.GetListElementType(), 
-                requestGraph, endpoint, ancestors);
+            var itemType = BuildGraph(type.GetListElementType(), requestGraph, 
+                endpoint, parent ?? dataType, ancestors, memberDescription,
+                logicalName, @namespace);
             dataType.ArrayItem = new ArrayItem
             {
                 Name = memberDescription
@@ -133,7 +155,7 @@ namespace Swank.Specification
         {
             dataType.IsSimple = true;
             if (type.GetNullableUnderlyingType().IsEnum)
-                dataType.Options = _optionFactory.BuildOptions(type, null, requestGraph);
+                dataType.Options = _optionBuilderService.BuildOptions(type, null, requestGraph);
         }
 
         private void BuildComplexType(
@@ -179,7 +201,7 @@ namespace Swank.Specification
                         Deprecated = x.Description.Deprecated,
                         DeprecationMessage = x.Description.DeprecationMessage,
                         Type = BuildGraph(x.Type, requestGraph, endpoint,
-                            x.Ancestors, x.Description)
+                            dataType, x.Ancestors, x.Description)
                     }
                 }).Member).ToList();
         }

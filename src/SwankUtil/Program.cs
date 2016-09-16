@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Fclp;
 
 namespace SwankUtil
@@ -22,6 +21,7 @@ namespace SwankUtil
         public string SpecPath { get; set; }
         public string EndpointId { get; set; }
         public string OutputPath { get; set; }
+        public bool TemplateNamespaceIncludesModule { get; set; }
         public RenderingEngine? RenderingEngine { get; set; }
     }
 
@@ -73,6 +73,11 @@ namespace SwankUtil
                 .WithDescription("The rendering engine. If not supplied, " +
                     "will use the file extension to determine this.");
 
+            arguments.Setup(a => a.TemplateNamespaceIncludesModule)
+                .As('m', "module")
+                .WithDescription("Specifies that the namespace in the " +
+                    "template model includes the module name.");
+
             var result = arguments.Parse(args);
 
             if (result.HasErrors)
@@ -98,7 +103,8 @@ namespace SwankUtil
                             arguments.Object.TemplatePath,
                             arguments.Object.SpecPath,
                             arguments.Object.OutputPath,
-                            arguments.Object.RenderingEngine); break;
+                            arguments.Object.RenderingEngine,
+                            arguments.Object.TemplateNamespaceIncludesModule); break;
                     default: Console.WriteLine("No command passed."); break;
                 }
             }

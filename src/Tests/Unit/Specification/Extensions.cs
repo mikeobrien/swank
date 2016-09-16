@@ -36,32 +36,32 @@ namespace Tests.Unit.Specification
             <TNamespace>(Swank.Configuration.Configuration configuration)
         {
             return MicroContainer.Create(x => x
-                    .Register(configuration)
-                    .Register<IApiExplorer>(ApiDescription<TNamespace>.Discover())
-                    .Register<IDescriptionConvention<ApiDescription,
-                        ModuleDescription>, ModuleConvention>()
-                    .Register<IDescriptionConvention<ApiDescription,
-                        ResourceDescription>, ResourceConvention>()
-                    .Register<IDescriptionConvention<ApiDescription,
-                        EndpointDescription>, EndpointConvention>()
-                    .Register<IDescriptionConvention<Type,
-                        TypeDescription>, TypeConvention>()
-                    .Register<IDescriptionConvention<PropertyInfo,
-                        MemberDescription>, MemberConvention>()
-                    .Register<IDescriptionConvention<ApiParameterDescription,
-                        ParameterDescription>, ParameterConvention>()
-                    .Register<IDescriptionConvention<ApiDescription,
-                        List<StatusCodeDescription>>, StatusCodeConvention>()
-                    .Register<IDescriptionConvention<ApiDescription,
-                        List<HeaderDescription>>, HeaderConvention>()
-                    .Register<IDescriptionConvention<Type,
-                        EnumDescription>, EnumConvention>()
-                    .Register<IDescriptionConvention<FieldInfo,
-                        OptionDescription>, OptionConvention>())
+                .Register(configuration)
+                .Register<IApiExplorer>(ApiDescription<TNamespace>.Discover())
+                .Register<IDescriptionConvention<ApiDescription,
+                    ModuleDescription>, ModuleConvention>()
+                .Register<IDescriptionConvention<ApiDescription,
+                    ResourceDescription>, ResourceConvention>()
+                .Register<IDescriptionConvention<ApiDescription,
+                    EndpointDescription>, EndpointConvention>()
+                .Register<IDescriptionConvention<Type,
+                    TypeDescription>, TypeConvention>()
+                .Register<IDescriptionConvention<PropertyInfo,
+                    MemberDescription>, MemberConvention>()
+                .Register<IDescriptionConvention<ApiParameterDescription,
+                    ParameterDescription>, ParameterConvention>()
+                .Register<IDescriptionConvention<ApiDescription,
+                    List<StatusCodeDescription>>, StatusCodeConvention>()
+                .Register<IDescriptionConvention<ApiDescription,
+                    List<HeaderDescription>>, HeaderConvention>()
+                .Register<IDescriptionConvention<Type,
+                    EnumDescription>, EnumConvention>()
+                .Register<IDescriptionConvention<FieldInfo,
+                    OptionDescription>, OptionConvention>())
                 .GetInstance<Swank.Specification.SpecificationService>().Generate();
         }
 
-        public static TypeGraphFactory BuildTypeGraphFactory(
+        public static TypeGraphService BuildTypeGraphService(
             Action<Swank.Configuration.Configuration> configure = null,
             Swank.Configuration.Configuration configuration = null)
         {
@@ -73,7 +73,7 @@ namespace Tests.Unit.Specification
                 .Register<IDescriptionConvention<PropertyInfo, MemberDescription>, MemberConvention>()
                 .Register<IDescriptionConvention<Type, EnumDescription>, EnumConvention>()
                 .Register<IDescriptionConvention<FieldInfo, OptionDescription>, OptionConvention>())
-                .GetInstance<TypeGraphFactory>();
+                .GetInstance<TypeGraphService>();
         }
     }
 }

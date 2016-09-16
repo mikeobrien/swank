@@ -242,8 +242,9 @@ namespace Tests.Unit.Description.EndpointConventionTests
                 ApiDescription<NoDescriptionController>
                     .ForAction(x => x.Get(null)));
 
-            description.Namespace.ShouldOnlyContain("Tests", "Unit", "Description",
-                "EndpointConventionTests", "EndpointDescriptions", "NoDescription");
+            description.Namespace.ShouldOnlyContain("Description",
+                "EndpointConventionTests", "EndpointDescriptions", 
+                "NoDescriptionController", "Get");
         }
 
         [Test]

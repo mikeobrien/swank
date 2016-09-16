@@ -22,13 +22,8 @@ namespace Swank.Configuration
         public const string DefaultCodeExampleTheme = "github-gist.css";
         public const string DefaultDefaultModuleName = "Resources"; // yo dawg I heard you like defaults...
 
-        public static readonly Func<Type, List<string>> DefaultTypeNamespace = 
-            x => x.Namespace.Split(".").DistinctSiblings().ToList();
         public static readonly Func<ApiDescription, List<string>> DefaultActionNamespace =
-            x => x.GetControllerType().Namespace.Split(".")
-                .Concat(x.GetControllerType().Name.Replace("Controller", ""))
-                .Where(y => y.IsNotNullOrEmpty())
-                .DistinctSiblings().ToList();
+            x => x.Route.GetNamespaceFromRoute().DistinctSiblings().ToList();
         public static readonly Func<ApiDescription, string> DefaultActionName = x => x.GetMethodInfo().Name;
 
         public class OverviewLink
@@ -56,6 +51,7 @@ namespace Swank.Configuration
             XmlComments = new List<IAsset>();
             Copyright = $"Copyright &copy; {DateTime.Now.Year}";
             Templates = new List<WebTemplate>();
+            TemplateNamespaceIncludesModule = false;
             Assets = new List<WebAsset>(WebAsset.FromResources(
                 Assembly.GetExecutingAssembly().AsList(),
                 "Swank.Web.Content", null, null, ".js", ".css", ".eot", 
@@ -102,17 +98,16 @@ namespace Swank.Configuration
             DefaultDictionaryKeyName = "key";
             EnumFormat = EnumFormat.AsString;
             OverviewLinks = new List<OverviewLink>();
-
-            TypeNamespace = DefaultTypeNamespace;
+            
             ActionNamespace = DefaultActionNamespace;
             ActionName = DefaultActionName;
 
             CodeExamples = new List<CodeExample>
             {
                 new CodeExample("Curl", "bash", null, RazorTemplate
-                    .FromResourceInThisAssembly<TemplateModel>("curl.cshtml", this)),
+                    .FromResourceInThisAssembly<CodeExampleModel>("curl.cshtml", this)),
                 new CodeExample("Node.js", "javascript", null, RazorTemplate
-                    .FromResourceInThisAssembly<TemplateModel>("node.cshtml", this))
+                    .FromResourceInThisAssembly<CodeExampleModel>("node.cshtml", this))
             };
 
             SampleDateTimeFormat = "g";
@@ -179,6 +174,7 @@ namespace Swank.Configuration
         public string Copyright { get; set; }
         public List<WebAsset> Assets { get; }
         public List<WebTemplate> Templates { get; }
+        public bool TemplateNamespaceIncludesModule { get; set; }
         public List<LazyUrl> Scripts { get; }
         public List<LazyUrl> Stylesheets { get; }
         public List<LazyUrl> IEPolyfills { get; }
@@ -186,7 +182,6 @@ namespace Swank.Configuration
         public bool DisplayXmlData { get; set; }
         public List<Assembly> AppliesToAssemblies { get; }
         public Func<ApiDescription, bool> Filter { get; set; }
-        public Func<Type, List<string>> TypeNamespace { get; set; }
         public Func<ApiDescription, List<string>> ActionNamespace { get; set; }
         public Func<ApiDescription, string> ActionName { get; set; }
 

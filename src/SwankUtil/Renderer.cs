@@ -4,15 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Bender;
-using RazorEngine;
-using RazorEngine.Templating;
 using Swank.Configuration;
 using Swank.Description.CodeExamples;
 using Swank.Extensions;
 using Swank.Specification;
 using Swank.Web.Assets;
-using Swank.Web.Handlers;
+using Swank.Web.Handlers.App;
+using Swank.Web.Handlers.Templates;
 using Swank.Web.Templates;
+using CodeExampleModel = Swank.Description.CodeExamples.CodeExampleModel;
 
 namespace SwankUtil
 {
@@ -20,7 +20,7 @@ namespace SwankUtil
     {
         public static void RenderTemplate(string templatePath,
             string specPath, string outputPath,
-            RenderingEngine? renderingEngine)
+            RenderingEngine? renderingEngine, bool moduleIncludedInNamespace)
         {
             Console.WriteLine("Starting render template.");
             Console.WriteLine("Loading spec...");
@@ -31,16 +31,24 @@ namespace SwankUtil
                     $"Could not load spec {specPath}.");
             Console.WriteLine("Loading template...");
             var template = File.ReadAllText(templatePath);
+            var configuration = ConfigurationDsl.CreateConfig();
+            if (moduleIncludedInNamespace) configuration
+                .TemplateNamespaceIncludesModule = true;
+            var templateModel = new TemplateModel
+            {
+                Specification = spec,
+                Namespaces = new NamespaceDescriptionService(configuration).Create(spec)
+            };
             string result = null;
             switch (WhatTheActualEngine(renderingEngine, templatePath))
             {
                 case RenderingEngine.Razor:
                     Console.WriteLine("Rendering Razor template...");
-                    result = FormatRazorError(() => Engine.Razor.RunCompile(template, 
-                        template.Hash(), typeof(List<Module>), spec)); break;
+                    result = FormatRazorError(() => template
+                        .RenderAndCompileRazor(templateModel)); break;
                 case RenderingEngine.Mustache:
                     Console.WriteLine("Rendering mustache template...");
-                    result = template.RenderMustache(spec); break;
+                    result = template.RenderMustache(templateModel); break;
             }
             Console.WriteLine("Saving results...");
             File.WriteAllText(outputPath, result);
@@ -60,7 +68,7 @@ namespace SwankUtil
                 $"Could not load spec {specPath}.");
             Console.WriteLine("Loading template...");
             var template = File.ReadAllText(templatePath);
-            Swank.Web.Templates.ITemplate templateAsset = null;
+            ITemplate templateAsset = null;
             switch (WhatTheActualEngine(renderingEngine, templatePath))
             {
                 case RenderingEngine.Razor:
@@ -76,7 +84,7 @@ namespace SwankUtil
             {
                 new CodeExample("Haskell", "haskell", (StringAsset)"Haskell rocks!!", templateAsset)
             };
-            var bodyDescriptionFactory = new BodyDescriptionFactory(configuration);
+            var bodyDescriptionFactory = new BodyDescriptionService(configuration);
             var url = new Uri("http://www.setecastronomy.com:8080/");
             Console.WriteLine("Rendering template...");
             var endpoint = spec
@@ -85,7 +93,7 @@ namespace SwankUtil
                 .FirstOrDefault(e => e.Id == endpointId);
             if (endpoint == null) throw new ValidationException(
                 $"Could not find endpoint id {endpointId}.");
-            template.CompileRazor<TemplateModel>();
+            template.CompileRazor<CodeExampleModel>();
             var result = FormatRazorError(() => AppResourceHandler.MapEndpoint(
                     url, endpoint, codeExamples, bodyDescriptionFactory)
                 .CodeExamples.First().Example);
