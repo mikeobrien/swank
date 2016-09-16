@@ -8,7 +8,7 @@ using Swank.Description.CodeExamples;
 using Swank.Extensions;
 using Swank.Specification;
 using Swank.Web.Assets;
-using Swank.Web.Handlers;
+using Swank.Web.Handlers.App;
 using Swank.Web.Templates;
 
 namespace Swank.Configuration
@@ -22,11 +22,11 @@ namespace Swank.Configuration
             _configuration = configuration;
         }
 
-        public static Configuration CreateConfig(Action<ConfigurationDsl> configure)
+        public static Configuration CreateConfig(Action<ConfigurationDsl> configure = null)
         {
             var configuration = new Configuration(Assembly.GetCallingAssembly());
             var configurationDsl = new ConfigurationDsl(configuration);
-            configure(configurationDsl);
+            configure?.Invoke(configurationDsl);
             return configuration;
         }
 
@@ -267,6 +267,15 @@ namespace Swank.Configuration
         }
 
         /// <summary>
+        /// Specifies that the namespace in the template model includes the module name.
+        /// </summary>
+        public ConfigurationDsl TemplateNamespaceIncludesModule()
+        {
+            _configuration.TemplateNamespaceIncludesModule = true;
+            return this;
+        }
+
+        /// <summary>
         /// Adds a template embedded resource. If the extension is not 
         /// specified it must have a .mustache or .cshtml extension.
         /// </summary>
@@ -374,16 +383,6 @@ namespace Swank.Configuration
         public ConfigurationDsl HideXmlData()
         {
             _configuration.DisplayXmlData = false;
-            return this;
-        }
-
-        /// <summary>
-        /// Specifies a convention for generating the namespace of types.
-        /// </summary>
-        public ConfigurationDsl WithTypeNamespaceConvention(
-            Func<Type, List<string>> @namespace)
-        {
-            _configuration.TypeNamespace = @namespace;
             return this;
         }
 
@@ -521,8 +520,8 @@ namespace Swank.Configuration
             CodeExampleLanguage language, string comments, string template)
         {
             _configuration.CodeExamples.Add(new CodeExample(name,
-                language.ToString().ToLower(), MarkdownAsset.FromString(comments), 
-                RazorTemplate.FromString<TemplateModel>(template, _configuration)));
+                language.ToString().ToLower(), MarkdownAsset.FromString(comments),
+                RazorTemplate.FromString<Description.CodeExamples.CodeExampleModel>(template, _configuration)));
             return this;
         }
 

@@ -8,13 +8,13 @@ using Swank.Extensions;
 
 namespace Swank.Specification
 {
-    public class OptionFactory
+    public class OptionBuilderService
     {
         private readonly Configuration.Configuration _configuration;
         private readonly IDescriptionConvention<Type, EnumDescription> _enumConvention;
         private readonly IDescriptionConvention<FieldInfo, OptionDescription> _optionConvention;
 
-        public OptionFactory(
+        public OptionBuilderService(
             Configuration.Configuration configuration,
             IDescriptionConvention<Type, EnumDescription> enumConvention,
             IDescriptionConvention<FieldInfo, OptionDescription> optionConvention)

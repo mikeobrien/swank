@@ -363,7 +363,7 @@ Currently there is not support for creating different [markdown](https://github.
 Swank supports code examples that are generated from the specification. This can be done with Razor or Mustache templates. Two examples ship with Swank, [curl](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/curl.cshtml) and [Node.js](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/node.cshtml). You can use these as a starting point for creating your own custom examples. Code example templates are passed a [model](https://github.com/mikeobrien/swank/blob/master/src/Swank/Description/CodeExamples/TemplateModel.cs) that contains a complete description of the endpoint. You may also want to include [Swank extension methods](#overrides) in your template.
 
 ```
-@model Swank.Description.CodeExamples.TemplateModel
+@model Swank.Description.CodeExamples.CodeExampleModel
 @using Swank.Extensions;
 
 Name: @name
@@ -661,7 +661,9 @@ The specification model returned is `List<Swank.Specification.Module>` found [he
 Swank also allows you to generate your own content with templates. For example you could generate html documentation or bindings in different languages that could be consumed by other processes. Swank supports Razor and mustache templates which can be loaded from a file, a virtual path, embedded resource or by passing the template in directly. These are then exposed at a url you specify. Templates are past a list of `Model`s as illustrated in the Razor template below.
 
 ```
-@model List<Swank.Specification.Module>
+@model Swank.Web.Handlers.Templates.TemplateModel
+@using Swank.Web.Handlers.Templates;
+@using Swank.Specification;
 @using Swank.Extensions;
 ...
 ```

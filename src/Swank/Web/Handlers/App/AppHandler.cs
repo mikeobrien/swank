@@ -3,7 +3,7 @@ using System.Linq;
 using Swank.Extensions;
 using Swank.Specification;
 
-namespace Swank.Web.Handlers
+namespace Swank.Web.Handlers.App
 {
     public class LinkModel
     {

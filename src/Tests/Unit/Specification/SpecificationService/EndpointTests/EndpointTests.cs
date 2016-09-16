@@ -1,4 +1,6 @@
-﻿using Swank.Extensions;
+﻿using System;
+using System.Linq.Expressions;
+using Swank.Extensions;
 using NUnit.Framework;
 using Should;
 using Tests.Common;
@@ -20,18 +22,30 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
         }
 
         [Test]
-        public void should_set_default_controller_description_for_endpoint_with_no_description()
+        public void should_set_default_controller_description_for_get_endpoint_with_no_description()
         {
-            var endpoint = Builder.BuildSpecAndGetEndpoint<EndpointDescriptions
-                .NoDescriptionController>(x => x.Get(null));
-            endpoint.Name.ShouldEqual("Get");
+            should_set_default_controller_description_for_endpoint_with_no_description
+                <EndpointDescriptions.NoDescriptionController>(x => x.Get(null), "Get", "GET");
+        }
+
+        [Test]
+        public void should_set_default_controller_description_for_post_endpoint_with_no_description()
+        {
+            should_set_default_controller_description_for_endpoint_with_no_description
+                <EndpointDescriptions.NoDescriptionController>(x => x.Post(null), "Post", "POST");
+        }
+        
+        public void should_set_default_controller_description_for_endpoint_with_no_description
+            <TController>(Expression<Func<TController, object>> action, string name, string verb)
+        {
+            var endpoint = Builder.BuildSpecAndGetEndpoint(action);
+            endpoint.Name.ShouldEqual(name);
             endpoint.Comments.ShouldBeNull();
-            endpoint.Method.ShouldEqual("GET");
-            endpoint.MethodName.ShouldEqual("Get");
-            endpoint.Namespace.ShouldOnlyContain("Tests", "Unit", "Specification", "SpecificationService", 
-                "EndpointTests", "EndpointDescriptions", "NoDescription");
-            endpoint.UrlTemplate.ShouldEqualUrl<EndpointDescriptions
-                .NoDescriptionController>(x => x.Get(null));
+            endpoint.Method.ShouldEqual(verb);
+            endpoint.MethodName.ShouldEqual(name);
+            endpoint.Namespace.ShouldOnlyContain("Specification", "SpecificationService", 
+                "EndpointTests", "EndpointDescriptions", "NoDescriptionController", name);
+            endpoint.UrlTemplate.ShouldEqualUrl(action);
         }
 
         [Test]
@@ -60,8 +74,9 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
             endpoint.Comments.ShouldEqual("<p>Some get <strong>Controller</strong> description</p>");
             endpoint.Method.ShouldEqual("GET");
             endpoint.MethodName.ShouldEqual("Get");
-            endpoint.Namespace.ShouldOnlyContain("Tests", "Unit", "Specification", "SpecificationService",
-                "EndpointTests", "EndpointDescriptions", "ControllerDescription");
+            endpoint.Namespace.ShouldOnlyContain("Specification", "SpecificationService",
+                "EndpointTests", "EndpointDescriptions", "ControllerDescription", 
+                "Controller", "Get");
             endpoint.UrlTemplate.ShouldEqualUrl<EndpointDescriptions
                 .ControllerDescription.Controller>(x => x.Get(null));
         }

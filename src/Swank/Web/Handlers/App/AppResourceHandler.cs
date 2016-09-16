@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Swank.Description.CodeExamples;
 using Swank.Extensions;
 using Swank.Specification;
-using System.Net;
-using Swank.Description.CodeExamples;
 
-namespace Swank.Web.Handlers
+namespace Swank.Web.Handlers.App
 {
     public class Request
     {
@@ -20,12 +20,12 @@ namespace Swank.Web.Handlers
     {
         private readonly Configuration.Configuration _configuration;
         private readonly SpecificationService _specification;
-        private readonly BodyDescriptionFactory _bodyDescriptionFactory;
+        private readonly BodyDescriptionService _bodyDescriptionFactory;
 
         public AppResourceHandler(
             Configuration.Configuration configuration,
             SpecificationService specification,
-            BodyDescriptionFactory bodyDescriptionFactory)
+            BodyDescriptionService bodyDescriptionFactory)
         {
             _configuration = configuration;
             _specification = specification;
@@ -58,7 +58,7 @@ namespace Swank.Web.Handlers
         }
 
         public static EndpointModel MapEndpoint(Uri url, Endpoint endpoint,
-            List<CodeExample> codeExamples, BodyDescriptionFactory bodyDescriptionFactory)
+            List<CodeExample> codeExamples, BodyDescriptionService bodyDescriptionFactory)
         {
             var request = new MessageModel
             {
@@ -69,6 +69,7 @@ namespace Swank.Web.Handlers
                     .WhenNotNull(bodyDescriptionFactory.Create)
                     .OtherwiseDefault()
             };
+
             var response = new MessageModel
             {
                 Comments = endpoint.Response.Comments,
@@ -78,7 +79,8 @@ namespace Swank.Web.Handlers
                     .WhenNotNull(bodyDescriptionFactory.Create)
                     .OtherwiseDefault()
             };
-            var codeExampleModel = new TemplateModel
+
+            var codeExampleModel = new Description.CodeExamples.CodeExampleModel
             {
                 Name = endpoint.Name,
                 Comments = endpoint.Comments,
@@ -95,6 +97,7 @@ namespace Swank.Web.Handlers
                 Request = request,
                 Response = response
             };
+
             return new EndpointModel
             {
                 Id = endpoint.Id,

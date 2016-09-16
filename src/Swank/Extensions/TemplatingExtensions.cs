@@ -28,6 +28,11 @@ namespace Swank.Extensions
             return Engine.Razor.Run(template.Hash(), typeof(T), model);
         }
 
+        public static string RenderAndCompileRazor<T>(this string template, T model)
+        {
+            return Engine.Razor.RunCompile(template, template.Hash(), typeof(T), model);
+        }
+
         // Markdown
 
         public static string AddMarkdownExtension(this string filename)

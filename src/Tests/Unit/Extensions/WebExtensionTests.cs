@@ -3,6 +3,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Should;
 using Swank.Extensions;
+using Tests.Common;
 
 namespace Tests.Unit.Extensions
 {
@@ -62,6 +63,13 @@ namespace Tests.Unit.Extensions
         public void should_make_relative_url(string root, string url, string expected)
         {
             url.MakeRelative(root).ShouldEqual(expected);
+        }
+
+        [Test]
+        public void should_generate_namespace_from_route_template()
+        {
+            new HttpRoute("level1/{param1}/level2/{param2}")
+                .GetNamespaceFromRoute().ShouldOnlyContain("level1", "level2");
         }
     }
 }

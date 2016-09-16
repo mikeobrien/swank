@@ -15,7 +15,7 @@ namespace Tests.Unit.Description.CodeExamples
         private const string MarkdownCompiled = "<p><em>comments</em></p>";
         private const string RazorTemplate = "Fark @Model.Name";
         private const string MustacheTemplate = "Fark {{Name}}";
-        private static readonly TemplateModel model = new TemplateModel { Name = "Farker" };
+        private static readonly CodeExampleModel model = new CodeExampleModel { Name = "Farker" };
         private const string RenderedTemplate = "Fark Farker";
 
         private Swank.Configuration.Configuration _configuration;

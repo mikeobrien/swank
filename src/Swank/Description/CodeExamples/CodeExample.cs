@@ -35,7 +35,7 @@ namespace Swank.Description.CodeExamples
         public string Language { get; }
         public string Comments => _comments?.ReadString();
 
-        public string Render(TemplateModel model)
+        public string Render(CodeExampleModel model)
         {
             return _template.RenderString(model);
         } 
@@ -93,7 +93,7 @@ namespace Swank.Description.CodeExamples
         {
             return asset.Path.MatchesExtensions(MustacheTemplate.Extension)
                 ? (ITemplate)new MustacheTemplate(asset, configuration)
-                : new RazorTemplate(asset, configuration).Compile<TemplateModel>();
+                : new RazorTemplate(asset, configuration).Compile<CodeExampleModel>();
         }
     }
 }

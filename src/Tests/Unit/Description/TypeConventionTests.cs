@@ -39,7 +39,6 @@ namespace Tests.Unit.Description
             var description = GetDescription<SomeType>();
             description.Name.ShouldEqual("SomeType");
             description.Comments.ShouldBeNull();
-            description.Namespace.ShouldOnlyContain("Tests", "Unit", "Description");
         }
 
         [Test]

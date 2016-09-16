@@ -44,6 +44,7 @@ namespace Swank.Description
                     .GroupJoin(CommentsExtensions, x => true, x => true, 
                         (f, e) => e.Select(x => f + x))
                     .SelectMany(x => x))
+                .Where(x => x != null)
                 .Select(x => x.AddMarkdownExtension())
                 .ToList();
             var orphans = assembly.GetManifestResourceNames()
