@@ -658,7 +658,7 @@ The specification model returned is `List<Swank.Specification.Module>` found [he
 
 ### Templates
 
-Swank also allows you to generate your own content with templates. For example you could generate html documentation or bindings in different languages that could be consumed by other processes. Swank supports Razor and mustache templates which can be loaded from a file, a virtual path, embedded resource or by passing the template in directly. These are then exposed at a url you specify. Templates are past a list of `Model`s as illustrated in the Razor template below.
+Swank also allows you to generate your own content with templates. For example you could generate html documentation or bindings in different languages that could be consumed by other processes. Swank supports Razor and mustache templates which can be loaded from a file, a virtual path, embedded resource or by passing the template in directly. These are then exposed at a url you specify. Templates are passed a model as illustrated in the Razor template below. This model contains the spec (`Specification`), a code generation optimized model (`Namespaces`) and querystring values (`Values`).
 
 ```
 @model Swank.Web.Handlers.Templates.TemplateModel

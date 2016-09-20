@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Fclp;
 
 namespace SwankUtil
@@ -22,6 +24,7 @@ namespace SwankUtil
         public string SpecPath { get; set; }
         public string EndpointId { get; set; }
         public string OutputPath { get; set; }
+        public List<string> Values { get; set; }
         public bool TemplateNamespaceIncludesModule { get; set; }
         public RenderingEngine? RenderingEngine { get; set; }
     }
@@ -79,6 +82,10 @@ namespace SwankUtil
                 .WithDescription("Specifies that the namespace in the " +
                     "template model includes the module name.");
 
+            arguments.Setup(a => a.Values)
+                .As('v', "value")
+                .WithDescription("Ad hoc values passed into the template.");
+
             var result = arguments.Parse(args);
 
             if (result.HasErrors)
@@ -105,7 +112,10 @@ namespace SwankUtil
                             arguments.Object.SpecPath,
                             arguments.Object.OutputPath,
                             arguments.Object.RenderingEngine,
-                            arguments.Object.TemplateNamespaceIncludesModule); break;
+                            arguments.Object.TemplateNamespaceIncludesModule,
+                            arguments.Object.Values.Select(x => x.Split(':'))
+                                .ToDictionary(x => x[0], x => x[1],
+                                    StringComparer.OrdinalIgnoreCase)); break;
                     default: Console.WriteLine("No command passed."); break;
                 }
             }

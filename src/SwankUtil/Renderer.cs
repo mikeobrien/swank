@@ -20,7 +20,9 @@ namespace SwankUtil
     {
         public static void RenderTemplate(string templatePath,
             string specPath, string outputPath,
-            RenderingEngine? renderingEngine, bool moduleIncludedInNamespace)
+            RenderingEngine? renderingEngine, 
+            bool moduleIncludedInNamespace,
+            Dictionary<string, string> values)
         {
             Console.WriteLine("Starting render template.");
             Console.WriteLine("Loading spec...");
@@ -37,7 +39,8 @@ namespace SwankUtil
             var templateModel = new TemplateModel
             {
                 Specification = spec,
-                Namespaces = new NamespaceDescriptionService(configuration).Create(spec)
+                Namespaces = new NamespaceDescriptionService(configuration).Create(spec),
+                Values = values
             };
             string result = null;
             switch (WhatTheActualEngine(renderingEngine, templatePath))
