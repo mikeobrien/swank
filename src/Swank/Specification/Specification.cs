@@ -44,8 +44,7 @@ namespace Swank.Specification
     {
         public string Name { get; set; }
         public string Comments { get; set; }
-        public string Type { get; set; }
-        public Enumeration Options { get; set; }
+        public DataType Type { get; set; }
         public string SampleValue { get; set; }
     }
 
@@ -53,12 +52,11 @@ namespace Swank.Specification
     {
         public string Name { get; set; }
         public string Comments { get; set; }
-        public string Type { get; set; }
+        public DataType Type { get; set; }
         public string SampleValue { get; set; }
         public string DefaultValue { get; set; }
         public bool MultipleAllowed { get; set; }
         public bool Required { get; set; }
-        public Enumeration Options { get; set; }
     }
 
     public class StatusCode : IDescription
@@ -96,7 +94,7 @@ namespace Swank.Specification
         public string Comments { get; set; }
 
         public bool IsSimple { get; set; }
-        public Enumeration Options { get; set; }
+        public Enumeration Enumeration { get; set; }
 
         public bool IsComplex { get; set; }
         public List<Member> Members { get; set; }
@@ -136,13 +134,6 @@ namespace Swank.Specification
         public bool Deprecated { get; set; }
         public string DeprecationMessage { get; set; }
         public DataType Type { get; set; }
-    }
-
-    public class Key
-    {
-        public string Comments { get; set; }
-        public string TypeName { get; set; }
-        public Enumeration Options { get; set; }
     }
 
     public class Enumeration

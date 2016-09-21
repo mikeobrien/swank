@@ -28,13 +28,23 @@ namespace Swank.Specification
             _typeConvention = typeConvention;
         }
 
-        public DataType BuildGraph(bool requestGraph, Type type, 
+        public DataType BuildForMessage(bool requestGraph, Type type, 
             EndpointDescription description, ApiDescription endpoint)
         {
             var @namespace = description.MethodName;
             var logicalName = @namespace + (requestGraph ? "Request" : "Response");
             var dataType = BuildGraph(type, requestGraph, endpoint, 
                 logicalName: logicalName, @namespace: @namespace);
+            return dataType;
+        }
+
+        public DataType BuildForParameter(Type type,
+            EndpointDescription endpointDescription,
+            ParameterDescription parameterDescription, 
+            ApiDescription endpoint)
+        {
+            var @namespace = endpointDescription.MethodName;
+            var dataType = BuildGraph(type, true, endpoint, @namespace: @namespace);
             return dataType;
         }
 
@@ -45,6 +55,7 @@ namespace Swank.Specification
             DataType parent = null,
             IEnumerable<Type> ancestors = null,
             MemberDescription memberDescription = null,
+            string name = null,
             string logicalName = null,
             string @namespace = null)
         {
@@ -52,8 +63,8 @@ namespace Swank.Specification
 
             var dataType = new DataType
             {
-                Name = !type.IsSimpleType() && memberDescription != null ?
-                    memberDescription.Name : description.Name,
+                Name = name ?? (!type.IsSimpleType() && memberDescription != null ?
+                    memberDescription.Name : description.Name),
                 Comments = description.Comments
             };
 
@@ -65,14 +76,19 @@ namespace Swank.Specification
                 BuildArray(dataType, type, description, requestGraph, 
                     endpoint, ancestors, memberDescription, parent, 
                     logicalName, @namespace);
-            else if (type.IsSimpleType()) BuildSimpleType(dataType, type, requestGraph);
             else
             {
-                dataType.LogicalName = logicalName ?? dataType.Name;
-                dataType.Namespace = @namespace ?? parent.LogicalName + dataType.Name;
-                dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
-                    .Concat(dataType.Namespace).ToList();
-                BuildComplexType(dataType, type, requestGraph, endpoint, ancestors);
+                var isEnum = type.GetNullableUnderlyingType().IsEnum;
+                if (isEnum || !type.IsSimpleType())
+                {
+                    if (!isEnum) dataType.LogicalName = logicalName ?? dataType.Name;
+                    dataType.Namespace = @namespace ?? parent.LogicalName + dataType.Name;
+                    dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
+                        .Concat(dataType.Namespace).ToList();
+                }
+
+                if (type.IsSimpleType()) BuildSimpleType(dataType, type, requestGraph);
+                else BuildComplexType(dataType, type, requestGraph, endpoint, ancestors);
             }
 
             return _configuration.TypeOverrides.Apply(new TypeOverrideContext
@@ -117,7 +133,7 @@ namespace Swank.Specification
                         .OtherwiseDefault(),
                 ValueType = BuildGraph(types.Value, requestGraph, 
                     endpoint, parent ?? dataType, ancestors, memberDescription,
-                    logicalName, @namespace)
+                    logicalName: logicalName, @namespace: @namespace)
             };
         }
 
@@ -138,7 +154,7 @@ namespace Swank.Specification
                 .OtherwiseDefault() ?? dataType.Comments;
             var itemType = BuildGraph(type.GetListElementType(), requestGraph, 
                 endpoint, parent ?? dataType, ancestors, memberDescription,
-                logicalName, @namespace);
+                logicalName: logicalName, @namespace: @namespace);
             dataType.ArrayItem = new ArrayItem
             {
                 Name = memberDescription
@@ -156,7 +172,7 @@ namespace Swank.Specification
         {
             dataType.IsSimple = true;
             if (type.GetNullableUnderlyingType().IsEnum)
-                dataType.Options = _optionBuilderService.BuildOptions(type, null, requestGraph);
+                dataType.Enumeration = _optionBuilderService.BuildOptions(type, null, requestGraph);
         }
 
         private void BuildComplexType(

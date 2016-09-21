@@ -26,11 +26,11 @@ namespace Tests.Unit
         public void should_return_querystring_with_default_description()
         {
             var querystring = _endpoint.GetQuerystring("querystring");
-            querystring.Type.ShouldEqual("string");
+            querystring.Type.Name.ShouldEqual("string");
             querystring.Comments.ShouldBeNull();
             querystring.DefaultValue.ShouldBeNull();
             querystring.MultipleAllowed.ShouldBeFalse();
-            querystring.Options.ShouldBeNull();
+            querystring.Type.Enumeration.ShouldBeNull();
             querystring.Required.ShouldBeTrue();
             querystring.SampleValue.ShouldEqual("");
         }
@@ -74,7 +74,7 @@ namespace Tests.Unit
         public void should_set_the_element_type_when_multiple_are_allowed()
         {
             _endpoint.GetQuerystring("multipleQuerystring")
-                .Type.ShouldEqual("int");
+                .Type.Name.ShouldEqual("ArrayOfInt");
         }
 
         [Test]
@@ -103,7 +103,7 @@ namespace Tests.Unit
         {
             var options = _spec.GetEndpoint<OptionController>(
                     x => x.Get(null, null, Options.Option1))
-                .GetQuerystring("querystring").Options;
+                .GetQuerystring("querystring").Type.Enumeration;
 
             options.Options[0].Value.ShouldEqual("Option1");
             options.Options[1].Value.ShouldEqual("Option3");
@@ -114,7 +114,7 @@ namespace Tests.Unit
         {
             var option = _spec.GetEndpoint<OptionController>(
                     x => x.Get(null, null, Options.Option1))
-                .GetQuerystring("querystring").Options.Options[0];
+                .GetQuerystring("querystring").Type.Enumeration.Options[0];
 
             option.Name.ShouldEqual("Option 1");
             option.Value.ShouldEqual("Option1");
@@ -126,7 +126,7 @@ namespace Tests.Unit
         {
             var option = _spec.GetEndpoint<OptionController>(x => 
                     x.Get(null, null, Options.Option1))
-                .GetQuerystring("querystring").Options.Options[1];
+                .GetQuerystring("querystring").Type.Enumeration.Options[1];
 
             option.Name.ShouldEqual("Option3");
             option.Value.ShouldEqual("Option3");
@@ -137,7 +137,7 @@ namespace Tests.Unit
         public void should_hide_querystring_options_marked_with_the_hide_attribute()
         {
             _spec.GetEndpoint<OptionController>(x => x.Get(null, null, Options.Option1))
-                .GetQuerystring("querystring").Options.Options
+                .GetQuerystring("querystring").Type.Enumeration.Options
                 .Any(x => x.Value == "Option2").ShouldBeFalse();
         }
     }

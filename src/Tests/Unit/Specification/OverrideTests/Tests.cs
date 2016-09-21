@@ -104,7 +104,7 @@ namespace Tests.Unit.Specification.OverrideTests
                 .OverrideOptions(z => z.Option.Comments = z.Option.Comments + "*fark*"));
 
             var options = spec[0].Resources[0].Endpoints[0]
-                .Request.Type.Members[0].Type.Options;
+                .Request.Type.Members[0].Type.Enumeration;
             options.Options[0].Name.ShouldEqual("option1");
             options.Options[0].Comments.ShouldEqual("option comments23<em>fark</em>");
         }

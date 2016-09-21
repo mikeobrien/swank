@@ -231,10 +231,12 @@
                 <tr>
                     <td class="value"><strong>{{name}}</strong></td>
                     <td>
-                        <p><code>{{type}}</code>{{{comments}}}</p>
-                        {{#options}}
-                            {{> options}}
-                        {{/options}}
+                        <p><code>{{type.name}}</code>{{{comments}}}</p>
+                        {{#type}}
+                            {{#enumeration}}
+                                {{> options }}
+                            {{/enumeration}}
+                        {{/type}}
                     </td>
                 </tr>
                 {{/urlParameters}}
@@ -250,7 +252,7 @@
                 <tr>
                     <td class="value"><strong>{{name}}</strong></td>
                     <td>
-                        <p><code>{{type}}</code>
+                        <p><code>{{type.name}}</code>
                         {{#required}}<span class="badge swank-required">Required</span>{{/required}}
                         {{^required}}<span class="badge swank-optional">Optional</span>{{/required}}
                         {{#multipleAllowed}}<span class="badge">Multiple Allowed</span>{{/multipleAllowed}}
@@ -260,9 +262,11 @@
                         {{/if}}
                         {{/required}}
                         {{{comments}}}
-                        {{#options}}
-                            {{> options}}
-                        {{/options}}
+                        {{#type}}
+                            {{#enumeration}}
+                                {{> options }}
+                            {{/enumeration}}
+                        {{/type}}
                     </td>
                 </tr>
                 {{/querystringParameters}}

@@ -34,11 +34,11 @@ namespace Swank.Specification
 
                         e.UrlParameters?.ForEach(u => {
                             u.Comments = u.Comments.TransformMarkdownInline();
-                            Apply(u.Options);
+                            Apply(u.Type.Enumeration);
                         });
                         e.QuerystringParameters?.ForEach(q => {
                             q.Comments = q.Comments.TransformMarkdownInline();
-                            Apply(q.Options);
+                            Apply(q.Type.Enumeration);
                         });
                         e.StatusCodes?.ForEach(s => s.Comments =
                             s.Comments.TransformMarkdownInline());
@@ -72,7 +72,7 @@ namespace Swank.Specification
                 m.DeprecationMessage = m.DeprecationMessage.TransformMarkdownInline();
                 Apply(m.Type);
             });
-            Apply(type.Options);
+            Apply(type.Enumeration);
         }
 
         private static void Apply(Enumeration enumeration)

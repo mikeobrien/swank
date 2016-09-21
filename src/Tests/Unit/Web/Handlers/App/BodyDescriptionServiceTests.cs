@@ -26,7 +26,7 @@ namespace Tests.Unit.Web.Handlers.App
             configure?.Invoke(configuration);
             return new BodyDescriptionService(configuration)
                 .Create(Builder.BuildTypeGraphService(configuration: configuration)
-                    .BuildGraph(requestGraph, type, new EndpointDescription { MethodName = "Get" }, 
+                    .BuildForMessage(requestGraph, type, new EndpointDescription { MethodName = "Get" }, 
                         new ApiDescription()));
         }
 
@@ -582,7 +582,7 @@ namespace Tests.Unit.Web.Handlers.App
             var compare = CreateSimpleType(name, valueTypeName,
                 level, sampleValue, simpleTypeProperties);
             compare.IsDictionaryEntry = true;
-            compare.DictionaryKey = new Key { TypeName = keyTypeName };
+            compare.DictionaryKey = new KeyModel { TypeName = keyTypeName };
             dictionaryEntryProperties?.Invoke(new DictionaryKeyDsl(compare));
             source.ShouldMatchLineItem(compare);
         }
@@ -668,7 +668,7 @@ namespace Tests.Unit.Web.Handlers.App
             var compare = CreateArray(name, level, arrayProperties);
             compare.IsOpening = true;
             compare.IsDictionaryEntry = true;
-            compare.DictionaryKey = new Key { TypeName = keyTypeName };
+            compare.DictionaryKey = new KeyModel { TypeName = keyTypeName };
             dictionaryKeyProperties?.Invoke(new DictionaryKeyDsl(compare));
             source.ShouldMatchLineItem(compare);
         }
@@ -744,7 +744,7 @@ namespace Tests.Unit.Web.Handlers.App
         {
             var compare = CreateDictionary(name, level, dictionaryProperties);
             compare.IsDictionaryEntry = true;
-            compare.DictionaryKey = new Key { TypeName = keyTypeName };
+            compare.DictionaryKey = new KeyModel { TypeName = keyTypeName };
             dictionaryKeyProperties?.Invoke(new DictionaryKeyDsl(compare));
             source.ShouldMatchLineItem(compare);
         }
@@ -757,7 +757,7 @@ namespace Tests.Unit.Web.Handlers.App
             var compare = CreateDictionary(name, level, dictionaryProperties);
             compare.IsOpening = true;
             compare.IsDictionaryEntry = true;
-            compare.DictionaryKey = new Key { TypeName = keyTypeName };
+            compare.DictionaryKey = new KeyModel { TypeName = keyTypeName };
             dictionaryKeyProperties?.Invoke(new DictionaryKeyDsl(compare));
             source.ShouldMatchLineItem(compare);
         }
@@ -833,7 +833,7 @@ namespace Tests.Unit.Web.Handlers.App
             var compare = CreateComplexType(name, level, complexTypeProperties);
             compare.IsOpening = true;
             compare.IsDictionaryEntry = true;
-            compare.DictionaryKey = new Key { TypeName = keyTypeName };
+            compare.DictionaryKey = new KeyModel { TypeName = keyTypeName };
             dictionaryKeyProperties?.Invoke(new DictionaryKeyDsl(compare));
             source.ShouldMatchLineItem(compare);
         }
@@ -886,7 +886,7 @@ namespace Tests.Unit.Web.Handlers.App
 
         public class DictionaryKeyDsl
         {
-            private readonly Key _key;
+            private readonly KeyModel _key;
 
             public DictionaryKeyDsl(BodyDefinitionModel body)
             {
@@ -900,9 +900,9 @@ namespace Tests.Unit.Web.Handlers.App
 
             public OptionDsl KeyOptions(string name)
             {
-                _key.Options = _key.Options ?? new Enumeration();
-                _key.Options.Name = name;
-                return new OptionDsl(_key.Options);
+                _key.Enumeration = _key.Enumeration ?? new Enumeration();
+                _key.Enumeration.Name = name;
+                return new OptionDsl(_key.Enumeration);
             }
         }
 
@@ -1017,7 +1017,7 @@ namespace Tests.Unit.Web.Handlers.App
             {
                 source.DictionaryKey.TypeName.ShouldEqual(compare.DictionaryKey.TypeName);
                 source.DictionaryKey.Comments.ShouldEqual(compare.DictionaryKey.Comments);
-                source.DictionaryKey.Options.ShouldEqualOptions(compare.DictionaryKey.Options);
+                source.DictionaryKey.Enumeration.ShouldEqualOptions(compare.DictionaryKey.Enumeration);
             }
         }
 

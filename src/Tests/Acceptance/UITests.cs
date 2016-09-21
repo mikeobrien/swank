@@ -114,13 +114,13 @@ namespace Tests.Acceptance
             querystring.MultipleAllowed.ShouldBeFalse();
             querystring.Required.ShouldBeTrue();
             querystring.SampleValue.ShouldEqual("Option1");
-            querystring.Type.ShouldEqual("string");
+            querystring.Type.Name.ShouldEqual("string");
 
-            querystring.Options.Name.ShouldEqual("Options");
-            querystring.Options.Comments.ShouldStartWith("Enum comments.");
-            querystring.Options.Options.Count.ShouldEqual(2);
+            querystring.Type.Enumeration.Name.ShouldEqual("Options");
+            querystring.Type.Enumeration.Comments.ShouldStartWith("Enum comments.");
+            querystring.Type.Enumeration.Options.Count.ShouldEqual(2);
 
-            var option = querystring.Options.Options.First();
+            var option = querystring.Type.Enumeration.Options.First();
 
             option.Name.ShouldEqual("Option1");
             option.Comments.ShouldStartWith("Enum option 1 comments.");
@@ -131,7 +131,7 @@ namespace Tests.Acceptance
             querystring = endpoint.QuerystringParameters.Skip(2).First();
             querystring.DefaultValue.ShouldEqual("5");
             querystring.SampleValue.ShouldEqual("0");
-            querystring.Type.ShouldEqual("int");
+            querystring.Type.Name.ShouldEqual("int");
 
             endpoint.UrlParameters.Count.ShouldEqual(2);
 
@@ -140,13 +140,13 @@ namespace Tests.Acceptance
             urlParameter.Name.ShouldEqual("option");
             urlParameter.Comments.ShouldStartWith("Option url parameter 2.");
             urlParameter.SampleValue.ShouldEqual("Option1");
-            urlParameter.Type.ShouldEqual("string");
+            urlParameter.Type.Name.ShouldEqual("string");
 
-            urlParameter.Options.Name.ShouldEqual("Options");
-            urlParameter.Options.Comments.ShouldStartWith("Enum comments.");
-            urlParameter.Options.Options.Count.ShouldEqual(2);
+            urlParameter.Type.Enumeration.Name.ShouldEqual("Options");
+            urlParameter.Type.Enumeration.Comments.ShouldStartWith("Enum comments.");
+            urlParameter.Type.Enumeration.Options.Count.ShouldEqual(2);
 
-            option = urlParameter.Options.Options.First();
+            option = urlParameter.Type.Enumeration.Options.First();
 
             option.Name.ShouldEqual("Option1");
             option.Comments.ShouldStartWith("Enum option 1 comments.");

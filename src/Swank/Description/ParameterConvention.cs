@@ -26,9 +26,9 @@ namespace Swank.Description
 
             return new ParameterDescription
             {
+                Name = description.WhenNotNull(x => x.Name).Otherwise(parameter.Name),
                 Type = (type.GetListElementType() ?? type).GetXmlName(
                     _configuration.EnumFormat == EnumFormat.AsString),
-                Name = description.WhenNotNull(x => x.Name).Otherwise(parameter.Name),
                 Comments = description.WhenNotNull(x => x.Comments).OtherwiseDefault() ??
                     parameter.GetAttribute<CommentsAttribute>().WhenNotNull(x => x.Comments)
                         .OtherwiseDefault() ?? parameter.Documentation ??

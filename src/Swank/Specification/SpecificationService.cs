@@ -41,7 +41,6 @@ namespace Swank.Specification
         private readonly IDescriptionConvention<ApiDescription, List<StatusCodeDescription>> _statusCodeConvention;
         private readonly IDescriptionConvention<ApiDescription, List<HeaderDescription>> _headerConvention;
         private readonly TypeGraphService _typeGraphService;
-        private readonly OptionBuilderService _optionBuilderService;
         private readonly Lazy<List<Module>> _specification;
 
         public SpecificationService(
@@ -53,8 +52,7 @@ namespace Swank.Specification
             IDescriptionConvention<ApiParameterDescription, ParameterDescription> parameterConvention,
             IDescriptionConvention<ApiDescription, List<StatusCodeDescription>> statusCodeConvention,
             IDescriptionConvention<ApiDescription, List<HeaderDescription>> headerConvention,
-            TypeGraphService typeGraphService,
-            OptionBuilderService optionBuilderService)
+            TypeGraphService typeGraphService)
         {
             _configuration = configuration;
             _apiExplorer = apiExplorer;
@@ -64,7 +62,6 @@ namespace Swank.Specification
             _parameterConvention = parameterConvention;
             _statusCodeConvention = statusCodeConvention;
             _typeGraphService = typeGraphService;
-            _optionBuilderService = optionBuilderService;
             _headerConvention = headerConvention;
             _specification = new Lazy<List<Module>>(GenerateSpecification);
         }
@@ -194,8 +191,8 @@ namespace Swank.Specification
                             MethodName = description.MethodName,
                             UrlTemplate = endpoint.RelativePath,
                             Method = endpoint.HttpMethod.Method,
-                            UrlParameters = GetUrlParameters(endpoint),
-                            QuerystringParameters = GetQuerystringParameters(endpoint),
+                            UrlParameters = GetUrlParameters(endpoint, description),
+                            QuerystringParameters = GetQuerystringParameters(endpoint, description),
                             Secure = description.Secure,
                             StatusCodes = GetStatusCodes(endpoint),
                             Request = GetRequest(endpoint, description),
@@ -207,7 +204,8 @@ namespace Swank.Specification
                 .ThenBy(x => HttpVerbRank(x.Method)).ToList();
         }
 
-        private List<UrlParameter> GetUrlParameters(ApiDescription endpoint)
+        private List<UrlParameter> GetUrlParameters(ApiDescription endpoint, 
+            EndpointDescription endpointDescription)
         {
             return endpoint.ParameterDescriptions
                 .Where(x => x.IsUrlParameter(endpoint))
@@ -222,16 +220,16 @@ namespace Swank.Specification
                         {
                             Name = description.WhenNotNull(y => y.Name).OtherwiseDefault(),
                             Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
-                            Type = description.WhenNotNull(y => y.Type).OtherwiseDefault(),
-                            Options = _optionBuilderService.BuildOptions(x.ParameterDescriptor
-                                .ParameterType, endpoint, true),
+                            Type = _typeGraphService.BuildForParameter(x.ParameterDescriptor
+                                .ParameterType, endpointDescription, description, endpoint),
                             SampleValue = description.WhenNotNull(y => y.SampleValue).OtherwiseDefault()
                         }
                     }).UrlParameter;
                 }).ToList();
         }
 
-        private List<QuerystringParameter> GetQuerystringParameters(ApiDescription endpoint)
+        private List<QuerystringParameter> GetQuerystringParameters(ApiDescription endpoint, 
+            EndpointDescription endpointDescription)
         {
             return endpoint.ParameterDescriptions
                 .Where(x => x.IsQuerystring(endpoint))
@@ -243,7 +241,6 @@ namespace Swank.Specification
                 .Where(x => !x.Description.Hidden)
                 .Select(x =>
                 {
-                    var type = x.Parameter.ParameterDescriptor.ParameterType;
                     return _configuration.QuerystringOverrides.Apply(new QuerystringOverrideContext
                     {
                         ApiDescription = endpoint,
@@ -252,8 +249,8 @@ namespace Swank.Specification
                         {
                             Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
                             Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
-                            Type = x.Description.WhenNotNull(y => y.Type).OtherwiseDefault(),
-                            Options = _optionBuilderService.BuildOptions(type, endpoint, true),
+                            Type = _typeGraphService.BuildForParameter(x.Parameter.ParameterDescriptor
+                                .ParameterType, endpointDescription, x.Description, endpoint),
                             DefaultValue = x.Description.DefaultValue.WhenNotNull(y => y
                                 .ToSampleValueString(_configuration)).OtherwiseDefault(),
                             SampleValue = x.Description.WhenNotNull(y => y.SampleValue).OtherwiseDefault(),
@@ -274,7 +271,7 @@ namespace Swank.Specification
                 endpoint.HttpMethod == HttpMethod.Put ||
                 endpoint.HttpMethod == HttpMethod.Delete))
             {
-                data.Type = _typeGraphService.BuildGraph(true, requestDescription
+                data.Type = _typeGraphService.BuildForMessage(true, requestDescription
                     .ParameterDescriptor.ParameterType, description, endpoint);
             }
 
@@ -297,7 +294,7 @@ namespace Swank.Specification
 
             if (responseType != null)
             {
-                data.Type = _typeGraphService.BuildGraph(
+                data.Type = _typeGraphService.BuildForMessage(
                     false, responseType, description, endpoint);
             }
 

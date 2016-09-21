@@ -82,6 +82,13 @@ namespace Swank.Web.Handlers.App
 
         public bool? IsDictionary { get; set; }
         public bool? IsDictionaryEntry { get; set; }
-        public Key DictionaryKey { get; set; }
+        public KeyModel DictionaryKey { get; set; }
+    }
+
+    public class KeyModel
+    {
+        public string Comments { get; set; }
+        public string TypeName { get; set; }
+        public Enumeration Enumeration { get; set; }
     }
 }

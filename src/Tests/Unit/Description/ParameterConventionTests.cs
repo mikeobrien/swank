@@ -57,18 +57,6 @@ namespace Tests.Unit.Description
         }
 
         [Test]
-        public void should_not_specify_type()
-        {
-            GetDescription(x => x.Value(0)).Type.ShouldEqual("int");
-        }
-
-        [Test]
-        public void should_specify_list_item_type()
-        {
-            GetDescription(x => x.ListValue(null)).Type.ShouldEqual("int");
-        }
-
-        [Test]
         public void should_not_specify_description_by_default()
         {
             var description = GetDescription(x => x.Value(0));

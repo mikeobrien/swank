@@ -25,9 +25,9 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
                 (x => x.Get(null, Guid.Empty))
                 .GetUrlParameter("urlParameter");
             
-            parameter.Type.ShouldEqual("uuid");
+            parameter.Type.Name.ShouldEqual("uuid");
             parameter.Comments.ShouldBeNull();
-            parameter.Options.ShouldBeNull();
+            parameter.Type.Enumeration.ShouldBeNull();
         }
 
         [Test]
@@ -36,9 +36,9 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
             var parameter = _spec.GetEndpoint<CommentsController>(
                 x => x.Get(null, Guid.Empty)).GetUrlParameter("urlParameter");
             
-            parameter.Type.ShouldEqual("uuid");
+            parameter.Type.Name.ShouldEqual("uuid");
             parameter.Comments.ShouldEqual("url <strong>parameter</strong> comments");
-            parameter.Options.ShouldBeNull();
+            parameter.Type.Enumeration.ShouldBeNull();
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
         {
             var option = _spec.GetEndpoint<OptionController>(
                 x => x.Get(null, Options.Option1)).GetUrlParameter("urlParameter")
-                    .Options.Options[0];
+                    .Type.Enumeration.Options[0];
 
             option.Name.ShouldEqual("Option 1");
             option.Value.ShouldEqual("Option1");
@@ -58,7 +58,7 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
         {
             var option = _spec.GetEndpoint<OptionController>(
                 x => x.Get(null, Options.Option1)).GetUrlParameter("urlParameter")
-                    .Options.Options[1];
+                    .Type.Enumeration.Options[1];
 
             option.Name.ShouldEqual("Option3");
             option.Value.ShouldEqual("Option3");
@@ -69,8 +69,8 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
         public void should_hide_url_paramaters_options_marked_with_the_hide_attribute()
         {
             _spec.GetEndpoint<OptionController>(x => x.Get(null, Options.Option1))
-                .GetUrlParameter("urlParameter")
-                .Options.Options.Any(x => x.Value == "Option2").ShouldBeFalse();
+                .GetUrlParameter("urlParameter").Type.Enumeration.Options
+                .Any(x => x.Value == "Option2").ShouldBeFalse();
         }
     }
 }

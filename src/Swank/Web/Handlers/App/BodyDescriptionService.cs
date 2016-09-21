@@ -104,12 +104,12 @@ namespace Swank.Web.Handlers.App
         private static Enumeration WalkOptions(DataType type, 
             Action<Enumeration> whenOptions = null)
         {
-            if (type.Options == null) return null;
+            if (type.Enumeration == null) return null;
             var enumeration = new Enumeration
             {
-                Name = type.Options.Name,
-                Comments = type.Options.Comments,
-                Options = new List<Option>(type.Options.Options.Select(x => new Option
+                Name = type.Enumeration.Name,
+                Comments = type.Enumeration.Comments,
+                Options = new List<Option>(type.Enumeration.Options.Select(x => new Option
                 {
                     Name = x.Name,
                     Value = x.Value,
@@ -191,10 +191,10 @@ namespace Swank.Web.Handlers.App
                     x.IsDictionaryEntry = true;
                     if (type.DictionaryEntry.ValueComments != null)
                         x.Comments = type.DictionaryEntry.ValueComments;
-                    x.DictionaryKey = new Key
+                    x.DictionaryKey = new KeyModel
                     {
                         TypeName = type.DictionaryEntry.KeyType.Name,
-                        Options = WalkOptions(type.DictionaryEntry.KeyType),
+                        Enumeration = WalkOptions(type.DictionaryEntry.KeyType),
                         Comments = type.DictionaryEntry.KeyComments
                     };
                 },

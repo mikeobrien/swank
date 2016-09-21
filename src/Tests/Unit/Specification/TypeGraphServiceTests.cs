@@ -15,14 +15,14 @@ namespace Tests.Unit.Specification
     [TestFixture]
     public class TypeGraphServiceTests
     {
-        private EndpointDescription _endpointDescription = 
+        private readonly EndpointDescription _endpointDescription = 
             new EndpointDescription { MethodName = "Method" };
         public class TypeWithoutComments { }
 
         [Test]
         public void should_create_type_without_comments()
         {
-            var type = Builder.BuildTypeGraphService().BuildGraph(false, 
+            var type = Builder.BuildTypeGraphService().BuildForMessage(false, 
                 typeof(TypeWithoutComments), _endpointDescription, null);
 
             type.Name.ShouldEqual("TypeWithoutComments");
@@ -35,7 +35,7 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_create_type_with_comments()
         {
-            var type = Builder.BuildTypeGraphService().BuildGraph(false, 
+            var type = Builder.BuildTypeGraphService().BuildForMessage(false, 
                 typeof(TypeWithComments), _endpointDescription, null);
 
             type.Name.ShouldEqual("TypeWithComments");
@@ -49,7 +49,7 @@ namespace Tests.Unit.Specification
             {
                 t.DataType.Name += t.Type.Name;
                 t.DataType.Comments += t.Type.Name;
-            })).BuildGraph<TypeWithComments>();
+            })).BuildForMessage<TypeWithComments>();
 
             type.Name.ShouldEqual("TypeWithCommentsTypeWithComments");
             type.Comments.ShouldEqual("This is **a** type.TypeWithComments");
@@ -68,7 +68,7 @@ namespace Tests.Unit.Specification
             {
                 m.Member.Name += m.Property.Name;
                 m.Member.Comments += m.Property.Name;
-            })).BuildGraph<TypeWithOverrodeMember>();
+            })).BuildForMessage<TypeWithOverrodeMember>();
 
             var member = type.Members.Single();
             member.Name.ShouldEqual("MemberMember");
@@ -85,10 +85,24 @@ namespace Tests.Unit.Specification
         [TestCase(typeof(TimeSpan), "duration")]
         [TestCase(typeof(DateTime), "dateTime")]
         [TestCase(typeof(Uri), "anyURI")]
-        public void should_create_simple_type(Type type, string name)
+        public void should_create_simple_message_type(Type type, string name)
         {
             should_be_simple_type(Builder.BuildTypeGraphService()
-                .BuildGraph(false, type, _endpointDescription, null), name);
+                .BuildForMessage(false, type, _endpointDescription, null), name);
+        }
+
+        [Test]
+        [TestCase(typeof(string), "string")]
+        [TestCase(typeof(int), "int")]
+        [TestCase(typeof(int?), "int")]
+        [TestCase(typeof(Guid), "uuid")]
+        [TestCase(typeof(TimeSpan), "duration")]
+        [TestCase(typeof(DateTime), "dateTime")]
+        [TestCase(typeof(Uri), "anyURI")]
+        public void should_create_simple_parameter_type(Type type, string name)
+        {
+            should_be_simple_type(Builder.BuildTypeGraphService()
+                .BuildForParameter(type, "parameter", name), name);
         }
 
         public class SimpleTypeMember
@@ -99,7 +113,7 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_create_simple_type_member()
         {
-            should_be_simple_type(Builder.BuildTypeGraphService().BuildGraph(
+            should_be_simple_type(Builder.BuildTypeGraphService().BuildForMessage(
                 false, typeof(SimpleTypeMember), _endpointDescription, null)
                     .Members.Single().Type, "int");
         }
@@ -107,10 +121,13 @@ namespace Tests.Unit.Specification
         public void should_be_simple_type(DataType type, string name)
         {
             type.Name.ShouldEqual(name);
+            type.LogicalName.ShouldBeNull();
+            type.Namespace.ShouldBeNull();
+            type.FullNamespace.ShouldBeNull();
             type.Comments.ShouldBeNull();
 
             type.IsSimple.ShouldBeTrue();
-            type.Options.ShouldBeNull();
+            type.Enumeration.ShouldBeNull();
 
             type.IsComplex.ShouldBeFalse();
             type.Members.ShouldBeNull();
@@ -134,45 +151,95 @@ namespace Tests.Unit.Specification
         [TestCase(typeof(Options?), EnumFormat.AsString, "string", "Option", "OptionWithComments")]
         [TestCase(typeof(Options), EnumFormat.AsNumber, "int", "0", "1")]
         [TestCase(typeof(Options?), EnumFormat.AsNumber, "int", "0", "1")]
-        public void should_create_simple_type_string_options(
+        public void should_create_message_simple_type_string_options(
             Type type, EnumFormat format, string dataTypeName, string value1, string value2)
         {
             var dataType = Builder.BuildTypeGraphService(x => x.EnumFormat = format)
-                .BuildGraph(false, type, _endpointDescription, null);
+                .BuildForMessage(false, type, _endpointDescription, null);
 
             dataType.Name.ShouldEqual(dataTypeName);
             dataType.IsSimple.ShouldBeTrue();
-            dataType.Options.Options.Count.ShouldEqual(2);
+            dataType.Enumeration.Options.Count.ShouldEqual(2);
 
-            var option = dataType.Options.Options[0];
+            var option = dataType.Enumeration.Options[0];
             option.Name.ShouldEqual("Option");
             option.Value.ShouldEqual(value1);
             option.Comments.ShouldBeNull();
 
-            option = dataType.Options.Options[1];
+            option = dataType.Enumeration.Options[1];
             option.Name.ShouldEqual("OptionWithComments");
             option.Value.ShouldEqual(value2);
             option.Comments.ShouldEqual("This is *an* option.");
         }
 
         [Test]
-        public void should_create_simple_type_numeric_options(
+        public void should_create_message_simple_type_numeric_options(
             [Values(typeof(Options), typeof(Options?))]Type type)
         {
             var dataType = Builder.BuildTypeGraphService(
                     x => x.EnumFormat = EnumFormat.AsString)
-                .BuildGraph(false, type, _endpointDescription, null);
+                .BuildForMessage(false, type, _endpointDescription, null);
 
             dataType.Name.ShouldEqual("string");
             dataType.IsSimple.ShouldBeTrue();
-            dataType.Options.Options.Count.ShouldEqual(2);
+            dataType.Enumeration.Options.Count.ShouldEqual(2);
 
-            var option = dataType.Options.Options[0];
+            var option = dataType.Enumeration.Options[0];
             option.Name.ShouldEqual("Option");
             option.Value.ShouldEqual("Option");
             option.Comments.ShouldBeNull();
 
-            option = dataType.Options.Options[1];
+            option = dataType.Enumeration.Options[1];
+            option.Name.ShouldEqual("OptionWithComments");
+            option.Value.ShouldEqual("OptionWithComments");
+            option.Comments.ShouldEqual("This is *an* option.");
+        }
+
+        [Test]
+        [TestCase(typeof(Options), EnumFormat.AsString, "string", "Option", "OptionWithComments")]
+        [TestCase(typeof(Options?), EnumFormat.AsString, "string", "Option", "OptionWithComments")]
+        [TestCase(typeof(Options), EnumFormat.AsNumber, "int", "0", "1")]
+        [TestCase(typeof(Options?), EnumFormat.AsNumber, "int", "0", "1")]
+        public void should_create_parameter_simple_type_string_options(Type type,
+            EnumFormat format, string dataTypeName, string value1, string value2)
+        {
+            var dataType = Builder.BuildTypeGraphService(x => x.EnumFormat = format)
+                .BuildForParameter(type, "options", "Get");
+
+            dataType.Name.ShouldEqual(dataTypeName);
+            dataType.IsSimple.ShouldBeTrue();
+            dataType.Enumeration.Options.Count.ShouldEqual(2);
+
+            var option = dataType.Enumeration.Options[0];
+            option.Name.ShouldEqual("Option");
+            option.Value.ShouldEqual(value1);
+            option.Comments.ShouldBeNull();
+
+            option = dataType.Enumeration.Options[1];
+            option.Name.ShouldEqual("OptionWithComments");
+            option.Value.ShouldEqual(value2);
+            option.Comments.ShouldEqual("This is *an* option.");
+        }
+
+        [Test]
+        [TestCase(typeof(Options))]
+        [TestCase(typeof(Options?))]
+        public void should_create_parameter_simple_type_numeric_options(Type type)
+        {
+            var dataType = Builder.BuildTypeGraphService(
+                    x => x.EnumFormat = EnumFormat.AsString)
+                .BuildForParameter(type, "options", "Get");
+
+            dataType.Name.ShouldEqual("string");
+            dataType.IsSimple.ShouldBeTrue();
+            dataType.Enumeration.Options.Count.ShouldEqual(2);
+
+            var option = dataType.Enumeration.Options[0];
+            option.Name.ShouldEqual("Option");
+            option.Value.ShouldEqual("Option");
+            option.Comments.ShouldBeNull();
+
+            option = dataType.Enumeration.Options[1];
             option.Name.ShouldEqual("OptionWithComments");
             option.Value.ShouldEqual("OptionWithComments");
             option.Comments.ShouldEqual("This is *an* option.");
@@ -188,7 +255,7 @@ namespace Tests.Unit.Specification
         public void should_create_array(Type type)
         {
             should_be_array_type(Builder.BuildTypeGraphService()
-                .BuildGraph(false, type, _endpointDescription, null));
+                .BuildForMessage(false, type, _endpointDescription, null));
         }
 
         [Comments("This *is* an array.")]
@@ -198,7 +265,7 @@ namespace Tests.Unit.Specification
         public void should_create_array_with_comments()
         {
             should_be_array_type(Builder.BuildTypeGraphService()
-                .BuildGraph<ListWithComments>(),
+                .BuildForMessage<ListWithComments>(),
                     comments: "This *is* an array.");
         }
 
@@ -210,7 +277,7 @@ namespace Tests.Unit.Specification
         public void should_create_array_with_array_description()
         {
             should_be_array_type(Builder.BuildTypeGraphService().
-                BuildGraph<ListWithArrayDescription>(),
+                BuildForMessage<ListWithArrayDescription>(),
                     "ArrayName", "This is *an* array comment.",
                     "ItemName", "This is *an* item comment.");
         }
@@ -227,7 +294,7 @@ namespace Tests.Unit.Specification
         public void should_create_array_member_without_description()
         {
             should_be_array_type(Builder.BuildTypeGraphService()
-                .BuildGraph<ArrayMember>()
+                .BuildForMessage<ArrayMember>()
                 .Members.Single(x => x.Name == "MemberWithoutComments").Type,
                     "MemberWithoutComments");
         }
@@ -236,7 +303,7 @@ namespace Tests.Unit.Specification
         public void should_create_array_member_with_description()
         {
             should_be_array_type(Builder.BuildTypeGraphService()
-                .BuildGraph<ArrayMember>()
+                .BuildForMessage<ArrayMember>()
                 .Members.Single(x => x.Name == "ArrayName").Type,
                     "ArrayName", "This *is* an array comment.",
                     "ItemName", "This is *an* item comment.");
@@ -256,7 +323,7 @@ namespace Tests.Unit.Specification
             should_be_simple_type(type.ArrayItem.Type, "int");
 
             type.IsSimple.ShouldBeFalse();
-            type.Options.ShouldBeNull();
+            type.Enumeration.ShouldBeNull();
 
             type.IsComplex.ShouldBeFalse();
             type.Members.ShouldBeNull();
@@ -273,7 +340,7 @@ namespace Tests.Unit.Specification
         public void should_create_dictionary(Type type)
         {
             should_be_dictionary_type(Builder.BuildTypeGraphService()
-                .BuildGraph(false, type, _endpointDescription, null), 
+                .BuildForMessage(false, type, _endpointDescription, null), 
                     "DictionaryOfInt");
         }
 
@@ -284,7 +351,7 @@ namespace Tests.Unit.Specification
         public void should_create_dictionary_with_comments()
         {
             should_be_dictionary_type(Builder.BuildTypeGraphService()
-                .BuildGraph<DictionaryWithComments>(),
+                .BuildForMessage<DictionaryWithComments>(),
                     "DictionaryOfInt", "This is *a* dictionary.");
         }
 
@@ -296,7 +363,7 @@ namespace Tests.Unit.Specification
         public void should_create_dictionary_with_dictionary_comments()
         {
             should_be_dictionary_type(Builder.BuildTypeGraphService()
-                .BuildGraph<DictionaryWithDictionaryComments>(),
+                .BuildForMessage<DictionaryWithDictionaryComments>(),
                     name: "DictionaryName",
                     comments: "This is *a* dictionary.",
                     keyName: "KeyName",
@@ -316,7 +383,7 @@ namespace Tests.Unit.Specification
         public void should_create_dictionary_member_without_comments()
         {
             should_be_dictionary_type(Builder.BuildTypeGraphService()
-                .BuildGraph<DictionaryMember>()
+                .BuildForMessage<DictionaryMember>()
                 .Members.Single(x => x.Name == "MemberWithoutComments").Type,
                 "MemberWithoutComments");
         }
@@ -325,7 +392,7 @@ namespace Tests.Unit.Specification
         public void should_create_dictionary_member_with_description()
         {
             should_be_dictionary_type(Builder.BuildTypeGraphService()
-                .BuildGraph<DictionaryMember>()
+                .BuildForMessage<DictionaryMember>()
                 .Members.Single(x => x.Name == "DictionaryName").Type,
                 "DictionaryName",
                 "This *is* a dictionary.",
@@ -346,7 +413,7 @@ namespace Tests.Unit.Specification
             type.ArrayItem.ShouldBeNull();
 
             type.IsSimple.ShouldBeFalse();
-            type.Options.ShouldBeNull();
+            type.Enumeration.ShouldBeNull();
 
             type.IsComplex.ShouldBeFalse();
             type.Members.ShouldBeNull();
@@ -372,7 +439,7 @@ namespace Tests.Unit.Specification
         public void should_create_complex_type_and_members()
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(false, typeof(ComplexType), _endpointDescription, 
+                .BuildForMessage(false, typeof(ComplexType), _endpointDescription, 
                     null), 2).Members;
 
             should_match_member(members[0], "Member1", sampleValue: "",
@@ -391,7 +458,7 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_comments()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(false, typeof(ComplexTypeWithMemberComments),
+                .BuildForMessage(false, typeof(ComplexTypeWithMemberComments),
                     _endpointDescription, null), 1)
                 .Members.Single();
 
@@ -409,7 +476,7 @@ namespace Tests.Unit.Specification
         public void should_not_return_complex_type_member_default_value_for_output_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(false, typeof(ComplexTypeWithDefaultValue),
+                .BuildForMessage(false, typeof(ComplexTypeWithDefaultValue),
                     _endpointDescription, null), 1)
                 .Members.Single();
 
@@ -422,7 +489,7 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_default_value_for_input_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(true, typeof(ComplexTypeWithDefaultValue),
+                .BuildForMessage(true, typeof(ComplexTypeWithDefaultValue),
                     _endpointDescription, new ApiDescription()), 1)
                 .Members.Single();
 
@@ -436,7 +503,7 @@ namespace Tests.Unit.Specification
         {
             var member = should_be_complex_type(Builder
                 .BuildTypeGraphService(x => x.SampleRealFormat = "0.0")
-                .BuildGraph(true, typeof(ComplexTypeWithDefaultValue),
+                .BuildForMessage(true, typeof(ComplexTypeWithDefaultValue),
                     _endpointDescription, new ApiDescription()), 1)
                 .Members.Single();
 
@@ -455,7 +522,7 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_sample_value_for_output_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(false, typeof(ComplexTypeWithSampleValue),
+                .BuildForMessage(false, typeof(ComplexTypeWithSampleValue),
                     _endpointDescription, null), 1)
                 .Members.Single();
 
@@ -468,7 +535,7 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_sample_value_for_input_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(true, typeof(ComplexTypeWithSampleValue),
+                .BuildForMessage(true, typeof(ComplexTypeWithSampleValue),
                     _endpointDescription, new ApiDescription()), 1)
                 .Members.Single();
 
@@ -483,7 +550,7 @@ namespace Tests.Unit.Specification
         {
             var member = should_be_complex_type(Builder
                 .BuildTypeGraphService(x => x.SampleRealFormat = "0.0")
-                .BuildGraph(true, typeof(ComplexTypeWithSampleValue),
+                .BuildForMessage(true, typeof(ComplexTypeWithSampleValue),
                     _endpointDescription, new ApiDescription()), 1)
                 .Members.Single();
 
@@ -549,7 +616,7 @@ namespace Tests.Unit.Specification
         {
             var apiDescription = new ApiDescription { HttpMethod = method };
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(true, typeof(ComplexTypeWithOptionalMember),
+                .BuildForMessage(true, typeof(ComplexTypeWithOptionalMember),
                     _endpointDescription, apiDescription), 9).Members;
 
             should_match_member(members.First(x => x.Name == property), property,
@@ -564,7 +631,7 @@ namespace Tests.Unit.Specification
                 string sampleValue, HttpMethod method)
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(false, typeof(ComplexTypeWithOptionalMember),
+                .BuildForMessage(false, typeof(ComplexTypeWithOptionalMember),
                     _endpointDescription, null), 9).Members;
 
             should_match_member(members.First(x => x.Name == property), property,
@@ -582,7 +649,7 @@ namespace Tests.Unit.Specification
         public void should_exclude_complex_type_cyclic_members()
         {
             should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph<CyclicModel>(), 1)
+                .BuildForMessage<CyclicModel>(), 1)
                 .Members.Single().Name.ShouldEqual("Member");
         }
 
@@ -596,7 +663,7 @@ namespace Tests.Unit.Specification
         public void should_exclude_complex_type_cyclic_array_members()
         {
             should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph<CyclicArrayModel>(), 1)
+                .BuildForMessage<CyclicArrayModel>(), 1)
                 .Members.Single().Name.ShouldEqual("Member");
         }
 
@@ -610,7 +677,7 @@ namespace Tests.Unit.Specification
         public void should_exclude_complex_type_cyclic_dictionary_members()
         {
             should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph<CyclicDictionaryModel>(), 1)
+                .BuildForMessage<CyclicDictionaryModel>(), 1)
                 .Members.Single().Name.ShouldEqual("Member");
         }
 
@@ -623,7 +690,7 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_exclude_a_member_if_it_is_hidden()
         {
-            Builder.BuildTypeGraphService().BuildGraph(false, 
+            Builder.BuildTypeGraphService().BuildForMessage(false, 
                 typeof(ComplexTypeWithHiddenMember), _endpointDescription, null)
                 .Members.Any(x => x.Name == "HiddenMember").ShouldBeFalse();
         }
@@ -639,7 +706,7 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_exclude_a_member_if_its_type_is_hidden()
         {
-            Builder.BuildTypeGraphService().BuildGraph(false, 
+            Builder.BuildTypeGraphService().BuildForMessage(false, 
                 typeof(ComplexTypeWithHiddenTypeMember), _endpointDescription, null)
                 .Members.Any(x => x.Name == "HiddenTypeMember").ShouldBeFalse();
         }
@@ -657,7 +724,7 @@ namespace Tests.Unit.Specification
         public void should_indicate_if_member_is_deprecated()
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(false, typeof(ComplexTypeWithDeprecatedMembers),
+                .BuildForMessage(false, typeof(ComplexTypeWithDeprecatedMembers),
                     _endpointDescription, null), 2).Members;
 
             should_match_member(members[0], "DeprecatedMember",
@@ -669,7 +736,7 @@ namespace Tests.Unit.Specification
         public void should_indicate_if_member_is_deprecated_with_message()
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(false, typeof(ComplexTypeWithDeprecatedMembers),
+                .BuildForMessage(false, typeof(ComplexTypeWithDeprecatedMembers),
                     _endpointDescription, null), 2).Members;
 
             should_match_member(members[1], "DeprecatedMemberWithMessage",
@@ -706,7 +773,7 @@ namespace Tests.Unit.Specification
             type.ArrayItem.ShouldBeNull();
 
             type.IsSimple.ShouldBeFalse();
-            type.Options.ShouldBeNull();
+            type.Enumeration.ShouldBeNull();
 
             type.IsComplex.ShouldBeTrue();
             type.Members.ShouldNotBeNull();
@@ -742,7 +809,7 @@ namespace Tests.Unit.Specification
             
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<Namespace>(@namespace, request);
+                .BuildForMessage<Namespace>(@namespace, request);
             type.LogicalName.ShouldEqual(logicalName);
             type.Namespace.ShouldEqual(@namespace);
             type.FullNamespace.ShouldOnlyContain(@namespace);
@@ -752,7 +819,7 @@ namespace Tests.Unit.Specification
         public void should_have_complex_type_member_namespace()
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<Namespace>("Post", true);
+                .BuildForMessage<Namespace>("Post", true);
 
             var member = type.Members.Member(nameof(Namespace.Child));
 
@@ -771,7 +838,7 @@ namespace Tests.Unit.Specification
         public void should_have_list_member_namespace()
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<Namespace>("Post", true);
+                .BuildForMessage<Namespace>("Post", true);
 
             var member = type.Members.Member(nameof(Namespace.ChildList));
 
@@ -796,7 +863,7 @@ namespace Tests.Unit.Specification
         public void should_have_dictionary_member_namespace()
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<Namespace>("Post", true);
+                .BuildForMessage<Namespace>("Post", true);
 
             var member = type.Members.Member(nameof(Namespace.ChildHash));
 
@@ -818,10 +885,10 @@ namespace Tests.Unit.Specification
         }
 
         [Test]
-        public void should_have_list_namespace()
+        public void should_have_message_list_namespace()
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<List<NamespacedChild>>("Post", true);
+                .BuildForMessage<List<NamespacedChild>>("Post", true);
 
             type.LogicalName.ShouldBeNull();
             type.Namespace.ShouldBeNull();
@@ -841,10 +908,28 @@ namespace Tests.Unit.Specification
         }
 
         [Test]
-        public void should_have_dictionary_namespace()
+        public void should_have_parameter_list_namespace()
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<Dictionary<string, NamespacedChild>>("Post", true);
+                .BuildForParameter<List<int>>("param", "string");
+
+            type.LogicalName.ShouldBeNull();
+            type.Namespace.ShouldBeNull();
+            type.FullNamespace.ShouldBeNull();
+
+            var item = type.ArrayItem;
+
+            item.Type.Name.ShouldEqual("int");
+            item.Type.LogicalName.ShouldBeNull();
+            item.Type.Namespace.ShouldBeNull();
+            item.Type.FullNamespace.ShouldBeNull();
+        }
+
+        [Test]
+        public void should_have_message_dictionary_namespace()
+        {
+            var type = Builder.BuildTypeGraphService()
+                .BuildForMessage<Dictionary<string, NamespacedChild>>("Post", true);
 
             type.LogicalName.ShouldBeNull();
             type.Namespace.ShouldBeNull();
@@ -862,15 +947,51 @@ namespace Tests.Unit.Specification
             member.Type.Namespace.ShouldEqual("PostRequestChild2");
             member.Type.FullNamespace.ShouldOnlyContain("Post", "PostRequestChild2");
         }
+
+        [Test]
+        public void should_have_parameter_dictionary_namespace()
+        {
+            var type = Builder.BuildTypeGraphService()
+                .BuildForParameter<Dictionary<string, string>>("param", "string");
+
+            type.LogicalName.ShouldBeNull();
+            type.Namespace.ShouldBeNull();
+            type.FullNamespace.ShouldBeNull();
+
+            var item = type.DictionaryEntry;
+
+            item.ValueType.Name.ShouldEqual("string");
+            item.ValueType.LogicalName.ShouldBeNull();
+            item.ValueType.Namespace.ShouldBeNull();
+            item.ValueType.FullNamespace.ShouldBeNull();
+        }
     }
 
     public static class TypeGraphFactoryExtensions
     {
-        public static DataType BuildGraph<T>(this TypeGraphService service, 
+        public static DataType BuildForMessage<T>(this TypeGraphService service, 
             string methodName = "Get", bool requestGraph = false)
         {
-            return service.BuildGraph(requestGraph, typeof(T), new EndpointDescription
+            return service.BuildForMessage(requestGraph, typeof(T), new EndpointDescription
                 { MethodName = methodName }, new ApiDescription());
+        }
+
+        public static DataType BuildForParameter<T>(this TypeGraphService service,
+            string parameterName, string parameterType,
+            string methodName = "Get")
+        {
+            return service.BuildForParameter(typeof(T), parameterName, parameterType, methodName);
+        }
+
+
+        public static DataType BuildForParameter(this TypeGraphService service,
+            Type type, string parameterName, string parameterType,
+            string methodName = "Get")
+        {
+            return service.BuildForParameter(type, 
+                new EndpointDescription { MethodName = methodName },
+                new ParameterDescription { Name = parameterName, Type = parameterType }, 
+                new ApiDescription());
         }
 
         public static Member Member(this List<Member> members, string name)
