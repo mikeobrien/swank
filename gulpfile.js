@@ -41,14 +41,17 @@ gulp.task('test', ['build'], function () {
         }));
 });
 
-gulp.task('nuget-package', ['test'], function() {
-
-    gulp.src('src/Swank/bin/Release/Swank.{dll,pdb,xml}')
+gulp.task('nuget-lib', ['test'], function() {
+    return gulp.src('src/Swank/bin/Release/Swank.{dll,pdb,xml}')
         .pipe(gulp.dest('package/lib'));
+});
 
-    gulp.src('src/SwankUtil/bin/Release/*.{exe,dll,pdb}')
+gulp.task('nuget-tools', ['nuget-lib'], function() {
+    return gulp.src('src/SwankUtil/bin/Release/*.{exe,dll,pdb}')
         .pipe(gulp.dest('package/tools'));
+});
 
+gulp.task('nuget-package', ['nuget-tools'], function() {
     return Nuget()
         .pack({
             spec: 'Swank.nuspec',
