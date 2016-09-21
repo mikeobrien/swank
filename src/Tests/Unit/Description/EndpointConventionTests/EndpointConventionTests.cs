@@ -5,6 +5,7 @@ using Swank.Description;
 using Tests.Common;
 using Swank.Extensions;
 using Tests.Unit.Description.EndpointConventionTests.EndpointDescriptions;
+using Tests.Unit.Description.EndpointConventionTests.EndpointDescriptions.ActionName;
 
 namespace Tests.Unit.Description.EndpointConventionTests
 {
@@ -49,7 +50,7 @@ namespace Tests.Unit.Description.EndpointConventionTests
         public void should_use_defaults_for_endpoint_with_no_description()
         {
             var description = _endpointConvention.GetDescription(
-                ApiDescription<EndpointDescriptions.NoDescriptionController>
+                ApiDescription<NoDescriptionController>
                     .ForAction(x => x.Get(null)));
             description.Name.ShouldEqual("Get");
             description.Comments.ShouldBeNull();
@@ -80,7 +81,7 @@ namespace Tests.Unit.Description.EndpointConventionTests
         public void should_get_endpoint_description_from_web_api()
         {
             var description = _endpointConvention.GetDescription(
-                ApiDescription<EndpointDescriptions.NoDescriptionController>
+                ApiDescription<NoDescriptionController>
                     .ForAction(x => x.Get(null), x => x.Documentation = 
                         "web api documentation."));
             description.Name.ShouldEqual("Get");
@@ -131,7 +132,7 @@ namespace Tests.Unit.Description.EndpointConventionTests
         public void should_get_request_description_from_web_api()
         {
             var description = _endpointConvention.GetDescription(
-               ApiDescription<EndpointDescriptions.NoDescriptionController>
+               ApiDescription<NoDescriptionController>
                     .ForAction(x => x.Get(null), x => x.GetRequestDescription()
                         .Documentation = "web api documentation."));
             description.RequestComments.ShouldEqual("web api documentation.");
@@ -169,7 +170,7 @@ namespace Tests.Unit.Description.EndpointConventionTests
         public void should_get_response_description_from_web_api()
         {
             var description = _endpointConvention.GetDescription(
-                ApiDescription<EndpointDescriptions.NoDescriptionController>
+                ApiDescription<NoDescriptionController>
                     .ForAction(x => x.Get(null), x => x.ResponseDescription
                         .Documentation = "response documentation."));
             description.ResponseComments.ShouldEqual("response documentation.");
@@ -211,7 +212,7 @@ namespace Tests.Unit.Description.EndpointConventionTests
         [Test]
         public void should_not_mark_request_or_response_binary_by_default()
         {
-            var description = _endpointConvention.GetDescription(ApiDescription<EndpointDescriptions.
+            var description = _endpointConvention.GetDescription(ApiDescription<
                 NoDescriptionController>.ForAction(x => x.Get(null)));
             description.BinaryRequest.ShouldBeFalse();
             description.BinaryResponse.ShouldBeFalse();
@@ -255,6 +256,41 @@ namespace Tests.Unit.Description.EndpointConventionTests
                     .ForAction(x => x.Get(null)));
 
             description.MethodName.ShouldEqual("Get");
+        }
+
+        [Test]
+        public void should_get_action_name_from_name_attribute()
+        {
+            var description = _endpointConvention.GetDescription(
+                ApiDescription<ActionNameController>
+                    .ForAction(x => x.Get(null)));
+
+            description.MethodName.ShouldEqual("ActionName");
+            description.Namespace.ShouldOnlyContain("Description",
+                "EndpointConventionTests", "EndpointDescriptions",
+                "ActionName", "ActionNameController", "Get");
+        }
+
+        [Test]
+        public void should_get_action_name_and_namespace_from_name_attribute()
+        {
+            var description = _endpointConvention.GetDescription(
+                ApiDescription<ActionNameAndNamespaceController>
+                    .ForAction(x => x.Get(null)));
+
+            description.MethodName.ShouldEqual("ActionName");
+            description.Namespace.ShouldOnlyContain("Action", "Namespace");
+        }
+
+        [Test]
+        public void should_get_action_namespace_from_namespace_attribute()
+        {
+            var description = _endpointConvention.GetDescription(
+                ApiDescription<ActionNamespaceController>
+                    .ForAction(x => x.Get(null)));
+
+            description.MethodName.ShouldEqual("Get");
+            description.Namespace.ShouldOnlyContain("Action", "Namespace");
         }
     }
 }

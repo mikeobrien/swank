@@ -22,9 +22,12 @@ namespace Swank.Configuration
         public const string DefaultCodeExampleTheme = "github-gist.css";
         public const string DefaultDefaultModuleName = "Resources"; // yo dawg I heard you like defaults...
 
-        public static readonly Func<ApiDescription, List<string>> DefaultActionNamespace =
-            x => x.Route.GetNamespaceFromRoute().DistinctSiblings().ToList();
-        public static readonly Func<ApiDescription, string> DefaultActionName = x => x.GetMethodInfo().Name;
+        public static readonly Func<ApiDescription, List<string>> DefaultActionNamespace = x => 
+            x.GetActionAttribute<ActionNamespaceAttribute>()?.Namespace ??
+            x.GetActionAttribute<ActionNameAttribute>()?.Namespace ??
+            x.Route.GetNamespaceFromRoute().DistinctSiblings().ToList();
+        public static readonly Func<ApiDescription, string> DefaultActionName = x =>
+            x.GetActionAttribute<ActionNameAttribute>()?.Name ?? x.GetMethodInfo().Name;
 
         public class OverviewLink
         {

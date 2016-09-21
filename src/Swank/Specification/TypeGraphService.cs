@@ -28,9 +28,10 @@ namespace Swank.Specification
             _typeConvention = typeConvention;
         }
 
-        public DataType BuildGraph(Type type, HttpMethod method, bool requestGraph, ApiDescription endpoint)
+        public DataType BuildGraph(bool requestGraph, Type type, 
+            EndpointDescription description, ApiDescription endpoint)
         {
-            var @namespace = method.ToString().ToLower().InitialCase(true);
+            var @namespace = description.MethodName;
             var logicalName = @namespace + (requestGraph ? "Request" : "Response");
             var dataType = BuildGraph(type, requestGraph, endpoint, 
                 logicalName: logicalName, @namespace: @namespace);

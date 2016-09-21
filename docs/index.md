@@ -273,6 +273,8 @@ The following are all the built in attributes.
 | `Description` | Sets the name and comments on action methods, action parameters, types, members, enums and enum options. |
 | `Hide` | Excludes controllers, action methods, members, enum options and action parameters |
 | `Secure` | Indicates that an endpoint is secure, used on action methods. |
+| `ActionName` |  Specifies the action name and optionally the action namespace, by default this is the action method name. |
+| `ActionNamespace` |  Specifies the action namespace, by default this is derived from the url template. |
 | `RequestHeader` |  Adds request headers, used on action methods. |
 | `ResponseHeader` | Adds response headers, used on action methods. |
 | `RequestComments` | Describes the request, used on action methods. |

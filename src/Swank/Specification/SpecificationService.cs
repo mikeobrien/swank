@@ -274,9 +274,8 @@ namespace Swank.Specification
                 endpoint.HttpMethod == HttpMethod.Put ||
                 endpoint.HttpMethod == HttpMethod.Delete))
             {
-                data.Type = _typeGraphService.BuildGraph(requestDescription
-                    .ParameterDescriptor.ParameterType, endpoint.HttpMethod, 
-                    true, endpoint);
+                data.Type = _typeGraphService.BuildGraph(true, requestDescription
+                    .ParameterDescriptor.ParameterType, description, endpoint);
             }
 
             data.Comments = description.RequestComments;
@@ -298,8 +297,8 @@ namespace Swank.Specification
 
             if (responseType != null)
             {
-                data.Type = _typeGraphService.BuildGraph(responseType, 
-                    endpoint.HttpMethod, false, endpoint);
+                data.Type = _typeGraphService.BuildGraph(
+                    false, responseType, description, endpoint);
             }
 
             data.Comments = description.ResponseComments;
