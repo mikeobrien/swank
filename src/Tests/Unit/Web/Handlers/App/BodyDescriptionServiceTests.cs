@@ -26,7 +26,8 @@ namespace Tests.Unit.Web.Handlers.App
             configure?.Invoke(configuration);
             return new BodyDescriptionService(configuration)
                 .Create(Builder.BuildTypeGraphService(configuration: configuration)
-                    .BuildGraph(type, HttpMethod.Get, requestGraph, new ApiDescription()));
+                    .BuildGraph(requestGraph, type, new EndpointDescription { MethodName = "Get" }, 
+                        new ApiDescription()));
         }
 
         public List<BodyDefinitionModel> BuildDescription<T>(

@@ -15,13 +15,15 @@ namespace Tests.Unit.Specification
     [TestFixture]
     public class TypeGraphServiceTests
     {
+        private EndpointDescription _endpointDescription = 
+            new EndpointDescription { MethodName = "Method" };
         public class TypeWithoutComments { }
 
         [Test]
         public void should_create_type_without_comments()
         {
-            var type = Builder.BuildTypeGraphService().BuildGraph(
-                typeof(TypeWithoutComments), HttpMethod.Get, false, null);
+            var type = Builder.BuildTypeGraphService().BuildGraph(false, 
+                typeof(TypeWithoutComments), _endpointDescription, null);
 
             type.Name.ShouldEqual("TypeWithoutComments");
             type.Comments.ShouldBeNull();
@@ -33,8 +35,8 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_create_type_with_comments()
         {
-            var type = Builder.BuildTypeGraphService().BuildGraph(
-                typeof(TypeWithComments), HttpMethod.Get, false, null);
+            var type = Builder.BuildTypeGraphService().BuildGraph(false, 
+                typeof(TypeWithComments), _endpointDescription, null);
 
             type.Name.ShouldEqual("TypeWithComments");
             type.Comments.ShouldEqual("This is **a** type.");
@@ -86,7 +88,7 @@ namespace Tests.Unit.Specification
         public void should_create_simple_type(Type type, string name)
         {
             should_be_simple_type(Builder.BuildTypeGraphService()
-                .BuildGraph(type, HttpMethod.Get, false, null), name);
+                .BuildGraph(false, type, _endpointDescription, null), name);
         }
 
         public class SimpleTypeMember
@@ -98,7 +100,7 @@ namespace Tests.Unit.Specification
         public void should_create_simple_type_member()
         {
             should_be_simple_type(Builder.BuildTypeGraphService().BuildGraph(
-                typeof(SimpleTypeMember), HttpMethod.Get, false, null)
+                false, typeof(SimpleTypeMember), _endpointDescription, null)
                     .Members.Single().Type, "int");
         }
 
@@ -136,7 +138,7 @@ namespace Tests.Unit.Specification
             Type type, EnumFormat format, string dataTypeName, string value1, string value2)
         {
             var dataType = Builder.BuildTypeGraphService(x => x.EnumFormat = format)
-                .BuildGraph(type, HttpMethod.Get, false, null);
+                .BuildGraph(false, type, _endpointDescription, null);
 
             dataType.Name.ShouldEqual(dataTypeName);
             dataType.IsSimple.ShouldBeTrue();
@@ -159,7 +161,7 @@ namespace Tests.Unit.Specification
         {
             var dataType = Builder.BuildTypeGraphService(
                     x => x.EnumFormat = EnumFormat.AsString)
-                .BuildGraph(type, HttpMethod.Get, false, null);
+                .BuildGraph(false, type, _endpointDescription, null);
 
             dataType.Name.ShouldEqual("string");
             dataType.IsSimple.ShouldBeTrue();
@@ -186,7 +188,7 @@ namespace Tests.Unit.Specification
         public void should_create_array(Type type)
         {
             should_be_array_type(Builder.BuildTypeGraphService()
-                .BuildGraph(type, HttpMethod.Get, false, null));
+                .BuildGraph(false, type, _endpointDescription, null));
         }
 
         [Comments("This *is* an array.")]
@@ -271,7 +273,8 @@ namespace Tests.Unit.Specification
         public void should_create_dictionary(Type type)
         {
             should_be_dictionary_type(Builder.BuildTypeGraphService()
-                .BuildGraph(type, HttpMethod.Get, false, null), "DictionaryOfInt");
+                .BuildGraph(false, type, _endpointDescription, null), 
+                    "DictionaryOfInt");
         }
 
         [Comments("This is *a* dictionary.")]
@@ -369,7 +372,8 @@ namespace Tests.Unit.Specification
         public void should_create_complex_type_and_members()
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(typeof(ComplexType), HttpMethod.Get, false, null), 2).Members;
+                .BuildGraph(false, typeof(ComplexType), _endpointDescription, 
+                    null), 2).Members;
 
             should_match_member(members[0], "Member1", sampleValue: "",
                 type: x => should_be_simple_type(x, "string"));
@@ -387,8 +391,8 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_comments()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(typeof(ComplexTypeWithMemberComments), 
-                    HttpMethod.Get, false, null), 1)
+                .BuildGraph(false, typeof(ComplexTypeWithMemberComments),
+                    _endpointDescription, null), 1)
                 .Members.Single();
 
             should_match_member(member, "Member", "This is *a* member.", sampleValue: "",
@@ -405,8 +409,8 @@ namespace Tests.Unit.Specification
         public void should_not_return_complex_type_member_default_value_for_output_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(typeof(ComplexTypeWithDefaultValue), 
-                    HttpMethod.Get, false, null), 1)
+                .BuildGraph(false, typeof(ComplexTypeWithDefaultValue),
+                    _endpointDescription, null), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -418,8 +422,8 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_default_value_for_input_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(typeof(ComplexTypeWithDefaultValue), 
-                    HttpMethod.Get, true, new ApiDescription()), 1)
+                .BuildGraph(true, typeof(ComplexTypeWithDefaultValue),
+                    _endpointDescription, new ApiDescription()), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -432,8 +436,8 @@ namespace Tests.Unit.Specification
         {
             var member = should_be_complex_type(Builder
                 .BuildTypeGraphService(x => x.SampleRealFormat = "0.0")
-                .BuildGraph(typeof(ComplexTypeWithDefaultValue), 
-                    HttpMethod.Get, true, new ApiDescription()), 1)
+                .BuildGraph(true, typeof(ComplexTypeWithDefaultValue),
+                    _endpointDescription, new ApiDescription()), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -451,8 +455,8 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_sample_value_for_output_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(typeof(ComplexTypeWithSampleValue), 
-                    HttpMethod.Get, false, null), 1)
+                .BuildGraph(false, typeof(ComplexTypeWithSampleValue),
+                    _endpointDescription, null), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -464,8 +468,8 @@ namespace Tests.Unit.Specification
         public void should_return_complex_type_member_sample_value_for_input_type()
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(typeof(ComplexTypeWithSampleValue), 
-                    HttpMethod.Get, true, new ApiDescription()), 1)
+                .BuildGraph(true, typeof(ComplexTypeWithSampleValue),
+                    _endpointDescription, new ApiDescription()), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -479,8 +483,8 @@ namespace Tests.Unit.Specification
         {
             var member = should_be_complex_type(Builder
                 .BuildTypeGraphService(x => x.SampleRealFormat = "0.0")
-                .BuildGraph(typeof(ComplexTypeWithSampleValue), 
-                    HttpMethod.Get, true, new ApiDescription()), 1)
+                .BuildGraph(true, typeof(ComplexTypeWithSampleValue),
+                    _endpointDescription, new ApiDescription()), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -545,8 +549,8 @@ namespace Tests.Unit.Specification
         {
             var apiDescription = new ApiDescription { HttpMethod = method };
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(typeof(ComplexTypeWithOptionalMember), 
-                    HttpMethod.Get, true, apiDescription), 9).Members;
+                .BuildGraph(true, typeof(ComplexTypeWithOptionalMember),
+                    _endpointDescription, apiDescription), 9).Members;
 
             should_match_member(members.First(x => x.Name == property), property,
                 required: required, sampleValue: sampleValue, optional: optional,
@@ -560,8 +564,8 @@ namespace Tests.Unit.Specification
                 string sampleValue, HttpMethod method)
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(typeof(ComplexTypeWithOptionalMember), 
-                    HttpMethod.Get, false, null), 9).Members;
+                .BuildGraph(false, typeof(ComplexTypeWithOptionalMember),
+                    _endpointDescription, null), 9).Members;
 
             should_match_member(members.First(x => x.Name == property), property,
                 required: false, sampleValue: sampleValue, optional: false,
@@ -619,8 +623,8 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_exclude_a_member_if_it_is_hidden()
         {
-            Builder.BuildTypeGraphService().BuildGraph(
-                typeof(ComplexTypeWithHiddenMember), HttpMethod.Get, false, null)
+            Builder.BuildTypeGraphService().BuildGraph(false, 
+                typeof(ComplexTypeWithHiddenMember), _endpointDescription, null)
                 .Members.Any(x => x.Name == "HiddenMember").ShouldBeFalse();
         }
 
@@ -635,8 +639,8 @@ namespace Tests.Unit.Specification
         [Test]
         public void should_exclude_a_member_if_its_type_is_hidden()
         {
-            Builder.BuildTypeGraphService().BuildGraph(
-                typeof(ComplexTypeWithHiddenTypeMember), HttpMethod.Get, false, null)
+            Builder.BuildTypeGraphService().BuildGraph(false, 
+                typeof(ComplexTypeWithHiddenTypeMember), _endpointDescription, null)
                 .Members.Any(x => x.Name == "HiddenTypeMember").ShouldBeFalse();
         }
 
@@ -653,8 +657,8 @@ namespace Tests.Unit.Specification
         public void should_indicate_if_member_is_deprecated()
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(typeof(ComplexTypeWithDeprecatedMembers), 
-                    HttpMethod.Get, false, null), 2).Members;
+                .BuildGraph(false, typeof(ComplexTypeWithDeprecatedMembers),
+                    _endpointDescription, null), 2).Members;
 
             should_match_member(members[0], "DeprecatedMember",
                 deprecated: true, sampleValue: "",
@@ -665,8 +669,8 @@ namespace Tests.Unit.Specification
         public void should_indicate_if_member_is_deprecated_with_message()
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
-                .BuildGraph(typeof(ComplexTypeWithDeprecatedMembers), 
-                    HttpMethod.Get, false, null), 2).Members;
+                .BuildGraph(false, typeof(ComplexTypeWithDeprecatedMembers),
+                    _endpointDescription, null), 2).Members;
 
             should_match_member(members[1], "DeprecatedMemberWithMessage",
                 deprecated: true, sampleValue: "",
@@ -731,14 +735,14 @@ namespace Tests.Unit.Specification
         public class NamespacedChild2 { }
 
         [Test]
-        [TestCase("POST", true, "Post", "PostRequest")]
-        [TestCase("PUT", false, "Put", "PutResponse")]
-        public void should_have_complex_type_namespace(string method, 
+        [TestCase(true, "Post", "PostRequest")]
+        [TestCase(false, "Put", "PutResponse")]
+        public void should_have_complex_type_namespace( 
             bool request, string @namespace, string logicalName)
             
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<Namespace>(new HttpMethod(method), request);
+                .BuildGraph<Namespace>(@namespace, request);
             type.LogicalName.ShouldEqual(logicalName);
             type.Namespace.ShouldEqual(@namespace);
             type.FullNamespace.ShouldOnlyContain(@namespace);
@@ -748,7 +752,7 @@ namespace Tests.Unit.Specification
         public void should_have_complex_type_member_namespace()
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<Namespace>(HttpMethod.Post, true);
+                .BuildGraph<Namespace>("Post", true);
 
             var member = type.Members.Member(nameof(Namespace.Child));
 
@@ -767,7 +771,7 @@ namespace Tests.Unit.Specification
         public void should_have_list_member_namespace()
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<Namespace>(HttpMethod.Post, true);
+                .BuildGraph<Namespace>("Post", true);
 
             var member = type.Members.Member(nameof(Namespace.ChildList));
 
@@ -792,7 +796,7 @@ namespace Tests.Unit.Specification
         public void should_have_dictionary_member_namespace()
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<Namespace>(HttpMethod.Post, true);
+                .BuildGraph<Namespace>("Post", true);
 
             var member = type.Members.Member(nameof(Namespace.ChildHash));
 
@@ -817,7 +821,7 @@ namespace Tests.Unit.Specification
         public void should_have_list_namespace()
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<List<NamespacedChild>>(HttpMethod.Post, true);
+                .BuildGraph<List<NamespacedChild>>("Post", true);
 
             type.LogicalName.ShouldBeNull();
             type.Namespace.ShouldBeNull();
@@ -840,7 +844,7 @@ namespace Tests.Unit.Specification
         public void should_have_dictionary_namespace()
         {
             var type = Builder.BuildTypeGraphService()
-                .BuildGraph<Dictionary<string, NamespacedChild>>(HttpMethod.Post, true);
+                .BuildGraph<Dictionary<string, NamespacedChild>>("Post", true);
 
             type.LogicalName.ShouldBeNull();
             type.Namespace.ShouldBeNull();
@@ -863,10 +867,10 @@ namespace Tests.Unit.Specification
     public static class TypeGraphFactoryExtensions
     {
         public static DataType BuildGraph<T>(this TypeGraphService service, 
-            HttpMethod method = null, bool requestGraph = false)
+            string methodName = "Get", bool requestGraph = false)
         {
-            return service.BuildGraph(typeof(T), method ?? HttpMethod.Get, 
-                requestGraph, new ApiDescription());
+            return service.BuildGraph(requestGraph, typeof(T), new EndpointDescription
+                { MethodName = methodName }, new ApiDescription());
         }
 
         public static Member Member(this List<Member> members, string name)
