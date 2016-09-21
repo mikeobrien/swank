@@ -11,7 +11,7 @@ using Tests.Unit.Specification;
 namespace Tests.Unit.Web.Handlers.Templates
 {
     [TestFixture]
-    public class NamespaceDescriptionFactoryTests
+    public class NamespaceDescriptionServiceTests
     {
         public class Request { }
 

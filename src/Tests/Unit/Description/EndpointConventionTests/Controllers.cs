@@ -12,6 +12,36 @@ namespace Tests.Unit.Description.EndpointConventionTests
             }
         }
 
+        namespace ActionName
+        {
+            public class ActionNameController
+            {
+                [ActionName("ActionName")]
+                public object Get(object request)
+                {
+                    return null;
+                }
+            }
+
+            public class ActionNameAndNamespaceController
+            {
+                [ActionName("ActionName", "Action", "Namespace")]
+                public object Get(object request)
+                {
+                    return null;
+                }
+            }
+
+            public class ActionNamespaceController
+            {
+                [ActionNamespace("Action", "Namespace")]
+                public object Get(object request)
+                {
+                    return null;
+                }
+            }
+        }
+
         namespace ActionDescription
         {
             public class XmlCommentController
