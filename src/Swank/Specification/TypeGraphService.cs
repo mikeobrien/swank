@@ -63,7 +63,7 @@ namespace Swank.Specification
 
             var dataType = new DataType
             {
-                Name = name ?? (!type.IsSimpleType() && memberDescription != null ?
+                Name = name ?? (!type.IsSimpleType() && memberDescription != null ? 
                     memberDescription.Name : description.Name),
                 Comments = description.Comments
             };
@@ -82,7 +82,8 @@ namespace Swank.Specification
                 if (isEnum || !type.IsSimpleType())
                 {
                     if (!isEnum) dataType.LogicalName = logicalName ?? dataType.Name;
-                    dataType.Namespace = @namespace ?? parent.LogicalName + dataType.Name;
+                    dataType.Namespace = @namespace ?? parent.LogicalName + 
+                        (isEnum && memberDescription != null ? memberDescription.Name : dataType.Name);
                     dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
                         .Concat(dataType.Namespace).ToList();
                 }

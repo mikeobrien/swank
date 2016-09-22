@@ -113,7 +113,7 @@ namespace SwankUtil
                             arguments.Object.OutputPath,
                             arguments.Object.RenderingEngine,
                             arguments.Object.TemplateNamespaceIncludesModule,
-                            arguments.Object.Values.Select(x => x.Split(':'))
+                            arguments.Object.Values?.Select(x => x.Split(':'))
                                 .ToDictionary(x => x[0], x => x[1],
                                     StringComparer.OrdinalIgnoreCase)); break;
                     default: Console.WriteLine("No command passed."); break;

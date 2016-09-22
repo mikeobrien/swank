@@ -792,6 +792,7 @@ namespace Tests.Unit.Specification
             public NamespacedChild Child { get; set; }
             public List<NamespacedChild> ChildList { get; set; }
             public Dictionary<string, NamespacedChild> ChildHash { get; set; }
+            public Options Options { get; set; }
         }
 
         public class NamespacedChild
@@ -813,6 +814,19 @@ namespace Tests.Unit.Specification
             type.LogicalName.ShouldEqual(logicalName);
             type.Namespace.ShouldEqual(@namespace);
             type.FullNamespace.ShouldOnlyContain(@namespace);
+        }
+
+        [Test]
+        public void should_have_optional_member_namespace()
+        {
+            var type = Builder.BuildTypeGraphService()
+                .BuildForMessage<Namespace>("Post", true);
+
+            var member = type.Members.Member(nameof(Namespace.Options));
+
+            member.Type.LogicalName.ShouldBeNull();
+            member.Type.Namespace.ShouldEqual("PostRequestOptions");
+            member.Type.FullNamespace.ShouldOnlyContain("Post", "PostRequestOptions");
         }
 
         [Test]

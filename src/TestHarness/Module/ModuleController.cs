@@ -79,6 +79,17 @@ namespace TestHarness.Module
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             public string Value { get; set; }
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [Optional]
+            public string OptionalValue { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [DefaultValue("fark")]
+            public string DefaultValue { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public Options OptionValue { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [Obsolete("Obsolete comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public string DepricatedValue { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             public int NumericValue { get; set; }
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             public bool BooleanValue { get; set; }
@@ -88,6 +99,41 @@ namespace TestHarness.Module
             public TimeSpan DurationValue { get; set; }
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             public Guid GuidValue { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public ChildModel ComplexValue { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public List<int> SimpleList { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public List<ChildModel> ComplexList { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public List<List<ChildModel>> ListOfList { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public List<Dictionary<string, ChildModel>> ListOfDictionary { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [DictionaryDescription(comments: "Dictionary comments. Raw denim aesthetic synth nesciunt. :trollface:",
+                keyName: "key-name", keyComments: "Key comments. Raw denim aesthetic synth nesciunt. :trollface:",
+                valueComments: "Value comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public Dictionary<string, int> SimpleTypeDictionary { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [DictionaryDescription(comments: "Dictionary comments. Raw denim aesthetic synth nesciunt. :trollface:",
+                keyName: "key-name", keyComments: "Key comments. Raw denim aesthetic synth nesciunt. :trollface:",
+                valueComments: "Value comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public Dictionary<string, ChildModel> ComplexTypeDictionary { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [DictionaryDescription(comments: "Dictionary comments. Raw denim aesthetic synth nesciunt. :trollface:",
+                keyName: "key-name", keyComments: "Key comments. Raw denim aesthetic synth nesciunt. :trollface:",
+                valueComments: "Value comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public Dictionary<Options, Options> OptionsDictionary { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [DictionaryDescription(comments: "Dictionary comments. Raw denim aesthetic synth nesciunt. :trollface:",
+                keyName: "key-name", keyComments: "Key comments. Raw denim aesthetic synth nesciunt. :trollface:",
+                valueComments: "Value comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public Dictionary<Options, List<ChildModel>> DictionaryOfLists { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [DictionaryDescription(comments: "Dictionary comments. Raw denim aesthetic synth nesciunt. :trollface:",
+                keyName: "key-name", keyComments: "Key comments. Raw denim aesthetic synth nesciunt. :trollface:",
+                valueComments: "Value comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public Dictionary<Options, Dictionary<string, ChildModel>> DictionaryOfDictionaries { get; set; }
         }
 
         [Comments("Enum comments. Raw denim aesthetic synth nesciunt. :trollface:")]
@@ -117,6 +163,8 @@ namespace TestHarness.Module
             [Comments("Request parameter. Vegan excepteur butcher vice lomo. :trollface:")] Model model,
             [Comments("Url parameter 1. Enim eiusmod high life accusamus. :trollface:")] Guid id,
             [Comments("Option url parameter 2. 3 wolf moon officia aute sunt aliqua. :trollface:")] Options option,
+            [Comments("Option url parameter 2. 3 wolf moon officia aute sunt aliqua. :trollface:")] List<Options> multipleOptions,
+            [Comments("Option url parameter 2. 3 wolf moon officia aute sunt aliqua. :trollface:")] List<int> multipleValues,
             [Comments("Required, options query string 1. Leggings occaecat craft beer farm-to-table. :trollface:"), Required] Options requiredOption,
             [Comments("Required, multiple querystring 2. Leggings occaecat craft beer farm-to-table. :trollface:"), Required, Multiple] int requiredMultiple,
             [Comments("Option url parameter 2. 3 wolf moon officia aute sunt aliqua. :trollface:")] Options optionalOption = Options.Option1,
