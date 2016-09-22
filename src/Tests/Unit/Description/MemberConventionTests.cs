@@ -198,15 +198,9 @@ namespace Tests.Unit.Description
         }
 
         [Test]
-        public void should_return_optional_if_not_specified_and_nullable()
+        public void should_return_optional_if_not_specified()
         {
             GetDescription(x => x.OptionalNullable).Optional.ShouldEqual(OptionalScope.All);
-        }
-
-        [Test]
-        public void should_return_required_if_not_specified_and_not_nullable()
-        {
-            GetDescription(x => x.RequiredNonNullable).Optional.ShouldEqual(OptionalScope.None);
         }
 
         [Test]

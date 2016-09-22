@@ -82,6 +82,17 @@ namespace TestHarness.Module
             [Optional]
             public string OptionalValue { get; set; }
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [Required]
+            public string RequiredValue { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [RequiredForPost]
+            public string RequiredForPostValue { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [RequiredForPut]
+            public string RequiredForPutValue { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public int? NullableValue { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             [DefaultValue("fark")]
             public string DefaultValue { get; set; }
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]

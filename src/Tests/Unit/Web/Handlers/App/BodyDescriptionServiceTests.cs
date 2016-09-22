@@ -76,17 +76,17 @@ namespace Tests.Unit.Web.Handlers.App
                 x => x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeSimpleTypeMember("StringMember",
-                "string", 1, "", x => x.IsString());
+                "string", 1, "", x => x.IsString(), x => x.Required());
             description[2].ShouldBeSimpleTypeMember("BooleanMember",
-                "boolean", 1, "false", x => x.IsBoolean());
+                "boolean", 1, "false", x => x.IsBoolean(), x => x.Required());
             description[3].ShouldBeSimpleTypeMember("DateTimeMember",
-                "dateTime", 1, DateTime.Now.ToString("g"), x => x.IsDateTime());
+                "dateTime", 1, DateTime.Now.ToString("g"), x => x.IsDateTime(), x => x.Required());
             description[4].ShouldBeSimpleTypeMember("DurationMember",
-                "duration", 1, "0:00:00", x => x.IsDuration());
+                "duration", 1, "0:00:00", x => x.IsDuration(), x => x.Required());
             description[5].ShouldBeSimpleTypeMember("UuidMember",
-                "uuid", 1, "00000000-0000-0000-0000-000000000000", x => x.IsGuid());
+                "uuid", 1, "00000000-0000-0000-0000-000000000000", x => x.IsGuid(), x => x.Required());
             description[6].ShouldBeSimpleTypeMember("NumericMember",
-                "int", 1, "0", x => x.IsNumeric(), x => x.IsLastMember());
+                "int", 1, "0", x => x.IsNumeric(), x => x.IsLastMember().Required());
 
             description[7].ShouldBeComplexType("ComplexTypeWithSimpleMembers", 0,
                 x => x.Last().Closing());
@@ -125,7 +125,7 @@ namespace Tests.Unit.Web.Handlers.App
                     .Options("Options")
                         .WithOption("Option", value1)
                         .WithOptionAndComments("OptionWithComments", value2, "This is an option."),
-                x => x.IsLastMember());
+                x => x.IsLastMember().Required());
 
             description[2].ShouldBeComplexType("ComplexTypeWithSimpleOptionMember", 0,
                 x => x.Last().Closing());
@@ -154,9 +154,37 @@ namespace Tests.Unit.Web.Handlers.App
 
             description[2].ShouldBeSimpleTypeMember("RequiredMember",
                 "int", 1, "0", x => x.IsNumeric(),
-                x => x.Required().IsLastMember());
+                x => x.Optional().IsLastMember());
 
             description[3].ShouldBeComplexType("ComplexTypeWithOptionalMember", 0,
+                x => x.Last().Closing());
+        }
+
+        public class ComplexTypeWithNullableMember
+        {
+            [Optional]
+            public int NonNullableMember { get; set; }
+            public int? NullableMember { get; set; }
+        }
+
+        [Test]
+        public void should_create_complex_type_with_nullable_members()
+        {
+            var description = BuildDescription<ComplexTypeWithNullableMember>(requestGraph: true);
+
+            description.ShouldBeIndexed().ShouldTotal(4);
+
+            description[0].ShouldBeComplexType("ComplexTypeWithNullableMember", 0,
+                x => x.First().Opening().Namespace("Get"));
+
+            description[1].ShouldBeSimpleTypeMember("NonNullableMember",
+                "int", 1, "0", x => x.IsNumeric(), x => x.Optional());
+
+            description[2].ShouldBeSimpleTypeMember("NullableMember",
+                "int", 1, "0", x => x.IsNumeric().IsNullable(),
+                x => x.Optional().IsLastMember());
+
+            description[3].ShouldBeComplexType("ComplexTypeWithNullableMember", 0,
                 x => x.Last().Closing());
         }
 
@@ -177,8 +205,8 @@ namespace Tests.Unit.Web.Handlers.App
                 x => x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeSimpleTypeMember("DeprecatedMember",
-                "string", 1, "", x => x.IsString(),
-                x => x.IsDeprecated("Why u no use different one??").IsLastMember());
+                "string", 1, "", x => x.IsString(), x => x.IsLastMember().Required()
+                .IsDeprecated("Why u no use different one??"));
 
             description[2].ShouldBeComplexType("ComplexTypeWithDeprecatedMember", 0,
                 x => x.Last().Closing());
@@ -225,8 +253,8 @@ namespace Tests.Unit.Web.Handlers.App
             description[0].ShouldBeComplexType("ComplexTypeWithSampleValueMember", 0,
                 x => x.First().Opening().Namespace("Get"));
 
-            description[1].ShouldBeSimpleTypeMember("SampleValueMember",
-                "string", 1, "zero", x => x.IsString(), x => x.IsLastMember());
+            description[1].ShouldBeSimpleTypeMember("SampleValueMember", "string", 1, 
+                "zero", x => x.IsString(), x => x.IsLastMember().Required());
 
             description[2].ShouldBeComplexType("ComplexTypeWithSampleValueMember", 0,
                 x => x.Last().Closing());
@@ -256,7 +284,7 @@ namespace Tests.Unit.Web.Handlers.App
                 x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeArrayMember("ArrayMember", 1,
-                x => x.Opening(), x => x.IsLastMember().SampleValue(""));
+                x => x.Opening(), x => x.IsLastMember().Required().SampleValue(""));
 
             description[2].ShouldBeSimpleType(itemName,
                 "string", 2, "", x => x.IsString());
@@ -287,7 +315,8 @@ namespace Tests.Unit.Web.Handlers.App
                 x => x.First().Opening().Namespace("Get"));
 
             description[1].ShouldBeDictionaryMember("Entries", 1, x => x.Opening(),
-                x => x.Comments("This is a dictionary.").IsLastMember().SampleValue(""));
+                x => x.Comments("This is a dictionary.").IsLastMember()
+                    .SampleValue("").Required());
 
             description[2].ShouldBeSimpleTypeDictionaryEntry(
                 "KeyName", "string", "string", 2, "",
@@ -368,7 +397,7 @@ namespace Tests.Unit.Web.Handlers.App
                 1, x => x.Opening().Namespace("Get"));
 
             description[2].ShouldBeSimpleTypeMember("Member", "string", 2, "",
-                x => x.IsString(), x => x.IsLastMember());
+                x => x.IsString(), x => x.IsLastMember().Required());
 
             description[3].ShouldBeComplexType("ArrayComplexType", 1,
                 x => x.Closing());
@@ -499,7 +528,7 @@ namespace Tests.Unit.Web.Handlers.App
                 "key", "string", 1, x => x.Namespace("Get"));
 
             description[2].ShouldBeSimpleTypeMember("Member", "string", 2, "",
-                x => x.IsString(), x => x.IsLastMember());
+                x => x.IsString(), x => x.IsLastMember().Required());
 
             description[3].ShouldBeClosingComplexTypeDictionaryEntry("key", 1);
 
@@ -611,6 +640,8 @@ namespace Tests.Unit.Web.Handlers.App
             {
                 _body.Comments = comments; return this;
             }
+
+            public SimpleTypeDsl IsNullable() { _body.Nullable = true; return this; }
 
             public SimpleTypeDsl IsString() { _body.IsString = true; return this; }
 
@@ -921,7 +952,7 @@ namespace Tests.Unit.Web.Handlers.App
             }
 
             public MemberDsl Default(string value) { _body.DefaultValue = value; return this; }
-            public MemberDsl Required() { _body.Required = true; return this; }
+            public MemberDsl Required() { _body.Optional = false; return this; }
             public MemberDsl Optional() { _body.Optional = true; return this; }
             public MemberDsl IsLastMember() { _body.IsLastMember = true; return this; }
 
@@ -983,8 +1014,8 @@ namespace Tests.Unit.Web.Handlers.App
             source.TypeName.ShouldEqual(compare.TypeName);
             source.SampleValue.ShouldEqual(compare.SampleValue);
             source.DefaultValue.ShouldEqual(compare.DefaultValue);
-            source.Required.ShouldEqual(compare.Required);
             source.Optional.ShouldEqual(compare.Optional);
+            source.Nullable.ShouldEqual(compare.Nullable);
             source.Whitespace.ShouldEqual(compare.Whitespace);
             source.IsDeprecated.ShouldEqual(compare.IsDeprecated);
             source.DeprecationMessage.ShouldEqual(compare.DeprecationMessage);

@@ -42,10 +42,7 @@ namespace Swank.Description
                 SampleValue = property.GetCustomAttribute<SampleValueAttribute>()
                     .WhenNotNull(x => x.Value.ToSampleValueString(_configuration))
                     .Otherwise(property.PropertyType.GetSampleValue(_configuration)),
-                Optional = property.GetOptionalScope() ?? 
-                    (property.PropertyType.IsNullable() || 
-                     property.PropertyType.IsClass ?
-                        OptionalScope.All : OptionalScope.None),
+                Optional = property.GetOptionalScope() ?? OptionalScope.All,
                 Hidden = property.PropertyType.HasAttribute<HideAttribute>() ||
                     property.HasAttribute<HideAttribute>() ||
                     property.HasAttribute<XmlIgnoreAttribute>(),

@@ -85,6 +85,7 @@ namespace Swank.Description
 
     public class TypeDescription : Description
     {
+        public bool Nullable { get; set; }
         public Description ArrayItem { get; set; }
         public DictionaryDescription DictionaryEntry { get; set; }
     }

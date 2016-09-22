@@ -51,7 +51,8 @@ namespace Swank.Web.Handlers.App
                 TypeName = type.Name,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
-                IsSimpleType = true
+                IsSimpleType = true,
+                Nullable = type.IsNullable
             };
             
             switch (type.Name)
@@ -250,8 +251,7 @@ namespace Swank.Web.Handlers.App
                         x.IsMember = true;
                         if (lastMember) x.IsLastMember = true;
                         if (!member.Type.IsSimple) x.IsOpening = true;
-                        if (member.Required) x.Required = true;
-                        if (member.Optional) x.Optional = true;
+                        x.Optional = member.Optional;
 
                         if (member.Deprecated)
                         {

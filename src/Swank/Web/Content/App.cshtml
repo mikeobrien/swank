@@ -157,7 +157,7 @@
 
             <div class="sticky swank-endpoint-header" data-toggle="collapse" data-target="#Endpoint-{{id}}">
                 <!-- Screw it, I'm no longer fighting this troglodytic abomination that is CSS 
-                    to do something that a table does exactly what I want out of the box. -->
+                    to do something that a table does exactly what I want right out of the box. -->
                 <table class="swank-endpoint-header-fields"><tr>
                   <td class="swank-endpoint-method">{{method}}</td>  
                   <td class="swank-endpoint-url">{{{replace urlTemplate '/(\{.*?\})/g' 
@@ -193,7 +193,7 @@
 
                     {{#either comments body}}
                         <h4>Request</h4>
-                        {{> message}}
+                        {{> message isRequest=true}}
                     {{/either}}
                 {{/request}}
 
@@ -205,7 +205,7 @@
 
                     {{#either comments body}}
                         <h4>Response</h4>
-                        {{> message}}
+                        {{> message isRequest=false}}
                     {{/either}}
                 {{/response}}
 
@@ -293,7 +293,6 @@
     </script>
 
     <script type="text/html" id="swank-message-template">
-        
 
         {{#if comments}}
         <div class="swank-message-description">
@@ -329,7 +328,7 @@
                     <tr>
                         <td class="swank-sample-data swank-sample-data-json">{{> jsonMessage}}</td>
                         <td class="swank-sample-data swank-sample-data-xml hide">{{> xmlMessage}}</td>
-                        <td>{{> messageDescription}}</td>
+                        <td>{{> messageDescription isRequest=../isRequest }}</td>
                     </tr>
                     {{/body}}
                 </tbody>
@@ -340,6 +339,7 @@
     </script>
 
     <script type="text/html" id="swank-message-description-template">
+
         {{^isClosing}}
             {{^isDictionaryEntry}}
                 <p>
@@ -347,8 +347,11 @@
                     {{#isDictionary}}<span class="badge">Dictionary</span>{{/isDictionary}}
                     {{#isArray}}<span class="badge">Array</span>{{/isArray}}
                     {{#isMember}}
-                        {{#required}}<span class="badge swank-required">Required</span>{{/required}}
-                        {{#optional}}<span class="badge swank-optional">Optional</span>{{/optional}}
+                        {{#isRequest}}
+                            {{^optional}}<span class="badge swank-required">Required</span>{{/optional}}
+                            {{#optional}}<span class="badge swank-optional">Optional</span>{{/optional}}
+                        {{/isRequest}}
+                        {{#nullable}}<span class="badge swank-nullable">Nullable</span>{{/nullable}}
                         {{#if defaultValue}}
                             <span class="badge badge-inverse">Default: <code>{{defaultValue}}</code></span>
                         {{/if}}

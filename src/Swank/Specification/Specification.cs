@@ -92,6 +92,7 @@ namespace Swank.Specification
         public string Namespace { get; set; }
         public List<string> FullNamespace { get; set; }
         public string Comments { get; set; }
+        public bool IsNullable { get; set; }
 
         public bool IsSimple { get; set; }
         public Enumeration Enumeration { get; set; }
@@ -127,7 +128,6 @@ namespace Swank.Specification
     {
         public string Name { get; set; }
         public string Comments { get; set; }
-        public bool Required { get; set; }
         public bool Optional { get; set; }
         public string DefaultValue { get; set; }
         public string SampleValue { get; set; }

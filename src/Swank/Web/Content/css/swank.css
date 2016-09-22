@@ -456,6 +456,10 @@ table.swank-endpoint-header-fields {
     margin-bottom: 10px;
 }
 
+.swank-nullable {
+    background-color: #945ba9;
+}
+
 .swank-required {
     background-color: #c15757;
 }

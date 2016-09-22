@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http.Description;
+using Bender.Reflection;
 using Swank.Description;
 using Swank.Specification;
 using NUnit.Framework;
@@ -88,7 +89,7 @@ namespace Tests.Unit.Specification
         public void should_create_simple_message_type(Type type, string name)
         {
             should_be_simple_type(Builder.BuildTypeGraphService()
-                .BuildForMessage(false, type, _endpointDescription, null), name);
+                .BuildForMessage(false, type, _endpointDescription, null), type, name);
         }
 
         [Test]
@@ -102,7 +103,7 @@ namespace Tests.Unit.Specification
         public void should_create_simple_parameter_type(Type type, string name)
         {
             should_be_simple_type(Builder.BuildTypeGraphService()
-                .BuildForParameter(type, "parameter", name), name);
+                .BuildForParameter(type, "parameter", name), type, name);
         }
 
         public class SimpleTypeMember
@@ -115,28 +116,29 @@ namespace Tests.Unit.Specification
         {
             should_be_simple_type(Builder.BuildTypeGraphService().BuildForMessage(
                 false, typeof(SimpleTypeMember), _endpointDescription, null)
-                    .Members.Single().Type, "int");
+                    .Members.Single().Type, typeof(int), "int");
         }
 
-        public void should_be_simple_type(DataType type, string name)
+        public void should_be_simple_type(DataType dataType, Type type, string name)
         {
-            type.Name.ShouldEqual(name);
-            type.LogicalName.ShouldBeNull();
-            type.Namespace.ShouldBeNull();
-            type.FullNamespace.ShouldBeNull();
-            type.Comments.ShouldBeNull();
+            dataType.Name.ShouldEqual(name);
+            dataType.LogicalName.ShouldBeNull();
+            dataType.Namespace.ShouldBeNull();
+            dataType.FullNamespace.ShouldBeNull();
+            dataType.Comments.ShouldBeNull();
+            dataType.IsNullable.ShouldEqual(type.IsNullable());
 
-            type.IsSimple.ShouldBeTrue();
-            type.Enumeration.ShouldBeNull();
+            dataType.IsSimple.ShouldBeTrue();
+            dataType.Enumeration.ShouldBeNull();
 
-            type.IsComplex.ShouldBeFalse();
-            type.Members.ShouldBeNull();
+            dataType.IsComplex.ShouldBeFalse();
+            dataType.Members.ShouldBeNull();
 
-            type.IsArray.ShouldBeFalse();
-            type.ArrayItem.ShouldBeNull();
+            dataType.IsArray.ShouldBeFalse();
+            dataType.ArrayItem.ShouldBeNull();
 
-            type.IsDictionary.ShouldBeFalse();
-            type.DictionaryEntry.ShouldBeNull();
+            dataType.IsDictionary.ShouldBeFalse();
+            dataType.DictionaryEntry.ShouldBeNull();
         }
 
         public enum Options
@@ -255,7 +257,8 @@ namespace Tests.Unit.Specification
         public void should_create_array(Type type)
         {
             should_be_array_type(Builder.BuildTypeGraphService()
-                .BuildForMessage(false, type, _endpointDescription, null));
+                .BuildForMessage(false, type, _endpointDescription, null), 
+                    type.GetGenericEnumerableType());
         }
 
         [Comments("This *is* an array.")]
@@ -265,7 +268,7 @@ namespace Tests.Unit.Specification
         public void should_create_array_with_comments()
         {
             should_be_array_type(Builder.BuildTypeGraphService()
-                .BuildForMessage<ListWithComments>(),
+                .BuildForMessage<ListWithComments>(), typeof(int),
                     comments: "This *is* an array.");
         }
 
@@ -277,7 +280,7 @@ namespace Tests.Unit.Specification
         public void should_create_array_with_array_description()
         {
             should_be_array_type(Builder.BuildTypeGraphService().
-                BuildForMessage<ListWithArrayDescription>(),
+                BuildForMessage<ListWithArrayDescription>(), typeof(int),
                     "ArrayName", "This is *an* array comment.",
                     "ItemName", "This is *an* item comment.");
         }
@@ -296,7 +299,7 @@ namespace Tests.Unit.Specification
             should_be_array_type(Builder.BuildTypeGraphService()
                 .BuildForMessage<ArrayMember>()
                 .Members.Single(x => x.Name == "MemberWithoutComments").Type,
-                    "MemberWithoutComments");
+                    typeof(int), "MemberWithoutComments");
         }
 
         [Test]
@@ -305,11 +308,11 @@ namespace Tests.Unit.Specification
             should_be_array_type(Builder.BuildTypeGraphService()
                 .BuildForMessage<ArrayMember>()
                 .Members.Single(x => x.Name == "ArrayName").Type,
-                    "ArrayName", "This *is* an array comment.",
+                    typeof(int), "ArrayName", "This *is* an array comment.",
                     "ItemName", "This is *an* item comment.");
         }
 
-        public void should_be_array_type(DataType type, 
+        public void should_be_array_type(DataType type, Type itemType, 
             string name = null, string comments = null,
             string itemName = "int", string itemComments = null)
         {
@@ -320,7 +323,7 @@ namespace Tests.Unit.Specification
             type.ArrayItem.ShouldNotBeNull();
             type.ArrayItem.Name.ShouldEqual(itemName);
             type.ArrayItem.Comments.ShouldEqual(itemComments);
-            should_be_simple_type(type.ArrayItem.Type, "int");
+            should_be_simple_type(type.ArrayItem.Type, itemType, "int");
 
             type.IsSimple.ShouldBeFalse();
             type.Enumeration.ShouldBeNull();
@@ -341,7 +344,7 @@ namespace Tests.Unit.Specification
         {
             should_be_dictionary_type(Builder.BuildTypeGraphService()
                 .BuildForMessage(false, type, _endpointDescription, null), 
-                    "DictionaryOfInt");
+                    typeof(string), typeof(int), "DictionaryOfInt");
         }
 
         [Comments("This is *a* dictionary.")]
@@ -352,7 +355,8 @@ namespace Tests.Unit.Specification
         {
             should_be_dictionary_type(Builder.BuildTypeGraphService()
                 .BuildForMessage<DictionaryWithComments>(),
-                    "DictionaryOfInt", "This is *a* dictionary.");
+                    typeof(string), typeof(int), "DictionaryOfInt", 
+                    "This is *a* dictionary.");
         }
 
         [DictionaryDescription("DictionaryName", "This is *a* dictionary.",
@@ -364,6 +368,7 @@ namespace Tests.Unit.Specification
         {
             should_be_dictionary_type(Builder.BuildTypeGraphService()
                 .BuildForMessage<DictionaryWithDictionaryComments>(),
+                    typeof(string), typeof(int), 
                     name: "DictionaryName",
                     comments: "This is *a* dictionary.",
                     keyName: "KeyName",
@@ -385,7 +390,7 @@ namespace Tests.Unit.Specification
             should_be_dictionary_type(Builder.BuildTypeGraphService()
                 .BuildForMessage<DictionaryMember>()
                 .Members.Single(x => x.Name == "MemberWithoutComments").Type,
-                "MemberWithoutComments");
+                typeof(string), typeof(int), "MemberWithoutComments");
         }
 
         [Test]
@@ -394,6 +399,7 @@ namespace Tests.Unit.Specification
             should_be_dictionary_type(Builder.BuildTypeGraphService()
                 .BuildForMessage<DictionaryMember>()
                 .Members.Single(x => x.Name == "DictionaryName").Type,
+                typeof(string), typeof(int), 
                 "DictionaryName",
                 "This *is* a dictionary.",
                 "KeyName",
@@ -402,6 +408,7 @@ namespace Tests.Unit.Specification
         }
 
         public void should_be_dictionary_type(DataType type, 
+            Type keyType, Type valueType,
             string name = null, string comments = null,
             string keyName = null, string keyComments = null, 
             string valueComments = null)
@@ -422,9 +429,9 @@ namespace Tests.Unit.Specification
             type.DictionaryEntry.ShouldNotBeNull();
             type.DictionaryEntry.KeyName.ShouldEqual(keyName);
             type.DictionaryEntry.KeyComments.ShouldEqual(keyComments);
-            should_be_simple_type(type.DictionaryEntry.KeyType, "string");
+            should_be_simple_type(type.DictionaryEntry.KeyType, keyType, "string");
             type.DictionaryEntry.ValueComments.ShouldEqual(valueComments);
-            should_be_simple_type(type.DictionaryEntry.ValueType, "int");
+            should_be_simple_type(type.DictionaryEntry.ValueType, valueType, "int");
         }
 
         // Complex types
@@ -443,9 +450,9 @@ namespace Tests.Unit.Specification
                     null), 2).Members;
 
             should_match_member(members[0], "Member1", sampleValue: "",
-                type: x => should_be_simple_type(x, "string"));
+                type: x => should_be_simple_type(x, typeof(string), "string"));
             should_match_member(members[1], "Member2", sampleValue: "",
-                type: x => should_be_simple_type(x, "string"));
+                type: x => should_be_simple_type(x, typeof(string), "string"));
         }
 
         public class ComplexTypeWithMemberComments
@@ -463,7 +470,7 @@ namespace Tests.Unit.Specification
                 .Members.Single();
 
             should_match_member(member, "Member", "This is *a* member.", sampleValue: "",
-                type: x => should_be_simple_type(x, "string"));
+                type: x => should_be_simple_type(x, typeof(string), "string"));
         }
 
         public class ComplexTypeWithDefaultValue
@@ -482,7 +489,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(member, "Member",
                 defaultValue: null, sampleValue: "0.00",
-                type: x => should_be_simple_type(x, "decimal"));
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
         }
 
         [Test]
@@ -494,8 +501,8 @@ namespace Tests.Unit.Specification
                 .Members.Single();
 
             should_match_member(member, "Member",
-                defaultValue: "3.14", sampleValue: "0.00", required: true,
-                type: x => should_be_simple_type(x, "decimal"));
+                defaultValue: "3.14", sampleValue: "0.00", optional: true,
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
         }
 
         [Test]
@@ -508,8 +515,8 @@ namespace Tests.Unit.Specification
                 .Members.Single();
 
             should_match_member(member, "Member",
-                defaultValue: "3.1", sampleValue: "0.0", required: true,
-                type: x => should_be_simple_type(x, "decimal"));
+                defaultValue: "3.1", sampleValue: "0.0", optional: true,
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
         }
 
         public class ComplexTypeWithSampleValue
@@ -528,7 +535,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(member, "Member",
                 sampleValue: "3.14",
-                type: x => should_be_simple_type(x, "decimal"));
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
         }
 
         [Test]
@@ -540,9 +547,8 @@ namespace Tests.Unit.Specification
                 .Members.Single();
 
             should_match_member(member, "Member",
-                sampleValue: "3.14",
-                required: true,
-                type: x => should_be_simple_type(x, "decimal"));
+                sampleValue: "3.14", optional: true,
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
         }
 
         [Test]
@@ -555,16 +561,15 @@ namespace Tests.Unit.Specification
                 .Members.Single();
 
             should_match_member(member, "Member",
-                sampleValue: "3.1",
-                required: true,
-                type: x => should_be_simple_type(x, "decimal"));
+                sampleValue: "3.1", optional: true,
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
         }
 
         public class ComplexTypeWithOptionalMember
         {
             public string OptionalReference { get; set; }
             public int? OptionalNullable { get; set; }
-            public int RequiredNonNullable { get; set; }
+            public int OptionalNonNullable { get; set; }
 
             [Optional]
             public string Optional { get; set; }
@@ -586,57 +591,61 @@ namespace Tests.Unit.Specification
         }
 
         private static readonly object[][] OptionalMemberTestCases = TestCaseSource.Create(x => x
-            .Add(nameof(ComplexTypeWithOptionalMember.OptionalReference), true, false, "string", "", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalReference), true, "string", "", null)
 
-            .Add(nameof(ComplexTypeWithOptionalMember.Optional), true, false, "string", "", null)
-            .Add(nameof(ComplexTypeWithOptionalMember.Required), false, true, "string", "", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.Optional), true, "string", "", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.Required), false, "string", "", null)
 
-            .Add(nameof(ComplexTypeWithOptionalMember.OptionalNullable), true, false, "int", "0", null)
-            .Add(nameof(ComplexTypeWithOptionalMember.RequiredNonNullable), false, true, "int", "0", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalNullable), true, "int", "0", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalNonNullable), true, "int", "0", null)
 
-            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPost), true, false, "string", "", HttpMethod.Post)
-            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPost), false, true, "string", "", HttpMethod.Post)
-            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPost), false, true, "string", "", HttpMethod.Put)
-            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPost), true, false, "string", "", HttpMethod.Put)
-            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPost), false, true, "string", "", null)
-            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPost), true, false, "string", "", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPost), true, "string", "", HttpMethod.Post)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPost), false, "string", "", HttpMethod.Post)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPost), false, "string", "", HttpMethod.Put)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPost), true, "string", "", HttpMethod.Put)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPost), false, "string", "", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPost), true, "string", "", null)
 
-            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPut), true, false, "string", "", HttpMethod.Put)
-            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPut), false, true, "string", "", HttpMethod.Put)
-            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPut), false, true, "string", "", HttpMethod.Post)
-            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPut), true, false, "string", "", HttpMethod.Post)
-            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPut), false, true, "string", "", null)
-            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPut), true, false, "string", "", null));
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPut), true, "string", "", HttpMethod.Put)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPut), false, "string", "", HttpMethod.Put)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPut), false, "string", "", HttpMethod.Post)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPut), true, "string", "", HttpMethod.Post)
+            .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPut), false, "string", "", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPut), true, "string", "", null));
 
         [Test]
         [TestCaseSource(nameof(OptionalMemberTestCases))]
         public void should_return_complex_type_optional_member_when_input(
-            string property, bool optional, bool required, string dataType, 
+            string property, bool optional, string dataType, 
                 string sampleValue, HttpMethod method)
         {
             var apiDescription = new ApiDescription { HttpMethod = method };
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
                 .BuildForMessage(true, typeof(ComplexTypeWithOptionalMember),
                     _endpointDescription, apiDescription), 9).Members;
+            var propertyType = typeof(ComplexTypeWithOptionalMember)
+                .GetProperty(property).PropertyType;
 
             should_match_member(members.First(x => x.Name == property), property,
-                required: required, sampleValue: sampleValue, optional: optional,
-                type: x => should_be_simple_type(x, dataType));
+                sampleValue: sampleValue, optional: optional,
+                type: x => should_be_simple_type(x, propertyType, dataType));
         }
 
         [Test]
         [TestCaseSource(nameof(OptionalMemberTestCases))]
         public void should_not_return_complex_type_optional_member_when_output(
-            string property, bool optional, bool required, string dataType,
+            string property, bool optional, string dataType,
                 string sampleValue, HttpMethod method)
         {
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
                 .BuildForMessage(false, typeof(ComplexTypeWithOptionalMember),
                     _endpointDescription, null), 9).Members;
+            var propertyType = typeof(ComplexTypeWithOptionalMember)
+                .GetProperty(property).PropertyType;
 
             should_match_member(members.First(x => x.Name == property), property,
-                required: false, sampleValue: sampleValue, optional: false,
-                type: x => should_be_simple_type(x, dataType));
+                optional: false, sampleValue: sampleValue,
+                type: x => should_be_simple_type(x, propertyType, dataType));
         }
 
         public class CyclicModel
@@ -729,7 +738,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(members[0], "DeprecatedMember",
                 deprecated: true, sampleValue: "",
-                type: x => should_be_simple_type(x, "string"));
+                type: x => should_be_simple_type(x, typeof(string), "string"));
         }
 
         [Test]
@@ -742,20 +751,19 @@ namespace Tests.Unit.Specification
             should_match_member(members[1], "DeprecatedMemberWithMessage",
                 deprecated: true, sampleValue: "",
                 deprecatedMessage: "**DO NOT** seek the treasure!",
-                type: x => should_be_simple_type(x, "string"));
+                type: x => should_be_simple_type(x, typeof(string), "string"));
         }
 
         public void should_match_member(Member member, string name,
             string comments = null, string defaultValue = null,
-            string sampleValue = null, bool required = false,
-            bool optional = false, bool deprecated = false,
-            string deprecatedMessage = null, Action<DataType> type = null)
+            string sampleValue = null, bool optional = false, 
+            bool deprecated = false, string deprecatedMessage = null, 
+            Action<DataType> type = null)
         {
             member.Name.ShouldEqual(name);
             member.Comments.ShouldEqual(comments);
             member.DefaultValue.ShouldEqual(defaultValue);
             member.SampleValue.ShouldEqual(sampleValue);
-            member.Required.ShouldEqual(required);
             member.Optional.ShouldEqual(optional);
             member.Type.ShouldNotBeNull();
             member.Deprecated.ShouldEqual(deprecated);

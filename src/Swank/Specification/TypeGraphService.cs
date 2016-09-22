@@ -76,21 +76,10 @@ namespace Swank.Specification
                 BuildArray(dataType, type, description, requestGraph, 
                     endpoint, ancestors, memberDescription, parent, 
                     logicalName, @namespace);
-            else
-            {
-                var isEnum = type.GetNullableUnderlyingType().IsEnum;
-                if (isEnum || !type.IsSimpleType())
-                {
-                    if (!isEnum) dataType.LogicalName = logicalName ?? dataType.Name;
-                    dataType.Namespace = @namespace ?? parent.LogicalName + 
-                        (isEnum && memberDescription != null ? memberDescription.Name : dataType.Name);
-                    dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
-                        .Concat(dataType.Namespace).ToList();
-                }
-
-                if (type.IsSimpleType()) BuildSimpleType(dataType, type, requestGraph);
-                else BuildComplexType(dataType, type, requestGraph, endpoint, ancestors);
-            }
+            else if (type.IsSimpleType()) BuildSimpleType(parent, dataType, 
+                description, type, requestGraph, @namespace, memberDescription);
+            else BuildComplexType(parent, dataType, type, requestGraph, 
+                endpoint, ancestors, logicalName, @namespace);
 
             return _configuration.TypeOverrides.Apply(new TypeOverrideContext
             {
@@ -100,6 +89,25 @@ namespace Swank.Specification
                 Description = description,
                 IsRequest = requestGraph
             }).DataType;
+        }
+
+        private void BuildSimpleType(
+            DataType parent,
+            DataType dataType, 
+            TypeDescription description, 
+            Type type, 
+            bool requestGraph,
+            string @namespace,
+            MemberDescription memberDescription)
+        {
+            dataType.IsSimple = true;
+            dataType.IsNullable = description.Nullable;
+            if (!type.GetNullableUnderlyingType().IsEnum) return;
+            dataType.Namespace = @namespace ?? parent.LogicalName +
+                (memberDescription != null ? memberDescription.Name : dataType.Name);
+            dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
+                .Concat(dataType.Namespace).ToList();
+            dataType.Enumeration = _optionBuilderService.BuildOptions(type, null, requestGraph);
         }
 
         private void BuildDictionary(
@@ -169,21 +177,21 @@ namespace Swank.Specification
             };
         }
 
-        private void BuildSimpleType(DataType dataType, Type type, bool requestGraph)
-        {
-            dataType.IsSimple = true;
-            if (type.GetNullableUnderlyingType().IsEnum)
-                dataType.Enumeration = _optionBuilderService.BuildOptions(type, null, requestGraph);
-        }
-
         private void BuildComplexType(
+            DataType parent,
             DataType dataType,
             Type type,
             bool requestGraph,
             ApiDescription endpoint,
-            IEnumerable<Type> ancestors)
+            IEnumerable<Type> ancestors,
+            string logicalName,
+            string @namespace)
         {
             dataType.IsComplex = true;
+            dataType.LogicalName = logicalName ?? dataType.Name;
+            dataType.Namespace = @namespace ?? parent.LogicalName + dataType.Name;
+            dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
+                .Concat(dataType.Namespace).ToList();
             dataType.Members = type.GetProperties()
                 .Select(x => new
                 {
@@ -210,9 +218,6 @@ namespace Swank.Specification
                         SampleValue = x.Description
                             .WhenNotNull(y => y.SampleValue)
                                 .OtherwiseDefault(),
-                        Required = requestGraph && x.Description
-                            .WhenNotNull(y => y.Optional.IsRequired(endpoint.HttpMethod))
-                            .OtherwiseDefault(),
                         Optional = requestGraph && x.Description
                             .WhenNotNull(y => y.Optional.IsOptional(endpoint.HttpMethod))
                             .OtherwiseDefault(),
@@ -220,22 +225,14 @@ namespace Swank.Specification
                         DeprecationMessage = x.Description.DeprecationMessage,
                         Type = BuildGraph(x.Type, requestGraph, endpoint,
                             dataType, x.Ancestors, x.Description)
-                    }
+                    },
+
                 }).Member).ToList();
         }
     }
 
     public static class TypeGraphFactoryExtensions
     {
-        public static bool IsRequired(this OptionalScope optional, HttpMethod method)
-        {
-            return optional == OptionalScope.None ||
-                (optional == OptionalScope.Post && method != HttpMethod.Post) ||
-                (optional == OptionalScope.Put && method != HttpMethod.Put) ||
-                (optional == OptionalScope.AllButPost && method == HttpMethod.Post) ||
-                (optional == OptionalScope.AllButPut && method == HttpMethod.Put);
-        }
-
         public static bool IsOptional(this OptionalScope optional, HttpMethod method)
         {
             return optional == OptionalScope.All ||

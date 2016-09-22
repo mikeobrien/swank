@@ -155,6 +155,8 @@ namespace Tests.Unit.Description
             description.Name.ShouldEqual("ArrayOfLong");
         }
 
+        // Array
+
         public class WithNoArrayComments : List<int> { }
 
         [ArrayDescription]
@@ -202,6 +204,8 @@ namespace Tests.Unit.Description
             GetDescription<WithArrayComments>().ArrayItem
                 .Comments.ShouldEqual("This is an item comment.");
         }
+
+        // Dictionary
 
         public class WithNoDictionaryDescription : Dictionary<string, int> { }
 
@@ -285,6 +289,20 @@ namespace Tests.Unit.Description
         {
             GetDescription<WithDictionaryDescription>().DictionaryEntry
                 .ValueComments.ShouldEqual("This is a value comment.");
+        }
+
+        // Nullable
+
+        [Test]
+        public void should_indicate_if_type_is_nullable()
+        {
+            GetDescription<int?>().Nullable.ShouldBeTrue();
+        }
+
+        [Test]
+        public void should_indicate_if_type_is_not_nullable()
+        {
+            GetDescription<int>().Nullable.ShouldBeFalse();
         }
     }
 }

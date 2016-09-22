@@ -55,8 +55,8 @@ namespace Swank.Web.Handlers.App
         public string TypeName { get; set; }
         public string SampleValue { get; set; }
         public string DefaultValue { get; set; }
-        public bool? Required { get; set; }
         public bool? Optional { get; set; }
+        public bool Nullable { get; set; }
         public string Whitespace { get; set; }
         public bool? IsDeprecated { get; set; }
         public string DeprecationMessage { get; set; }
