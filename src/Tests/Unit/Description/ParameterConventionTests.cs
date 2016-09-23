@@ -34,6 +34,8 @@ namespace Tests.Unit.Description
                     .ParameterDescriptions.First());
         }
 
+        public enum Options { Option1 }
+
         public class Controller
         {
             public object Value(int value) { return  null; }
@@ -54,6 +56,8 @@ namespace Tests.Unit.Description
             public object XmlIgnoreValue([XmlIgnore] int value) { return null; }
             public object MultipleValue([Multiple] int value) { return null; }
             public object ListValue(List<int> value) { return null; }
+            public object EnumDefaultValue(Options value = Options.Option1) { return null; }
+            public object NullableEnumDefaultValue(Options? value = Options.Option1) { return null; }
         }
 
         [Test]
@@ -108,6 +112,20 @@ namespace Tests.Unit.Description
         public void should_specify_default_value_if_default_value_attribute_applied()
         {
             GetDescription(x => x.DefaultValue(0)).DefaultValue.ShouldEqual("5");
+        }
+
+        [Test]
+        public void should_specify_the_default_enum_value()
+        {
+            GetDescription(x => x.EnumDefaultValue(0))
+                .DefaultValue.ShouldEqual("Option1");
+        }
+
+        [Test]
+        public void should_specify_the_default_nullable_enum_value()
+        {
+            GetDescription(x => x.NullableEnumDefaultValue(0))
+                .DefaultValue.ShouldEqual("Option1");
         }
 
         [Test]

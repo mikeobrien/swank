@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using NUnit.Framework;
 using Should;
-using Swank.Web.Handlers;
 using Swank.Web.Handlers.App;
 using Tests.Common;
 

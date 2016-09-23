@@ -1,4 +1,6 @@
-﻿using System.Web.Http.Description;
+﻿using System;
+using System.Web.Http.Controllers;
+using System.Web.Http.Description;
 using System.Xml.Serialization;
 using Swank.Configuration;
 using Swank.Extensions;
@@ -33,8 +35,8 @@ namespace Swank.Description
                     parameter.GetAttribute<CommentsAttribute>().WhenNotNull(x => x.Comments)
                         .OtherwiseDefault() ?? parameter.Documentation ??
                         xmlComments?.Parameters.TryGetValue(parameter.Name),
-                DefaultValue = (parameter.GetAttribute<DefaultValueAttribute>()?.Value ?? 
-                        parameter.ParameterDescriptor.DefaultValue)
+                DefaultValue = (parameter.GetAttribute<DefaultValueAttribute>()?.Value ??
+                        GetDefaultValue(parameter.ParameterDescriptor))
                     .WhenNotNull(x => x.ToSampleValueString(_configuration))
                     .OtherwiseDefault(),
                 SampleValue = parameter.GetAttribute<SampleValueAttribute>()
@@ -48,10 +50,29 @@ namespace Swank.Description
             };
         }
 
-        private bool IsOptional(ApiParameterDescription parameter)
+        private static string GetDefaultValue(HttpParameterDescriptor parameter)
         {
-            if (parameter.HasAttribute<RequiredAttribute>()) return false;
-            return parameter.ParameterDescriptor.IsOptional;
+            var value = parameter.DefaultValue;
+            if (value == null) return null;
+            var type = parameter.ParameterType;
+            // Web API sets the default values of nullable enums 
+            // to a numeric value instead of the enum value as it 
+            // does with a non nullable. So this normalizes enum 
+            // default values so they are the enum value for both 
+            // nullable and non nullable types.
+            var underlyingType = type.GetNullableUnderlyingType();
+            if (underlyingType.IsEnum && type.IsNullable() &&
+                underlyingType != value.GetType())
+            {
+                return Enum.ToObject(underlyingType, value).ToString();
+            }
+            return value.ToString();
+        }
+
+        public bool IsOptional(ApiParameterDescription parameter)
+        {
+            return !parameter.HasAttribute<RequiredAttribute>() && 
+                parameter.ParameterDescriptor.IsOptional;
         }
     }
 }
