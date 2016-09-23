@@ -48,7 +48,7 @@ namespace Tests.Unit.Description
             public object DefaultForOptionalValue(int? value = 8) { return null; }
             public object SampleValue([SampleValue(5)] int value) { return null; }
             public object OptionalNullableValue(int? value = null) { return null; }
-            public object OptionalValue([Optional] int value) { return null; }
+            public object RequiredNonNullableValue(int value) { return null; }
             public object RequiredValue([Required] int? value = null) { return null; }
             public object HiddenValue([Hide] int value) { return null; }
             public object XmlIgnoreValue([XmlIgnore] int value) { return null; }
@@ -135,9 +135,9 @@ namespace Tests.Unit.Description
         }
 
         [Test]
-        public void should_be_optional_if_optional_attribute_applied()
+        public void should_be_optional_if_non_nullable()
         {
-            GetDescription(x => x.OptionalValue(0)).Optional.ShouldBeTrue();
+            GetDescription(x => x.RequiredNonNullableValue(0)).Optional.ShouldBeFalse();
         }
 
         [Test]

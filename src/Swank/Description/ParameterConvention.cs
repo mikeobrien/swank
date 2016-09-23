@@ -51,7 +51,6 @@ namespace Swank.Description
         private bool IsOptional(ApiParameterDescription parameter)
         {
             if (parameter.HasAttribute<RequiredAttribute>()) return false;
-            if (parameter.HasAttribute<OptionalAttribute>()) return true;
             return parameter.ParameterDescriptor.IsOptional;
         }
     }

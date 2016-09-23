@@ -29,9 +29,6 @@ namespace TestHarness.Default
             /// </remarks>
             public string Value { get; set; }
             /// <summary>Member summary. Raw denim aesthetic synth nesciunt. :trollface:</summary>
-            [Optional]
-            public string OptionalValue { get; set; }
-            /// <summary>Member summary. Raw denim aesthetic synth nesciunt. :trollface:</summary>
             [DefaultValue("fark")]
             public string DefaultValue { get; set; }
             /// <summary>Member summary. Raw denim aesthetic synth nesciunt. :trollface:</summary>

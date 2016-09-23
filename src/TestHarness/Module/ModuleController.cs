@@ -16,9 +16,6 @@ namespace TestHarness.Module
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             public string Value { get; set; }
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
-            [Optional]
-            public string OptionalValue { get; set; }
-            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             [DefaultValue("fark")]
             public string DefaultValue { get; set; }
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
@@ -78,9 +75,6 @@ namespace TestHarness.Module
         {
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             public string Value { get; set; }
-            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
-            [Optional]
-            public string OptionalValue { get; set; }
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             [Required]
             public string RequiredValue { get; set; }

@@ -571,7 +571,6 @@ namespace Tests.Unit.Specification
             public int? OptionalNullable { get; set; }
             public int OptionalNonNullable { get; set; }
 
-            [Optional]
             public string Optional { get; set; }
 
             [Required]

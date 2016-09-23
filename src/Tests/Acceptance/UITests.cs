@@ -183,7 +183,7 @@ namespace Tests.Acceptance
             header.Optional.ShouldBeFalse();
             header.Required.ShouldBeFalse();
 
-            endpoint.Response.Body.Count.ShouldEqual(97);
+            endpoint.Response.Body.Count.ShouldEqual(96);
 
             var bodyLine = endpoint.Response.Body.First();
             bodyLine.Index.ShouldEqual(1);

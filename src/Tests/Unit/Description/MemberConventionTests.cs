@@ -66,7 +66,6 @@ namespace Tests.Unit.Description
             
             public int RequiredNonNullable { get; set; }
 
-            [Optional]
             public string Optional { get; set; }
 
             [Required]

@@ -70,12 +70,11 @@ namespace Swank.Description
         public static OptionalScope? GetOptionalScope(this PropertyInfo property)
         {
             if (property.HasAttribute<RequiredAttribute>()) return OptionalScope.None;
-            if (property.HasAttribute<OptionalAttribute>()) return OptionalScope.All;
             if (property.HasAttribute<OptionalForPostAttribute>()) return OptionalScope.Post;
             if (property.HasAttribute<OptionalForPutAttribute>()) return OptionalScope.Put;
             if (property.HasAttribute<RequiredForPutAttribute>()) return OptionalScope.AllButPut;
             if (property.HasAttribute<RequiredForPostAttribute>()) return OptionalScope.AllButPost;
-            return null;
+            return OptionalScope.All;
         }
     }
 }

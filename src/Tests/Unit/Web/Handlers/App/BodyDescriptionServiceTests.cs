@@ -133,7 +133,6 @@ namespace Tests.Unit.Web.Handlers.App
 
         public class ComplexTypeWithOptionalMember
         {
-            [Optional]
             public string OptionalMember { get; set; }
             public int RequiredMember { get; set; }
         }
@@ -162,7 +161,6 @@ namespace Tests.Unit.Web.Handlers.App
 
         public class ComplexTypeWithNullableMember
         {
-            [Optional]
             public int NonNullableMember { get; set; }
             public int? NullableMember { get; set; }
         }
@@ -214,7 +212,7 @@ namespace Tests.Unit.Web.Handlers.App
 
         public class ComplexTypeWithDefaultValueMember
         {
-            [Optional, DefaultValue("zero")]
+            [DefaultValue("zero")]
             public string DefaultValueMember { get; set; }
         }
 
