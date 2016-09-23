@@ -33,9 +33,9 @@ namespace Swank.Extensions
             return source != null ? map(source) : @default;
         }
 
-        public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, T item)
+        public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, params T[] item)
         {
-            return source != null ? new List<T>(source) { item } : item.AsList();
+            return source != null ? new List<T>(Enumerable.Concat(source, item)).ToList() : item.ToList();
         }
 
         public static IEnumerable<T> DistinctSiblings<T>(this IEnumerable<T> source)
