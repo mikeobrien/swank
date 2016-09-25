@@ -82,6 +82,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Acceptance\TemplateTests.cs" />
     <Compile Include="Common\ApiDescriptionDsl.cs" />
     <Compile Include="Common\Extensions.cs" />
     <Compile Include="Common\ReflectionExtensions.cs" />

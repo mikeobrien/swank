@@ -66,10 +66,17 @@ namespace Swank
             return (T)GetInstance(typeof(T), instances, new List<Type>());
         }
 
-        private object GetInstance(Type type, object[] instances, List<Type> ancestors)
+        public T CreateInstance<T>(params object[] instances)
         {
-            var cached = _cache.FirstOrDefault(x => x.GetType() == type);
-            if (cached != null) return cached;
+            return (T)GetInstance(typeof(T), instances, new List<Type>(), false);
+        }
+
+        private object GetInstance(Type type, object[] instances, List<Type> ancestors, bool cached = true)
+        {
+            var instance = instances.FirstOrDefault(x => x.GetType() == type) ??
+                (cached ? _cache.FirstOrDefault(x => x.GetType() == type) : null) ??
+                _registrations.FirstOrDefault(x => x.Key == type && !(x.Value is Type)).Value;
+            if (instance != null) return instance;
 
             var constructor = type
                 .GetConstructors(BindingFlags.Instance | BindingFlags.Public)
@@ -85,23 +92,21 @@ namespace Swank
                 $"{type.FullName} is not registered." + (ancestors.Any() ? "\r\n" +
                     ancestors.Concat(type).Select(x => x.FullName).Join(" -->\r\n") : ""));
 
-            var instance = constructor.Constructor.Invoke(constructor.Parameters
+            var newInstance = constructor.Constructor.Invoke(constructor.Parameters
                 .Select(x =>
                 {
-                    var registration = instances.FirstOrDefault(y => 
-                            y.GetType() == x.ParameterType) ??
-                        _registrations.FirstOrDefault(y => y.Key == x.ParameterType).Value;
-                    if (registration != null && !(registration is Type))
-                        return registration;
-                    var parameterType = registration as Type ?? x.ParameterType;
+                    var typeRegistration = _registrations
+                        .FirstOrDefault(y => y.Value is Type && 
+                            y.Key == x.ParameterType).Value;
+                    var parameterType = (Type)typeRegistration ?? x.ParameterType;
                     return _factories.Select(y => y(parameterType))
                         .FirstOrDefault() ?? GetInstance(parameterType, 
                             instances, new List<Type>(ancestors) { type });
                 }).ToArray());
 
-            _cache.Add(instance);
+            _cache.Add(newInstance);
 
-            return instance;
+            return newInstance;
         }
     }
 }

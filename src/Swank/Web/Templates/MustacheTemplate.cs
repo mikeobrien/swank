@@ -37,7 +37,7 @@ namespace Swank.Web.Templates
             }
             catch (Exception exception)
             {
-                return _configuration.DebugMode ? exception.Message : "";
+                return _configuration.DebugMode ? exception.ToString() : "Error rendering template. Enable debug mode to see more information.";
             }
         }
 

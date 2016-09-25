@@ -11,9 +11,19 @@ namespace Tests.Unit.Extensions
         public interface IDependency { }
         public class Dependency : IDependency { }
 
-        public class RootWithExplicitDependency
+        public class Root1WithExplicitDependency
         {
-            public RootWithExplicitDependency(Dependency dependency)
+            public Root1WithExplicitDependency(Dependency dependency)
+            {
+                Dependency = dependency;
+            }
+
+            public Dependency Dependency { get; set; }
+        }
+        
+        public class Root2WithExplicitDependency
+        {
+            public Root2WithExplicitDependency(Dependency dependency)
             {
                 Dependency = dependency;
             }
@@ -36,7 +46,7 @@ namespace Tests.Unit.Extensions
         {
             var container = MicroContainer.Create();
 
-            var result = container.GetInstance<RootWithExplicitDependency>();
+            var result = container.GetInstance<Root1WithExplicitDependency>();
             result.ShouldNotBeNull();
             result.Dependency.ShouldNotBeNull();
         }
@@ -47,9 +57,59 @@ namespace Tests.Unit.Extensions
             var container = MicroContainer.Create();
             var dependency = new Dependency();
 
-            var result = container.GetInstance<RootWithExplicitDependency>(dependency);
+            var result = container.GetInstance<Root1WithExplicitDependency>(dependency);
             result.ShouldNotBeNull();
             result.Dependency.ShouldEqual(dependency);
+        }
+
+        [Test]
+        public void Should_not_cache_instance_or_adhoc_dependencies_when_specified()
+        {
+            var container = MicroContainer.Create();
+            var dependency1 = new Dependency();
+
+            var result1 = container.CreateInstance<Root1WithExplicitDependency>(dependency1);
+            result1.ShouldNotBeNull();
+            result1.Dependency.ShouldEqual(dependency1);
+
+            var dependency2 = new Dependency();
+
+            var result2 = container.CreateInstance<Root1WithExplicitDependency>(dependency2);
+            result2.ShouldNotBeNull();
+            result2.Dependency.ShouldEqual(dependency2);
+            result1.ShouldNotEqual(result2);
+        }
+
+        [Test]
+        public void Should_cache_instance_when_specified()
+        {
+            var container = MicroContainer.Create();
+            var dependency = new Dependency();
+
+            var result1 = container.GetInstance<Root1WithExplicitDependency>(dependency);
+            result1.ShouldNotBeNull();
+            result1.Dependency.ShouldEqual(dependency);
+
+            var result2 = container.GetInstance<Root1WithExplicitDependency>(new Dependency());
+            result2.ShouldNotBeNull();
+            result1.ShouldEqual(result2);
+        }
+
+        [Test]
+        public void Should_not_cache_adhoc_dependencies()
+        {
+            var container = MicroContainer.Create();
+            var dependency1 = new Dependency();
+
+            var result1 = container.GetInstance<Root1WithExplicitDependency>(dependency1);
+            result1.ShouldNotBeNull();
+            result1.Dependency.ShouldEqual(dependency1);
+
+            var dependency2 = new Dependency();
+
+            var result2 = container.GetInstance<Root2WithExplicitDependency>(dependency2);
+            result2.ShouldNotBeNull();
+            result2.Dependency.ShouldNotEqual(dependency1);
         }
 
         [Test]
@@ -88,7 +148,7 @@ namespace Tests.Unit.Extensions
             var container = MicroContainer.Create(x => x
                 .Register(dependency));
 
-            container.GetInstance<RootWithExplicitDependency>()
+            container.GetInstance<Root1WithExplicitDependency>()
                 .Dependency.ShouldEqual(dependency);
         }
     }

@@ -57,7 +57,7 @@ namespace Swank.Extensions
 
         public static byte[] ToBytes(this string source)
         {
-            return source == null ? new byte[] {} : Encoding.UTF8.GetBytes(source);
+            return source == null ? null : Encoding.UTF8.GetBytes(source);
         }
 
         public static string ToSnakeCase(this object value)

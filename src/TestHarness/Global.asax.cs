@@ -32,6 +32,8 @@ namespace TestHarness
                 //.OverrideResourcesWhen(r => r.Comments = $"This is the {r.Name.ToLower()} resource.", r => r.Comments.IsNullOrEmpty())
                 //.HideXmlData()
                 //.HideJsonData()
+                .WithTemplateFromVirtualPath("Templates/Template.cshtml", "template", "text/plain")
+                .WithTemplateFromVirtualPath("Templates/missing.cshtml", "missing/template", "text/plain")
                 .IsInDebugModeWhenAppIsInDebugMode()
                 .OverrideRequestWhen(
                     r => { r.Message.Type = null; r.Message.IsBinary = true; }, 

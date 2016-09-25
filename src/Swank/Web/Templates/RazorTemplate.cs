@@ -35,14 +35,16 @@ namespace Swank.Web.Templates
             }
             catch (Exception exception)
             {
-                return _configuration.DebugMode ? exception.Message
-                    .Split("List of loaded Assemblies").First() : "";
+                if (!_configuration.DebugMode) return "Error rendering template. Enable debug mode to see more information.";
+                var error = exception.Message.Split("List of loaded Assemblies").First();
+                return error.IsNotNullOrEmpty() ? error + "\r\n\r\n" + exception  : exception.ToString();
             }
         }
 
         public RazorTemplate Compile<TModel>()
         {
-            _asset.ReadString().CompileRazor<TModel>();
+            var asset = _asset.ReadString();
+            asset?.CompileRazor<TModel>();
             return this;
         }
 

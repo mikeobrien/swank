@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Swank.Extensions;
 using Swank.Web.Assets;
@@ -16,7 +17,10 @@ namespace Swank.Web.Handlers
 
         protected override Task<HttpResponseMessage> Send(HttpRequestMessage request)
         {
-            return _asset.Load().CreateResponseTask(_asset.MimeType);
+            var asset = _asset.Load();
+            return asset == null
+                ? request.CreateErrorResponseTask(HttpStatusCode.NotFound)
+                : asset.CreateResponseTask(_asset.MimeType);
         }
     }
 }

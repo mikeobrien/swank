@@ -18,12 +18,12 @@ namespace Swank.Web.Assets
 
         public byte[] ReadBytes()
         {
-            return File.Exists(Path) ? File.ReadAllBytes(Path) : new byte[] {};
+            return File.Exists(Path) ? File.ReadAllBytes(Path) : null;
         }
 
         public string ReadString()
         {
-            return File.Exists(Path) ? File.ReadAllText(Path) : "";
+            return File.Exists(Path) ? File.ReadAllText(Path) : null;
         }
 
         public static FileAsset FromPath(string path)

@@ -1,0 +1,11 @@
+﻿@model Swank.Web.Handlers.Templates.TemplateModel
+@using Swank.Web.Handlers.Templates;
+@using Swank.Extensions;
+@using System.Linq;
+@using System.Web;
+@using System.Text.RegularExpressions;
+@using Swank.Specification;
+@foreach (var endpoint in @Model.Specification.SelectMany(m => m.Resources).SelectMany(r => r.Endpoints)) 
+{
+@:@endpoint.Name
+} 
