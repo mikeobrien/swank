@@ -60,7 +60,7 @@ namespace Swank
                 httpConfiguration.Routes.MapHttpRoute(
                     name: url, routeTemplate: url.TrimStart('/'),
                     defaults: null, constraints: null,
-                    handler: container.GetInstance<TemplateHandler>(x));
+                    handler: container.CreateInstance<TemplateHandler>(x));
             });
 
             httpConfiguration.Routes.MapHttpRoute(

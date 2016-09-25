@@ -15,7 +15,7 @@ namespace Tests.Acceptance
         {
             var result = WebClient.GetJson<List<Module>>("api/spec");
             result.Status.ShouldEqual(HttpStatusCode.OK);
-            //result.Data.Modules.First().Resources.First().Endpoints.Count.ShouldEqual(1);
+            result.Data.First().Resources.First().Endpoints.Count.ShouldEqual(6);
         }
     }
 }

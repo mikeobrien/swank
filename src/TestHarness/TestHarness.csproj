@@ -98,6 +98,7 @@
     <Content Include="Overview.md" />
     <EmbeddedResource Include="Module\Module.md" />
     <EmbeddedResource Include="Default\AttributeAndEmbeddedController.md" />
+    <Content Include="Templates\Template.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -127,6 +128,7 @@
       <Name>Swank</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

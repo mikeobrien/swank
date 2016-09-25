@@ -29,15 +29,21 @@ namespace Tests.Acceptance
             public T Data { get; }
         }
 
+        public static Result<string> GetText(string relativeUrl)
+        {
+            return Get(relativeUrl, "text/plain", 
+                x => new StreamReader(x).ReadToEnd());
+        }
+
         public static Result<string> GetHtml(string relativeUrl)
         {
-            return Get(relativeUrl, "text/html", 
+            return Get(relativeUrl, "text/html",
                 x => new StreamReader(x).ReadToEnd());
         }
 
         public static Result<T> GetJson<T>(string relativeUrl)
         {
-            return Get(relativeUrl, "application/json", x => Deserialize.Json<T>(x));
+            return Get(relativeUrl, "application/json", x => Deserialize.Json<T>(x, y => y.UseCamelCaseNaming()));
         }
 
         private static Result<T> Get<T>(string relativeUrl, 

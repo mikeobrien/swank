@@ -42,7 +42,8 @@ namespace Swank.Web.Templates
 
         public RazorTemplate Compile<TModel>()
         {
-            _asset.ReadString().CompileRazor<TModel>();
+            var asset = _asset.ReadString();
+            asset?.CompileRazor<TModel>();
             return this;
         }
 
