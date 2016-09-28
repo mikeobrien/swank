@@ -35,7 +35,7 @@ namespace Tests.Unit.Web.Templates
 
             template.GetUrl(_configuration).ShouldEqual("api/url");
             template.MimeType.ShouldEqual("mime");
-            template.Render(_model).ShouldEqual(RenderedTemplate.ToBytes());
+            template.Render(_model).ShouldEqual(RenderedTemplate);
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace Tests.Unit.Web.Templates
 
             template.GetUrl(_configuration).ShouldEqual("api/url");
             template.MimeType.ShouldEqual("mime");
-            template.Render(_model).ShouldEqual(RenderedTemplate.ToBytes());
+            template.Render(_model).ShouldEqual(RenderedTemplate);
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace Tests.Unit.Web.Templates
 
                 template.GetUrl(_configuration).ShouldEqual("api/url");
                 template.MimeType.ShouldEqual("fark/farker");
-                template.Render(_model).StripBom().ShouldEqual(RenderedTemplate.ToBytes());
+                template.Render(_model).ShouldEqual(RenderedTemplate);
             });
         }
 
@@ -81,14 +81,14 @@ namespace Tests.Unit.Web.Templates
                 template.GetUrl(_configuration).ShouldEqual(
                     $"api/url/{nestedPath}/{MustacheFile.GetFileNameWithoutExtension()}");
                 template.MimeType.ShouldEqual("fark/farker");
-                template.Render(_model).StripBom().ShouldEqual(RenderedTemplate.ToBytes());
+                template.Render(_model).ShouldEqual(RenderedTemplate);
 
                 template = templates.FirstOrDefault(x => x
                     .GetUrl(_configuration).EndsWith(RazorFile.GetFileNameWithoutExtension()));
                 template.GetUrl(_configuration).ShouldEqual(
                     $"api/url/{nestedPath}/{RazorFile.GetFileNameWithoutExtension()}");
                 template.MimeType.ShouldEqual("fark/farker");
-                template.Render(_model).StripBom().ShouldEqual(RenderedTemplate.ToBytes());
+                template.Render(_model).ShouldEqual(RenderedTemplate);
             });
         }
 
@@ -128,7 +128,7 @@ namespace Tests.Unit.Web.Templates
 
             template.GetUrl(_configuration).ShouldEqual("api/url");
             template.MimeType.ShouldEqual("fark/farker");
-            template.Render(_model).StripBom().ShouldEqual(RenderedTemplate.ToBytes());
+            template.Render(_model).ShouldEqual(RenderedTemplate);
         }
 
         [Test]
@@ -145,14 +145,14 @@ namespace Tests.Unit.Web.Templates
             template.GetUrl(_configuration).ShouldEqual("api/url/Resources/" + 
                 MustacheFile.GetFileNameWithoutExtension());
             template.MimeType.ShouldEqual("fark/farker");
-            template.Render(_model).StripBom().ShouldEqual(RenderedTemplate.ToBytes());
+            template.Render(_model).ShouldEqual(RenderedTemplate);
 
             template = templates.FirstOrDefault(x => x.GetUrl(_configuration)
                 .EndsWith(RazorFile.GetFileNameWithoutExtension()));
             template.GetUrl(_configuration).ShouldEqual("api/url/Resources/" + 
                 RazorFile.GetFileNameWithoutExtension());
             template.MimeType.ShouldEqual("fark/farker");
-            template.Render(_model).StripBom().ShouldEqual(RenderedTemplate.ToBytes());
+            template.Render(_model).ShouldEqual(RenderedTemplate);
         }
     }
 }

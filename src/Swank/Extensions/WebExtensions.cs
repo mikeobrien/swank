@@ -116,6 +116,11 @@ namespace Swank.Extensions
                 .ControllerType.Assembly;
         }
 
+        public static Task<HttpResponseMessage> CreateTextResponseTask(this string content)
+        {
+            return content.CreateResponseTask("text/plain");
+        }
+
         public static Task<HttpResponseMessage> CreateHtmlResponseTask(this string content)
         {
             return content.CreateResponseTask("text/html");
@@ -127,12 +132,22 @@ namespace Swank.Extensions
         }
 
         public static Task<HttpResponseMessage> CreateResponseTask(
+            this string content, string contentType)
+        {
+            return new HttpResponseMessage
+            {
+                Content = new StringContent(content, Encoding.UTF8, contentType)
+            }.ToTaskCompletionSource();
+        }
+
+        public static Task<HttpResponseMessage> CreateResponseTask(
             this byte[] content, string contentType)
         {
             return new HttpResponseMessage
             {
                 Content = new ByteArrayContent(content)
                 {
+                    
                     Headers =
                     {
                         ContentType = new MediaTypeHeaderValue(contentType)
@@ -148,15 +163,6 @@ namespace Swank.Extensions
             {
                 Content = new StringContent(source.SerializeJson(), 
                     Encoding.UTF8, Mime.ApplicationJson)
-            }.ToTaskCompletionSource();
-        }
-
-        public static Task<HttpResponseMessage> CreateResponseTask(
-            this string content, string contentType)
-        {
-            return new HttpResponseMessage
-            {
-                Content = new StringContent(content, Encoding.UTF8, contentType)
             }.ToTaskCompletionSource();
         }
 

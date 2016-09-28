@@ -31,9 +31,9 @@ namespace Swank.Web.Templates
             return configuration.AppUrl.CombineUrls(_url);
         }
 
-        public byte[] Render<TModel>(TModel model)
+        public string Render<TModel>(TModel model)
         {
-            return _template.RenderBytes(model);
+            return _template.RenderString(model);
         }
 
         public static IEnumerable<WebTemplate> FromVirtualPath<TModel>(

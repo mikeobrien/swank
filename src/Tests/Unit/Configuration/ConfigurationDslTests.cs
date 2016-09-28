@@ -208,7 +208,7 @@ namespace Tests.Unit.Configuration
             var result = template.Render(new Swank.Specification.Module
                 { Name = "Farker" }.AsList());
 
-            result.ShouldEqual("Fark Farker".ToBytes(), result.GetString());
+            result.ShouldEqual(result, "Fark Farker");
             template.GetUrl(_configuration).ShouldEqual("app/path1/path2");
             template.MimeType.ShouldEqual("text/html");
         }
@@ -227,14 +227,14 @@ namespace Tests.Unit.Configuration
             var template = templates.First();
 
             template.Render(new Swank.Specification.Module { Name = "Farker" }.AsList())
-                .ShouldEqual("Fark Farker".ToBytes());
+                .ShouldEqual("Fark Farker");
             template.GetUrl(_configuration).ShouldEqual("app/path1/path2/Nested/razor");
             template.MimeType.ShouldEqual("text/html");
 
             template = templates.Skip(1).First();
 
             template.Render(new Swank.Specification.Module { Name = "Farker" }.AsList())
-                .ShouldEqual("Fark Farker".ToBytes());
+                .ShouldEqual("Fark Farker");
             template.GetUrl(_configuration).ShouldEqual("app/path1/path2/Nested/template");
             template.MimeType.ShouldEqual("text/html");
         }
@@ -250,7 +250,7 @@ namespace Tests.Unit.Configuration
                 var template = _configuration.Templates.First();
 
                 template.Render(new Swank.Specification.Module { Name = "Farker" }.AsList())
-                    .ShouldEqual("Fark Farker".ToBytes());
+                    .ShouldEqual("Fark Farker");
                 template.GetUrl(_configuration).ShouldEqual("api/path");
                 template.MimeType.ShouldEqual("text/html");
             });
@@ -274,7 +274,7 @@ namespace Tests.Unit.Configuration
 
                 template.ShouldNotBeNull();
                 template.Render(new Swank.Specification.Module { Name = "Farker" }.AsList())
-                    .ShouldEqual("Fark Farker".ToBytes());
+                    .ShouldEqual("Fark Farker");
                 template.GetUrl(_configuration).ShouldEqual("api/url/nested"
                     .CombineUrls(relativePath.GetFileNameWithoutExtension()));
                 template.MimeType.ShouldEqual("text/html");
@@ -289,7 +289,7 @@ namespace Tests.Unit.Configuration
             var template = _configuration.Templates.First();
 
             template.Render(new Swank.Specification.Module { Name = "Farker" }.AsList())
-                .ShouldEqual("Fark Farker".ToBytes());
+                .ShouldEqual("Fark Farker");
             template.GetUrl(_configuration).ShouldEqual("api/url");
             template.MimeType.ShouldEqual("text/html");
         }
@@ -303,7 +303,7 @@ namespace Tests.Unit.Configuration
             var result = template.Render(new Swank.Specification
                 .Module { Name = "Farker" });
 
-            result.ShouldEqual("Fark Farker".ToBytes(), result.GetString());
+            result.ShouldEqual(result, "Fark Farker");
             template.GetUrl(_configuration).ShouldEqual("api/url");
             template.MimeType.ShouldEqual("text/html");
         }
