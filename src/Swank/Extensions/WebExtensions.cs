@@ -351,5 +351,15 @@ namespace Swank.Extensions
         {
             return method == HttpMethod.Delete;
         }
+
+        public static string HtmlDecode(this string value)
+        {
+            return value.IsNotNullOrEmpty() ? HttpUtility.HtmlDecode(value) : value;
+        }
+
+        public static string StripHtml(this string html)
+        {
+            return html.IsNotNullOrEmpty() ? Regex.Replace(html, "<.*?>", "") : html;
+        }
     }
 }
