@@ -9,6 +9,14 @@ namespace Swank.Extensions
 {
     public static class StringExtensions
     {
+        public static string JoinLines(this string value)
+        {
+            return value.IsNullOrEmpty() ? value : 
+                value.Split(new [] { "\r\n", "\r", "\n" })
+                .Select(x => x.Trim())
+                .Where(x => x.IsNotNullOrEmpty()).Join(" ");
+        }
+
         public static bool IsNullOrEmpty(this string value)
         {
             return string.IsNullOrEmpty(value);
