@@ -351,5 +351,20 @@ namespace Swank.Extensions
         {
             return method == HttpMethod.Delete;
         }
+        
+        private static readonly Regex HtmlEntityRegex = new Regex("&(#)?([a-zA-Z0-9]*);");
+
+        public static string HtmlDecode(this string html)
+        {
+            if (html.IsNullOrEmpty()) return html;
+            return HtmlEntityRegex.Replace(html, x => x.Groups[1].Value == "#"
+                ? ((char)int.Parse(x.Groups[2].Value)).ToString()
+                : HttpUtility.HtmlDecode(x.Groups[0].Value));
+        }
+
+        public static string StripHtml(this string html)
+        {
+            return html.IsNotNullOrEmpty() ? Regex.Replace(html, "<.*?>", "") : html;
+        }
     }
 }
