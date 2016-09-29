@@ -71,5 +71,24 @@ namespace Tests.Unit.Extensions
             new HttpRoute("level1/{param1}/level2/{param2}")
                 .GetNamespaceFromRoute().ShouldOnlyContain("level1", "level2");
         }
+
+        [Test]
+        [TestCase(null, null)]
+        [TestCase("", "")]
+        [TestCase("Oh <b>hai</b> there!", "Oh hai there!")]
+        public void should_remove_html(string html, string expected)
+        {
+            html.StripHtml().ShouldEqual(expected);
+        }
+
+        [Test]
+        [TestCase(null, null)]
+        [TestCase("", "")]
+        [TestCase("&#39;fark&#39;", "'fark'")]
+        [TestCase("&quot;fark&quot;", "\"fark\"")]
+        public void should_remove_html_entities(string html, string expected)
+        {
+            html.HtmlDecode().ShouldEqual(expected);
+        }
     }
 }
