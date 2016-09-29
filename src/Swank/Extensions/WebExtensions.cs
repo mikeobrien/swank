@@ -269,6 +269,18 @@ namespace Swank.Extensions
                 Path.GetTempPath().MapTempPath(url);
         }
 
+        public static string GetSubdomain(this Uri url)
+        {
+            return url.Host.Split(".").First();
+        }
+
+        public static string GetRootDomain(this Uri url)
+        {
+            var parts = url.Host.Split(".");
+            return parts.Count() < 3 ? url.Host : 
+                parts.Skip(parts.Length - 2).Join(".");
+        }
+
         public static string CombineUrls(this string url, params string[] urls)
         {
             return url.AsList().Concat(urls)
@@ -350,6 +362,21 @@ namespace Swank.Extensions
         public static bool IsDelete(this HttpMethod method)
         {
             return method == HttpMethod.Delete;
+        }
+        
+        private static readonly Regex HtmlEntityRegex = new Regex("&(#)?([a-zA-Z0-9]*);");
+
+        public static string HtmlDecode(this string html)
+        {
+            if (html.IsNullOrEmpty()) return html;
+            return HtmlEntityRegex.Replace(html, x => x.Groups[1].Value == "#"
+                ? ((char)int.Parse(x.Groups[2].Value)).ToString()
+                : HttpUtility.HtmlDecode(x.Groups[0].Value));
+        }
+
+        public static string StripHtml(this string html)
+        {
+            return html.IsNotNullOrEmpty() ? Regex.Replace(html, "<.*?>", "") : html;
         }
     }
 }
