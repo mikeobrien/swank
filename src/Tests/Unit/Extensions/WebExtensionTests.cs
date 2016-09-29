@@ -1,4 +1,5 @@
-﻿using System.Web.Http.Routing;
+﻿using System;
+using System.Web.Http.Routing;
 using NSubstitute;
 using NUnit.Framework;
 using Should;
@@ -70,6 +71,43 @@ namespace Tests.Unit.Extensions
         {
             new HttpRoute("level1/{param1}/level2/{param2}")
                 .GetNamespaceFromRoute().ShouldOnlyContain("level1", "level2");
+        }
+
+        [Test]
+        [TestCase(null, null)]
+        [TestCase("", "")]
+        [TestCase("Oh <b>hai</b> there!", "Oh hai there!")]
+        public void should_remove_html(string html, string expected)
+        {
+            html.StripHtml().ShouldEqual(expected);
+        }
+
+        [Test]
+        [TestCase(null, null)]
+        [TestCase("", "")]
+        [TestCase("&#39;fark&#39;", "'fark'")]
+        [TestCase("&quot;fark&quot;", "\"fark\"")]
+        public void should_remove_html_entities(string html, string expected)
+        {
+            html.HtmlDecode().ShouldEqual(expected);
+        }
+
+        [Test]
+        [TestCase("localhost", "localhost")]
+        [TestCase("fark.com", "fark")]
+        [TestCase("www.fark.com", "www")]
+        public void should_get_subdomain(string url, string expected)
+        {
+            $"http://{url}".ParseUri().GetSubdomain().ShouldEqual(expected);
+        }
+
+        [Test]
+        [TestCase("localhost", "localhost")]
+        [TestCase("fark.com", "fark.com")]
+        [TestCase("www.fark.com", "fark.com")]
+        public void should_get_root_domain(string url, string expected)
+        {
+            $"http://{url}".ParseUri().GetRootDomain().ShouldEqual(expected);
         }
     }
 }
