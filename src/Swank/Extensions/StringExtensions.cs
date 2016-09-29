@@ -9,6 +9,14 @@ namespace Swank.Extensions
 {
     public static class StringExtensions
     {
+        public static string RemoveLineBreaks(this string value)
+        {
+            return value.IsNullOrEmpty() ? value : 
+                value.Replace("\r\n", " ")
+                .Replace("\r", " ")
+                .Replace("\n", " ");
+        }
+
         public static bool IsNullOrEmpty(this string value)
         {
             return string.IsNullOrEmpty(value);
