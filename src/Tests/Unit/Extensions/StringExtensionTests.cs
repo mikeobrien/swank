@@ -81,5 +81,14 @@ namespace Tests.Unit.Extensions
         {
             source.InitialCase(upper).ShouldEqual(expected);
         }
+
+        [Test]
+        [TestCase(null, null)]
+        [TestCase("", "")]
+        [TestCase("  fark   \r\n   farker \r  yada   \n  ", "fark farker yada")]
+        public void Should_join_lines(string source, string expected)
+        {
+            source.JoinLines().ShouldEqual(expected);
+        }
     }
 }
