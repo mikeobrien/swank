@@ -14,7 +14,9 @@ namespace Swank.Web.Handlers.App
     {
         public string Comments { get; set; }
         public bool IsBinary { get; set; }
+        public bool HasBody { get; set; }
         public List<Header> Headers { get; set; }
+        public DataType Type { get; set; }
         public List<BodyDefinitionModel> Body { get; set; }
     }
 

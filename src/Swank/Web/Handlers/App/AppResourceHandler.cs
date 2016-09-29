@@ -64,7 +64,9 @@ namespace Swank.Web.Handlers.App
             {
                 Comments = endpoint.Request.Comments,
                 IsBinary = endpoint.Request.IsBinary,
+                HasBody = endpoint.Request.HasBody,
                 Headers = endpoint.Request.Headers,
+                Type = endpoint.Request.Type,
                 Body = endpoint.Request.Type
                     .WhenNotNull(bodyDescriptionFactory.Create)
                     .OtherwiseDefault()
@@ -74,7 +76,9 @@ namespace Swank.Web.Handlers.App
             {
                 Comments = endpoint.Response.Comments,
                 IsBinary = endpoint.Response.IsBinary,
+                HasBody = endpoint.Response.HasBody,
                 Headers = endpoint.Response.Headers,
+                Type = endpoint.Response.Type,
                 Body = endpoint.Response.Type
                     .WhenNotNull(bodyDescriptionFactory.Create)
                     .OtherwiseDefault()
@@ -85,8 +89,13 @@ namespace Swank.Web.Handlers.App
                 Name = endpoint.Name,
                 Comments = endpoint.Comments,
                 Method = endpoint.Method,
+                MethodName = endpoint.MethodName,
+                Namespace = endpoint.Namespace,
                 Host = url.Host,
-                Port = url.Port.ToString(),
+                Subdomain = url.GetSubdomain(),
+                RootDomain = url.GetRootDomain(),
+                Port = url.Port,
+                Authority = url.GetLeftPart(UriPartial.Authority),
                 Url = url.GetLeftPart(UriPartial.Authority)
                     .CombineUrls(endpoint.UrlTemplate),
                 UrlTemplate = endpoint.UrlTemplate,
