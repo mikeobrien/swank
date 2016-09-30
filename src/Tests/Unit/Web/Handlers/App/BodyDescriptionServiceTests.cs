@@ -739,9 +739,19 @@ namespace Tests.Unit.Web.Handlers.App
             public ArrayDsl First() { _body.IsFirst = true; return this; }
             public ArrayDsl Last() { _body.IsLast = true; return this; }
 
-            public ArrayDsl Namespace(params string[] @namespace)
+            public ArrayDsl LogicalName(string logicalName)
             {
-                _body.Namespace = @namespace.ToList(); return this;
+                _body.LogicalName = logicalName; return this;
+            }
+
+            public ArrayDsl Namespace(string @namespace)
+            {
+                _body.Namespace = @namespace; return this;
+            }
+
+            public ArrayDsl FullNamespace(params string[] @namespace)
+            {
+                _body.FullNamespace = @namespace.ToList(); return this;
             }
         }
 
@@ -828,9 +838,19 @@ namespace Tests.Unit.Web.Handlers.App
             public DictionaryDsl First() { _body.IsFirst = true; return this; }
             public DictionaryDsl Last() { _body.IsLast = true; return this; }
 
-            public DictionaryDsl Namespace(params string[] @namespace)
+            public DictionaryDsl LogicalName(string logicalName)
             {
-                _body.Namespace = @namespace.ToList(); return this;
+                _body.LogicalName = logicalName; return this;
+            }
+
+            public DictionaryDsl Namespace(string @namespace)
+            {
+                _body.Namespace = @namespace; return this;
+            }
+
+            public DictionaryDsl FullNamespace(params string[] @namespace)
+            {
+                _body.FullNamespace = @namespace.ToList(); return this;
             }
         }
 
@@ -904,9 +924,19 @@ namespace Tests.Unit.Web.Handlers.App
             public ComplexTypeDsl First() { _body.IsFirst = true; return this; }
             public ComplexTypeDsl Last() { _body.IsLast = true; return this; }
 
-            public ComplexTypeDsl Namespace(params string[] @namespace)
+            public ComplexTypeDsl LogicalName(string logicalName)
             {
-                _body.Namespace = @namespace.ToList(); return this;
+                _body.LogicalName = logicalName; return this;
+            }
+
+            public ComplexTypeDsl Namespace(string @namespace)
+            {
+                _body.Namespace = @namespace; return this;
+            }
+
+            public ComplexTypeDsl FullNamespace(params string[] @namespace)
+            {
+                _body.FullNamespace = @namespace.ToList(); return this;
             }
         }
 
