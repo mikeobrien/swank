@@ -120,12 +120,17 @@ namespace Swank.Web.Handlers.App
             var arrayOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
-                Namespace = type.FullNamespace,
+                Namespace = type.ArrayItem.Type.Namespace,
+                FullNamespace = type.ArrayItem.Type.FullNamespace,
+                LogicalName = type.ArrayItem.Type.LogicalName,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,
                 IsArray = true
             };
+
+            if (type.ArrayItem.Type.IsSimple)
+                arrayOpening.TypeName = type.ArrayItem.Type.Name;
 
             opening?.Invoke(arrayOpening);
 
@@ -165,12 +170,17 @@ namespace Swank.Web.Handlers.App
             var dictionaryOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
-                Namespace = type.FullNamespace,
+                Namespace = type.DictionaryEntry.ValueType.Namespace,
+                FullNamespace = type.DictionaryEntry.ValueType.FullNamespace,
+                LogicalName = type.DictionaryEntry.ValueType.LogicalName,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,
                 IsDictionary = true
             };
+
+            if (type.DictionaryEntry.ValueType.IsSimple)
+                dictionaryOpening.TypeName = type.DictionaryEntry.ValueType.Name;
 
             opening?.Invoke(dictionaryOpening);
 
@@ -218,7 +228,9 @@ namespace Swank.Web.Handlers.App
             var complexOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
-                Namespace = type.FullNamespace,
+                Namespace = type.Namespace,
+                FullNamespace = type.FullNamespace,
+                LogicalName = type.LogicalName,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,
