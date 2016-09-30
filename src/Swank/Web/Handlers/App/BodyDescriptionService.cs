@@ -120,7 +120,9 @@ namespace Swank.Web.Handlers.App
             var arrayOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
-                Namespace = type.FullNamespace,
+                LogicalName = type.LogicalName,
+                Namespace = type.Namespace,
+                FullNamespace = type.FullNamespace,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,
@@ -165,7 +167,9 @@ namespace Swank.Web.Handlers.App
             var dictionaryOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
-                Namespace = type.FullNamespace,
+                Namespace = type.Namespace,
+                FullNamespace = type.FullNamespace,
+                LogicalName = type.LogicalName,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,
@@ -218,7 +222,9 @@ namespace Swank.Web.Handlers.App
             var complexOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
-                Namespace = type.FullNamespace,
+                Namespace = type.Namespace,
+                FullNamespace = type.FullNamespace,
+                LogicalName = type.LogicalName,
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsOpening = true,

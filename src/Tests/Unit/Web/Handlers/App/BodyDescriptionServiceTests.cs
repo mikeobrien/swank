@@ -49,7 +49,7 @@ namespace Tests.Unit.Web.Handlers.App
 
             description[0].ShouldBeComplexType("ComplexTypeWithNoMembers", 0,
                 x => x.First().Opening().Comments("Complex type comments")
-                    .Namespace("Get"));
+                    .Namespace("Get").FullNamespace("Get").LogicalName("GetResponse"));
 
             description[1].ShouldBeComplexType("ComplexTypeWithNoMembers", 0,
                 x => x.Last().Closing());
@@ -73,7 +73,8 @@ namespace Tests.Unit.Web.Handlers.App
             description.ShouldBeIndexed().ShouldTotal(8);
 
             description[0].ShouldBeComplexType("ComplexTypeWithSimpleMembers", 0,
-                x => x.First().Opening().Namespace("Get"));
+                x => x.First().Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetResponse"));
 
             description[1].ShouldBeSimpleTypeMember("StringMember",
                 "string", 1, "", x => x.IsString(), x => x.Required());
@@ -116,7 +117,8 @@ namespace Tests.Unit.Web.Handlers.App
             description.ShouldBeIndexed().ShouldTotal(3);
 
             description[0].ShouldBeComplexType("ComplexTypeWithSimpleOptionMember", 0,
-                x => x.First().Opening().Namespace("Get"));
+                x => x.First().Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetResponse"));
 
             description[1].ShouldBeSimpleTypeMember("OptionMember", 
                 dataTypeName.ToLower(), 1, value1,
@@ -145,7 +147,8 @@ namespace Tests.Unit.Web.Handlers.App
             description.ShouldBeIndexed().ShouldTotal(4);
 
             description[0].ShouldBeComplexType("ComplexTypeWithOptionalMember", 0,
-                x => x.First().Opening().Namespace("Get"));
+                x => x.First().Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetRequest"));
 
             description[1].ShouldBeSimpleTypeMember("OptionalMember",
                 "string", 1, "", x => x.IsString(),
@@ -173,7 +176,8 @@ namespace Tests.Unit.Web.Handlers.App
             description.ShouldBeIndexed().ShouldTotal(4);
 
             description[0].ShouldBeComplexType("ComplexTypeWithNullableMember", 0,
-                x => x.First().Opening().Namespace("Get"));
+                x => x.First().Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetRequest"));
 
             description[1].ShouldBeSimpleTypeMember("NonNullableMember",
                 "int", 1, "0", x => x.IsNumeric(), x => x.Optional());
@@ -200,7 +204,8 @@ namespace Tests.Unit.Web.Handlers.App
             description.ShouldBeIndexed().ShouldTotal(3);
 
             description[0].ShouldBeComplexType("ComplexTypeWithDeprecatedMember", 0,
-                x => x.First().Opening().Namespace("Get"));
+                x => x.First().Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetResponse"));
 
             description[1].ShouldBeSimpleTypeMember("DeprecatedMember",
                 "string", 1, "", x => x.IsString(), x => x.IsLastMember().Required()
@@ -225,7 +230,8 @@ namespace Tests.Unit.Web.Handlers.App
             description.ShouldBeIndexed().ShouldTotal(3);
 
             description[0].ShouldBeComplexType("ComplexTypeWithDefaultValueMember", 0,
-                x => x.First().Opening().Namespace("Get"));
+                x => x.First().Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetRequest"));
 
             description[1].ShouldBeSimpleTypeMember("DefaultValueMember",
                 "string", 1, "", x => x.IsString(),
@@ -249,7 +255,8 @@ namespace Tests.Unit.Web.Handlers.App
             description.ShouldBeIndexed().ShouldTotal(3);
 
             description[0].ShouldBeComplexType("ComplexTypeWithSampleValueMember", 0,
-                x => x.First().Opening().Namespace("Get"));
+                x => x.First().Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetResponse"));
 
             description[1].ShouldBeSimpleTypeMember("SampleValueMember", "string", 1, 
                 "zero", x => x.IsString(), x => x.IsLastMember().Required());
@@ -279,7 +286,8 @@ namespace Tests.Unit.Web.Handlers.App
 
             description.ShouldBeIndexed().ShouldTotal(5);
             description[0].ShouldBeComplexType(type.Name, 0, x =>
-                x.First().Opening().Namespace("Get"));
+                x.First().Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetResponse"));
 
             description[1].ShouldBeArrayMember("ArrayMember", 1,
                 x => x.Opening(), x => x.IsLastMember().Required().SampleValue(""));
@@ -310,7 +318,8 @@ namespace Tests.Unit.Web.Handlers.App
             description.ShouldBeIndexed().ShouldTotal(5);
 
             description[0].ShouldBeComplexType("ComplexTypeWithDictionaryMember", 0,
-                x => x.First().Opening().Namespace("Get"));
+                x => x.First().Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetResponse"));
 
             description[1].ShouldBeDictionaryMember("Entries", 1, x => x.Opening(),
                 x => x.Comments("This is a dictionary.").IsLastMember()
@@ -392,7 +401,8 @@ namespace Tests.Unit.Web.Handlers.App
                 x => x.First().Opening());
 
             description[1].ShouldBeComplexType("ArrayComplexType", 
-                1, x => x.Opening().Namespace("Get"));
+                1, x => x.Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetResponse"));
 
             description[2].ShouldBeSimpleTypeMember("Member", "string", 2, "",
                 x => x.IsString(), x => x.IsLastMember().Required());
@@ -523,7 +533,8 @@ namespace Tests.Unit.Web.Handlers.App
                 x => x.First().Opening());
 
             description[1].ShouldBeOpeningComplexTypeDictionaryEntry(
-                "key", "string", 1, x => x.Namespace("Get"));
+                "key", "string", 1, x => x.Namespace("Get")
+                    .FullNamespace("Get").LogicalName("GetResponse"));
 
             description[2].ShouldBeSimpleTypeMember("Member", "string", 2, "",
                 x => x.IsString(), x => x.IsLastMember().Required());
@@ -739,9 +750,19 @@ namespace Tests.Unit.Web.Handlers.App
             public ArrayDsl First() { _body.IsFirst = true; return this; }
             public ArrayDsl Last() { _body.IsLast = true; return this; }
 
-            public ArrayDsl Namespace(params string[] @namespace)
+            public ArrayDsl LogicalName(string logicalName)
             {
-                _body.Namespace = @namespace.ToList(); return this;
+                _body.LogicalName = logicalName; return this;
+            }
+
+            public ArrayDsl Namespace(string @namespace)
+            {
+                _body.Namespace = @namespace; return this;
+            }
+
+            public ArrayDsl FullNamespace(params string[] @namespace)
+            {
+                _body.FullNamespace = @namespace.ToList(); return this;
             }
         }
 
@@ -828,9 +849,19 @@ namespace Tests.Unit.Web.Handlers.App
             public DictionaryDsl First() { _body.IsFirst = true; return this; }
             public DictionaryDsl Last() { _body.IsLast = true; return this; }
 
-            public DictionaryDsl Namespace(params string[] @namespace)
+            public DictionaryDsl LogicalName(string logicalName)
             {
-                _body.Namespace = @namespace.ToList(); return this;
+                _body.LogicalName = logicalName; return this;
+            }
+
+            public DictionaryDsl Namespace(string @namespace)
+            {
+                _body.Namespace = @namespace; return this;
+            }
+
+            public DictionaryDsl FullNamespace(params string[] @namespace)
+            {
+                _body.FullNamespace = @namespace.ToList(); return this;
             }
         }
 
@@ -904,9 +935,19 @@ namespace Tests.Unit.Web.Handlers.App
             public ComplexTypeDsl First() { _body.IsFirst = true; return this; }
             public ComplexTypeDsl Last() { _body.IsLast = true; return this; }
 
-            public ComplexTypeDsl Namespace(params string[] @namespace)
+            public ComplexTypeDsl LogicalName(string logicalName)
             {
-                _body.Namespace = @namespace.ToList(); return this;
+                _body.LogicalName = logicalName; return this;
+            }
+
+            public ComplexTypeDsl Namespace(string @namespace)
+            {
+                _body.Namespace = @namespace; return this;
+            }
+
+            public ComplexTypeDsl FullNamespace(params string[] @namespace)
+            {
+                _body.FullNamespace = @namespace.ToList(); return this;
             }
         }
 
@@ -1006,7 +1047,9 @@ namespace Tests.Unit.Web.Handlers.App
         {
             source.Name.ShouldEqual(compare.Name);
             source.Comments.ShouldEqual(compare.Comments);
-            source.Namespace.ShouldOnlyContain(compare.Namespace?.ToArray());
+            source.LogicalName.ShouldEqual(compare.LogicalName);
+            source.Namespace.ShouldEqual(compare.Namespace);
+            source.FullNamespace.ShouldOnlyContain(compare.FullNamespace?.ToArray());
             source.IsFirst.ShouldEqual(compare.IsFirst);
             source.IsLast.ShouldEqual(compare.IsLast);
             source.TypeName.ShouldEqual(compare.TypeName);

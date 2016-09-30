@@ -50,7 +50,9 @@ namespace Swank.Web.Handlers.App
     {
         public int Index { get; set; }
         public string Name { get; set; }
-        public List<string> Namespace { get; set; }
+        public string LogicalName { get; set; }
+        public string Namespace { get; set; }
+        public List<string> FullNamespace { get; set; }
         public string Comments { get; set; }
         public bool? IsFirst { get; set; }
         public bool? IsLast { get; set; }
