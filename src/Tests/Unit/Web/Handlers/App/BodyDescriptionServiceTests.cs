@@ -662,9 +662,9 @@ namespace Tests.Unit.Web.Handlers.App
 
             public OptionDsl Options(string name)
             {
-                _body.Options = _body.Options ?? new Enumeration();
-                _body.Options.Name = name;
-                return new OptionDsl(_body.Options);
+                _body.Enumeration = _body.Enumeration ?? new Enumeration();
+                _body.Enumeration.Name = name;
+                return new OptionDsl(_body.Enumeration);
             }
         }
 
@@ -1031,7 +1031,7 @@ namespace Tests.Unit.Web.Handlers.App
             source.IsDateTime.ShouldEqual(compare.IsDateTime);
             source.IsDuration.ShouldEqual(compare.IsDuration);
             source.IsGuid.ShouldEqual(compare.IsGuid);
-            source.Options.ShouldEqualOptions(compare.Options);
+            source.Enumeration.ShouldEqualOptions(compare.Enumeration);
 
             source.IsComplexType.ShouldEqual(compare.IsComplexType);
 

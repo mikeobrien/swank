@@ -363,29 +363,29 @@
                     <div class="alert alert-danger">{{{deprecationMessage}}}</div>
                 {{/isDeprecated}}
 
-                {{#options}}{{> options}}{{/options}}
+                {{#enumeration}}{{> options}}{{/enumeration}}
             {{/isDictionaryEntry}}
             {{#isDictionaryEntry}}
                 <div class="panel panel-default">
                     {{#with dictionaryKey}}
-                        <div class="panel-heading {{#unless options}}empty{{/unless}}">
+                        <div class="panel-heading {{#unless enumeration}}empty{{/unless}}">
                             <span class="label label-default">Key</span>
                             <code>{{{typeName}}}</code>
                             {{{comments}}}
                         </div>
-                        {{#options}}{{> options}}{{/options}}
+                        {{#enumeration}}{{> options}}{{/enumeration}}
                     {{/with}}
                 </div>
                 {{#either typeName comments}}
                     <div class="panel panel-default">
-                        <div class="panel-heading {{#unless options}}empty{{/unless}}">
+                        <div class="panel-heading {{#unless enumeration}}empty{{/unless}}">
                             <span class="label label-default">Value</span>
                             {{#isSimpleType}}<code>{{{typeName}}}</code>{{/isSimpleType}}
                             {{#isDictionary}}<span class="badge">Dictionary</span>{{/isDictionary}}
                             {{#isArray}}<span class="badge">Array</span>{{/isArray}}
                             {{{comments}}}
                         </div>
-                        {{#options}}{{> options}}{{/options}}
+                        {{#enumeration}}{{> options}}{{/enumeration}}
                     </div>
                 {{/either}}
             {{/isDictionaryEntry}}

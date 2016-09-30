@@ -38,6 +38,8 @@ namespace TestHarness.Module
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             public List<int> SimpleList { get; set; }
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            public List<Options> ListOfOptional { get; set; }
+            [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             public List<ChildModel> ComplexList { get; set; }
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             public List<List<ChildModel>> ListOfList { get; set; }

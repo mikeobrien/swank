@@ -90,7 +90,7 @@ namespace Swank.Web.Handlers.App
                     break;
             }
 
-            data.Options = WalkOptions(type);
+            data.Enumeration = WalkOptions(type);
 
             opening?.Invoke(data);
             description.Add(data);

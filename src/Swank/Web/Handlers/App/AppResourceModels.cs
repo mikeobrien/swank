@@ -76,7 +76,7 @@ namespace Swank.Web.Handlers.App
         public bool? IsDateTime { get; set; }
         public bool? IsDuration { get; set; }
         public bool? IsGuid { get; set; }
-        public Enumeration Options { get; set; }
+        public Enumeration Enumeration { get; set; }
 
         public bool? IsComplexType { get; set; }
 
