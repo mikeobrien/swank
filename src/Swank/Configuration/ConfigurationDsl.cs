@@ -634,6 +634,15 @@ namespace Swank.Configuration
         }
 
         /// <summary>
+        /// Sample URI value displayed in the documentation.
+        /// </summary>
+        public ConfigurationDsl WithSampleUriValue(Uri value)
+        {
+            _configuration.SampleUriValue = value;
+            return this;
+        }
+
+        /// <summary>
         /// Sets the module convention.
         /// </summary>
         public ConfigurationDsl WithModuleConvention<T>() where T :

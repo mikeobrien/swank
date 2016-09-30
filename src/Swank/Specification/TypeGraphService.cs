@@ -102,12 +102,52 @@ namespace Swank.Specification
         {
             dataType.IsSimple = true;
             dataType.IsNullable = description.Nullable;
-            if (!type.GetNullableUnderlyingType().IsEnum) return;
-            dataType.Namespace = @namespace ?? parent.LogicalName +
-                (memberDescription != null ? memberDescription.Name : dataType.Name);
-            dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
-                .Concat(dataType.Namespace).ToList();
-            dataType.Enumeration = _optionBuilderService.BuildOptions(type, null, requestGraph);
+            if (type.GetNullableUnderlyingType().IsEnum)
+            {
+                dataType.Namespace = @namespace ?? parent.LogicalName +
+                    (memberDescription != null ? memberDescription.Name : dataType.Name);
+                dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
+                    .Concat(dataType.Namespace).ToList();
+                dataType.Enumeration = _optionBuilderService.BuildOptions(type, null, requestGraph);
+            }
+            dataType.SampleValue = GetSimpleTypeSampleValue(dataType);
+        }
+
+        private string GetSimpleTypeSampleValue(DataType type)
+        {
+            if (type.Enumeration != null)
+            {
+                return type.Enumeration.Options.FirstOrDefault()?.Value;
+            }
+
+            switch (type.Name)
+            {
+                case Xml.UnsignedLongType:
+                case Xml.LongType:
+                case Xml.UnsignedIntType:
+                case Xml.IntType:
+                case Xml.UnsignedShortType:
+                case Xml.ShortType:
+                case Xml.ByteType:
+                case Xml.UnsignedByteType:
+                    return typeof(int).GetSampleValue(_configuration);
+                case Xml.FloatType:
+                case Xml.DoubleType:
+                case Xml.DecimalType:
+                    return typeof(decimal).GetSampleValue(_configuration);
+                case Xml.BooleanType:
+                    return typeof(bool).GetSampleValue(_configuration);
+                case Xml.DateTimeType:
+                    return typeof(DateTime).GetSampleValue(_configuration);
+                case Xml.DurationType:
+                    return typeof(TimeSpan).GetSampleValue(_configuration);
+                case Xml.UuidType:
+                    return typeof(Guid).GetSampleValue(_configuration);
+                case Xml.AnyUriType:
+                    return typeof(Uri).GetSampleValue(_configuration);
+                default:
+                    return _configuration.SampleStringValue;
+            }
         }
 
         private void BuildDictionary(
@@ -231,7 +271,7 @@ namespace Swank.Specification
         }
     }
 
-    public static class TypeGraphFactoryExtensions
+    public static class TypeGraphServiceExtensions
     {
         public static bool IsOptional(this OptionalScope optional, HttpMethod method)
         {

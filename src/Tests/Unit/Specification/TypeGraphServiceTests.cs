@@ -79,31 +79,40 @@ namespace Tests.Unit.Specification
         // Simple types
 
         [Test]
-        [TestCase(typeof(string), "string")]
-        [TestCase(typeof(int), "int")]
-        [TestCase(typeof(int?), "int")]
-        [TestCase(typeof(Guid), "uuid")]
-        [TestCase(typeof(TimeSpan), "duration")]
-        [TestCase(typeof(DateTime), "dateTime")]
-        [TestCase(typeof(Uri), "anyURI")]
-        public void should_create_simple_message_type(Type type, string name)
+        [TestCase(typeof(string), "string", "")]
+        [TestCase(typeof(int), "int", "0")]
+        [TestCase(typeof(int?), "int", "0")]
+        [TestCase(typeof(Guid), "uuid", "00000000-0000-0000-0000-000000000000")]
+        [TestCase(typeof(TimeSpan), "duration", "0:00:00")]
+        [TestCase(typeof(DateTime), "dateTime", "10/26/85 1:20 AM")]
+        [TestCase(typeof(Uri), "anyURI", "http://www.google.com/")]
+        public void should_create_simple_message_type(Type type, string name, string sampleValue)
         {
-            should_be_simple_type(Builder.BuildTypeGraphService()
-                .BuildForMessage(false, type, _endpointDescription, null), type, name);
+            should_be_simple_type(Builder.BuildTypeGraphService(x =>
+                    {
+                        x.SampleDateTimeValue = new DateTime(1985, 10, 26, 1, 20, 0);
+                        x.SampleDateTimeFormat = "MM/dd/yy h:mm tt";
+                    })
+                .BuildForMessage(false, type, _endpointDescription, null), 
+                    type, name, sampleValue);
         }
 
         [Test]
-        [TestCase(typeof(string), "string")]
-        [TestCase(typeof(int), "int")]
-        [TestCase(typeof(int?), "int")]
-        [TestCase(typeof(Guid), "uuid")]
-        [TestCase(typeof(TimeSpan), "duration")]
-        [TestCase(typeof(DateTime), "dateTime")]
-        [TestCase(typeof(Uri), "anyURI")]
-        public void should_create_simple_parameter_type(Type type, string name)
+        [TestCase(typeof(string), "string", "")]
+        [TestCase(typeof(int), "int", "0")]
+        [TestCase(typeof(int?), "int", "0")]
+        [TestCase(typeof(Guid), "uuid", "00000000-0000-0000-0000-000000000000")]
+        [TestCase(typeof(TimeSpan), "duration", "0:00:00")]
+        [TestCase(typeof(DateTime), "dateTime", "10/26/85 1:20 AM")]
+        [TestCase(typeof(Uri), "anyURI", "http://www.google.com/")]
+        public void should_create_simple_parameter_type(Type type, string name, string sampleValue)
         {
-            should_be_simple_type(Builder.BuildTypeGraphService()
-                .BuildForParameter(type, "parameter", name), type, name);
+            should_be_simple_type(Builder.BuildTypeGraphService(x =>
+                {
+                    x.SampleDateTimeValue = new DateTime(1985, 10, 26, 1, 20, 0);
+                    x.SampleDateTimeFormat = "MM/dd/yy h:mm tt";
+                })
+                .BuildForParameter(type, "parameter", name), type, name, sampleValue);
         }
 
         public class SimpleTypeMember
@@ -116,10 +125,11 @@ namespace Tests.Unit.Specification
         {
             should_be_simple_type(Builder.BuildTypeGraphService().BuildForMessage(
                 false, typeof(SimpleTypeMember), _endpointDescription, null)
-                    .Members.Single().Type, typeof(int), "int");
+                    .Members.Single().Type, typeof(int), "int", "0");
         }
 
-        public void should_be_simple_type(DataType dataType, Type type, string name)
+        public void should_be_simple_type(DataType dataType, 
+            Type type, string name, string sampleValue = null)
         {
             dataType.Name.ShouldEqual(name);
             dataType.LogicalName.ShouldBeNull();
@@ -129,6 +139,7 @@ namespace Tests.Unit.Specification
             dataType.IsNullable.ShouldEqual(type.IsNullable());
 
             dataType.IsSimple.ShouldBeTrue();
+            dataType.SampleValue.ShouldEqual(sampleValue);
             dataType.Enumeration.ShouldBeNull();
 
             dataType.IsComplex.ShouldBeFalse();
@@ -323,7 +334,7 @@ namespace Tests.Unit.Specification
             type.ArrayItem.ShouldNotBeNull();
             type.ArrayItem.Name.ShouldEqual(itemName);
             type.ArrayItem.Comments.ShouldEqual(itemComments);
-            should_be_simple_type(type.ArrayItem.Type, itemType, "int");
+            should_be_simple_type(type.ArrayItem.Type, itemType, "int", "0");
 
             type.IsSimple.ShouldBeFalse();
             type.Enumeration.ShouldBeNull();
@@ -429,9 +440,9 @@ namespace Tests.Unit.Specification
             type.DictionaryEntry.ShouldNotBeNull();
             type.DictionaryEntry.KeyName.ShouldEqual(keyName);
             type.DictionaryEntry.KeyComments.ShouldEqual(keyComments);
-            should_be_simple_type(type.DictionaryEntry.KeyType, keyType, "string");
+            should_be_simple_type(type.DictionaryEntry.KeyType, keyType, "string", "");
             type.DictionaryEntry.ValueComments.ShouldEqual(valueComments);
-            should_be_simple_type(type.DictionaryEntry.ValueType, valueType, "int");
+            should_be_simple_type(type.DictionaryEntry.ValueType, valueType, "int", "0");
         }
 
         // Complex types
@@ -450,9 +461,9 @@ namespace Tests.Unit.Specification
                     null), 2).Members;
 
             should_match_member(members[0], "Member1", sampleValue: "",
-                type: x => should_be_simple_type(x, typeof(string), "string"));
+                type: x => should_be_simple_type(x, typeof(string), "string", ""));
             should_match_member(members[1], "Member2", sampleValue: "",
-                type: x => should_be_simple_type(x, typeof(string), "string"));
+                type: x => should_be_simple_type(x, typeof(string), "string", ""));
         }
 
         public class ComplexTypeWithMemberComments
@@ -470,7 +481,7 @@ namespace Tests.Unit.Specification
                 .Members.Single();
 
             should_match_member(member, "Member", "This is *a* member.", sampleValue: "",
-                type: x => should_be_simple_type(x, typeof(string), "string"));
+                type: x => should_be_simple_type(x, typeof(string), "string", ""));
         }
 
         public class ComplexTypeWithDefaultValue
@@ -489,7 +500,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(member, "Member",
                 defaultValue: null, sampleValue: "0.00",
-                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal", "0.00"));
         }
 
         [Test]
@@ -502,7 +513,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(member, "Member",
                 defaultValue: "3.14", sampleValue: "0.00", optional: true,
-                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal", "0.00"));
         }
 
         [Test]
@@ -516,7 +527,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(member, "Member",
                 defaultValue: "3.1", sampleValue: "0.0", optional: true,
-                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal", "0.0"));
         }
 
         public class ComplexTypeWithSampleValue
@@ -535,7 +546,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(member, "Member",
                 sampleValue: "3.14",
-                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal", "0.00"));
         }
 
         [Test]
@@ -548,7 +559,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(member, "Member",
                 sampleValue: "3.14", optional: true,
-                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal", "0.00"));
         }
 
         [Test]
@@ -562,7 +573,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(member, "Member",
                 sampleValue: "3.1", optional: true,
-                type: x => should_be_simple_type(x, typeof(decimal), "decimal"));
+                type: x => should_be_simple_type(x, typeof(decimal), "decimal", "0.0"));
         }
 
         public class ComplexTypeWithOptionalMember
@@ -627,7 +638,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(members.First(x => x.Name == property), property,
                 sampleValue: sampleValue, optional: optional,
-                type: x => should_be_simple_type(x, propertyType, dataType));
+                type: x => should_be_simple_type(x, propertyType, dataType, sampleValue));
         }
 
         [Test]
@@ -644,7 +655,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(members.First(x => x.Name == property), property,
                 optional: false, sampleValue: sampleValue,
-                type: x => should_be_simple_type(x, propertyType, dataType));
+                type: x => should_be_simple_type(x, propertyType, dataType, sampleValue));
         }
 
         public class CyclicModel
@@ -737,7 +748,7 @@ namespace Tests.Unit.Specification
 
             should_match_member(members[0], "DeprecatedMember",
                 deprecated: true, sampleValue: "",
-                type: x => should_be_simple_type(x, typeof(string), "string"));
+                type: x => should_be_simple_type(x, typeof(string), "string", ""));
         }
 
         [Test]
@@ -750,7 +761,7 @@ namespace Tests.Unit.Specification
             should_match_member(members[1], "DeprecatedMemberWithMessage",
                 deprecated: true, sampleValue: "",
                 deprecatedMessage: "**DO NOT** seek the treasure!",
-                type: x => should_be_simple_type(x, typeof(string), "string"));
+                type: x => should_be_simple_type(x, typeof(string), "string", ""));
         }
 
         public void should_match_member(Member member, string name,
@@ -988,7 +999,7 @@ namespace Tests.Unit.Specification
         }
     }
 
-    public static class TypeGraphFactoryExtensions
+    public static class TypeGraphServiceExtensions
     {
         public static DataType BuildForMessage<T>(this TypeGraphService service, 
             string methodName = "Get", bool requestGraph = false)

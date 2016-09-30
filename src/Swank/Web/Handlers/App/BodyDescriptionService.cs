@@ -52,7 +52,8 @@ namespace Swank.Web.Handlers.App
                 Comments = type.Comments,
                 Whitespace = Whitespace.Repeat(level),
                 IsSimpleType = true,
-                Nullable = type.IsNullable
+                Nullable = type.IsNullable,
+                SampleValue = type.SampleValue
             };
             
             switch (type.Name)
@@ -66,44 +67,36 @@ namespace Swank.Web.Handlers.App
                 case Xml.ByteType:
                 case Xml.UnsignedByteType:
                     data.IsNumeric = true;
-                    data.SampleValue = typeof(int).GetSampleValue(_configuration);
                     break;
                 case Xml.FloatType:
                 case Xml.DoubleType:
                 case Xml.DecimalType: 
                     data.IsNumeric = true;
-                    data.SampleValue = typeof(decimal).GetSampleValue(_configuration);
                     break;
                 case Xml.BooleanType: 
                     data.IsBoolean = true;
-                    data.SampleValue = typeof(bool).GetSampleValue(_configuration);
                     break;
                 case Xml.DateTimeType: 
                     data.IsDateTime = true;
-                    data.SampleValue = typeof(DateTime).GetSampleValue(_configuration);
                     break;
                 case Xml.DurationType: 
                     data.IsDuration = true;
-                    data.SampleValue = typeof(TimeSpan).GetSampleValue(_configuration);
                     break;
                 case Xml.UuidType: 
                     data.IsGuid = true;
-                    data.SampleValue = typeof(Guid).GetSampleValue(_configuration);
                     break;
                 default: 
                     data.IsString = true;
-                    data.SampleValue = _configuration.SampleStringValue; 
                     break;
             }
 
-            data.Options = WalkOptions(type, x => data.SampleValue = x.Options.First().Value);
+            data.Options = WalkOptions(type);
 
             opening?.Invoke(data);
             description.Add(data);
         }
 
-        private static Enumeration WalkOptions(DataType type, 
-            Action<Enumeration> whenOptions = null)
+        private static Enumeration WalkOptions(DataType type)
         {
             if (type.Enumeration == null) return null;
             var enumeration = new Enumeration
@@ -117,7 +110,6 @@ namespace Swank.Web.Handlers.App
                     Comments = x.Comments
                 }))
             };
-            whenOptions?.Invoke(enumeration);
             return enumeration;
         }
 

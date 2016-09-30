@@ -95,6 +95,7 @@ namespace Swank.Specification
         public bool IsNullable { get; set; }
 
         public bool IsSimple { get; set; }
+        public string SampleValue { get; set; }
         public Enumeration Enumeration { get; set; }
 
         public bool IsComplex { get; set; }

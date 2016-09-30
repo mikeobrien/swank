@@ -85,6 +85,9 @@ namespace Swank.Extensions
             if (type == typeof(Guid))
                 return configuration.SampleGuidValue
                     .ToSampleValueString(configuration);
+            
+            if (type == typeof(Uri))
+                return configuration.SampleUriValue.ToString();
 
             if (type.IsEnum) return Activator.CreateInstance(type)
                 .ToSampleValueString(configuration);

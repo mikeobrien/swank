@@ -126,6 +126,7 @@ namespace Swank.Configuration
             SampleRealValue = 0;
             SampleTimeSpanValue = TimeSpan.FromHours(0);
             SampleGuidValue = Guid.Empty;
+            SampleUriValue = new Uri("http://www.google.com");
 
             ModuleConvention = new Service<IDescriptionConvention<ApiDescription, 
                 ModuleDescription>> { Type = typeof(ModuleConvention) };
@@ -213,6 +214,7 @@ namespace Swank.Configuration
         public decimal SampleRealValue { get; set; }
         public TimeSpan SampleTimeSpanValue { get; set; }
         public Guid SampleGuidValue { get; set; }
+        public Uri SampleUriValue { get; set; }
 
         public Service<IDescriptionConvention<ApiDescription, 
             ModuleDescription>> ModuleConvention { get; }
