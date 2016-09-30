@@ -33,7 +33,7 @@ namespace SwankUtil
                     $"Could not load spec {specPath}.");
             Console.WriteLine("Loading template...");
             var template = File.ReadAllText(templatePath);
-            var configuration = ConfigurationDsl.CreateConfig();
+            var configuration = ConfigurationDsl.CreateConfig(x => x.IsInDebugMode());
             if (moduleIncludedInNamespace) configuration
                 .TemplateNamespaceIncludesModule = true;
             var templateModel = new TemplateModel
@@ -63,7 +63,7 @@ namespace SwankUtil
             RenderingEngine? renderingEngine)
         {
             Console.WriteLine("Starting render code example.");
-            var configuration = new Configuration();
+            var configuration = new Configuration { DebugMode = true };
             Console.WriteLine("Loading spec...");
             var spec = Deserialize.JsonFile<List<Module>>(specPath,
                 x => x.Deserialization(d => d.IgnoreNameCase()));
