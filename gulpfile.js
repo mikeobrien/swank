@@ -61,5 +61,8 @@ gulp.task('nuget-package', ['nuget-tools'], function() {
 });
 
 gulp.task('nuget-push', ['nuget-package'], function() {
-    return Nuget({ apiKey: args.nugetApiKey }).push('*.nupkg');
+    return Nuget({ 
+        apiKey: args.nugetApiKey, 
+        source: 'https://www.nuget.org/api/v2/package' 
+    }).push('*.nupkg');
 });
