@@ -231,7 +231,8 @@ namespace Swank.Extensions
         public static bool IsUrlParameter(this ApiParameterDescription parameter, ApiDescription endpoint)
         {
             return parameter.Source == ApiParameterSource.FromUri &&
-                endpoint.Route.RouteTemplate.Contains($"{{{parameter.Name}}}");
+                (endpoint.Route.RouteTemplate.Contains($"{{{parameter.Name}}}") ||
+                endpoint.Route.RouteTemplate.Contains($"{{*{parameter.Name}}}"));
         }
 
         public static bool IsQuerystring(this ApiParameterDescription parameter, ApiDescription endpoint)

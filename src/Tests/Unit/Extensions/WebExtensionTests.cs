@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web.Http.Description;
 using System.Web.Http.Routing;
 using NSubstitute;
 using NUnit.Framework;
@@ -108,6 +109,28 @@ namespace Tests.Unit.Extensions
         public void should_get_root_domain(string url, string expected)
         {
             $"http://{url}".ParseUri().GetRootDomain().ShouldEqual(expected);
+        }
+
+        [Test]
+        [TestCase("fark/{farker}", ApiParameterSource.FromUri, true)]
+        [TestCase("fark/{*farker}", ApiParameterSource.FromUri, true)]
+        [TestCase("fark/{farker}", ApiParameterSource.FromBody, false)]
+        [TestCase("fark/farker", ApiParameterSource.FromUri, false)]
+        public void should_indicate_if_a_parameter_is_a_url_parameter(string url, ApiParameterSource source, bool expected)
+        {
+            new ApiParameterDescription { Name = "farker", Source = source }
+                .IsUrlParameter(new ApiDescription { Route = new HttpRoute(url) }).ShouldEqual(expected);
+        }
+
+        [Test]
+        [TestCase("fark/farker", ApiParameterSource.FromUri, true)]
+        [TestCase("fark/{farker}", ApiParameterSource.FromUri, false)]
+        [TestCase("fark/{*farker}", ApiParameterSource.FromUri, false)]
+        [TestCase("fark/{farker}", ApiParameterSource.FromBody, false)]
+        public void should_indicate_if_a_parameter_is_a_querystring(string url, ApiParameterSource source, bool expected)
+        {
+            new ApiParameterDescription { Name = "farker", Source = source }
+                .IsQuerystring(new ApiDescription { Route = new HttpRoute(url) }).ShouldEqual(expected);
         }
     }
 }

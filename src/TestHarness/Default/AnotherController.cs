@@ -195,8 +195,8 @@ namespace TestHarness.Default
         }
 
         [BinaryRequest, BinaryResponse]
-        [Route("another/controller/file")]
-        public Stream PostFile(Stream stream)
+        [Route("another/controller/file/{*filename}")]
+        public Stream PostFile(string filename, Stream stream)
         {
             return null;
         }
