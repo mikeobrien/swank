@@ -44,6 +44,8 @@ namespace Swank.Description
         public string DeprecationMessage { get; set; }
     }
 
+    public enum Encoding { ASCII, Unicode, ISO8601 }
+
     public class MemberDescription : Description
     {
         public string SampleValue { get; set; }
@@ -54,6 +56,8 @@ namespace Swank.Description
         public string DeprecationMessage { get; set; }
         public Description ArrayItem { get; set; }
         public DictionaryDescription DictionaryEntry { get; set; }
+        public Encoding? Encoding { get; set; }
+        public int? MaxLength { get; set; }
     }
 
     public class DictionaryDescription

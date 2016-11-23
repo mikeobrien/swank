@@ -135,6 +135,8 @@ namespace Swank.Specification
         public bool Deprecated { get; set; }
         public string DeprecationMessage { get; set; }
         public DataType Type { get; set; }
+        public string Encoding { get; set; }
+        public int? MaxLength { get; set; }
     }
 
     public class Enumeration

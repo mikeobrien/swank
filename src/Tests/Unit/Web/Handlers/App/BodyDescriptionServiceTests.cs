@@ -217,6 +217,56 @@ namespace Tests.Unit.Web.Handlers.App
                 x => x.Last().Closing());
         }
 
+        public class ComplexTypeWithMaxLengthMember
+        {
+            [MaxLength(50)]
+            public string MaxLengthMember { get; set; }
+        }
+
+        [Test]
+        public void should_create_complex_type_and_specify_max_length()
+        {
+            var description = BuildDescription<ComplexTypeWithMaxLengthMember>();
+
+            description.ShouldBeIndexed().ShouldTotal(3);
+
+            description[0].ShouldBeComplexType("ComplexTypeWithMaxLengthMember", 0,
+                x => x.First().Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetResponse"));
+
+            description[1].ShouldBeSimpleTypeMember("MaxLengthMember",
+                "string", 1, "", x => x.IsString(), x => x.IsLastMember().Required()
+                .HasMaxLength(50));
+
+            description[2].ShouldBeComplexType("ComplexTypeWithMaxLengthMember", 0,
+                x => x.Last().Closing());
+        }
+
+        public class ComplexTypeWithEncodedMember
+        {
+            [AsciiEncoding]
+            public string EncodedMember { get; set; }
+        }
+
+        [Test]
+        public void should_create_complex_type_and_specify_encoding()
+        {
+            var description = BuildDescription<ComplexTypeWithEncodedMember>();
+
+            description.ShouldBeIndexed().ShouldTotal(3);
+
+            description[0].ShouldBeComplexType("ComplexTypeWithEncodedMember", 0,
+                x => x.First().Opening().Namespace("Get").FullNamespace("Get")
+                    .LogicalName("GetResponse"));
+
+            description[1].ShouldBeSimpleTypeMember("EncodedMember",
+                "string", 1, "", x => x.IsString(), x => x.IsLastMember().Required()
+                .HasEncoding("ASCII"));
+
+            description[2].ShouldBeComplexType("ComplexTypeWithEncodedMember", 0,
+                x => x.Last().Closing());
+        }
+
         public class ComplexTypeWithDefaultValueMember
         {
             [DefaultValue("zero")]
@@ -1053,6 +1103,8 @@ namespace Tests.Unit.Web.Handlers.App
             public MemberDsl Required() { _body.Optional = false; return this; }
             public MemberDsl Optional() { _body.Optional = true; return this; }
             public MemberDsl IsLastMember() { _body.IsLastMember = true; return this; }
+            public MemberDsl HasMaxLength(int value) { _body.MaxLength = value; return this; }
+            public MemberDsl HasEncoding(string value) { _body.Encoding = value; return this; }
 
             public MemberDsl IsDeprecated(string message = null)
             {
@@ -1119,6 +1171,8 @@ namespace Tests.Unit.Web.Handlers.App
             source.Whitespace.ShouldEqual(compare.Whitespace);
             source.IsDeprecated.ShouldEqual(compare.IsDeprecated);
             source.DeprecationMessage.ShouldEqual(compare.DeprecationMessage);
+            source.MaxLength.ShouldEqual(compare.MaxLength);
+            source.Encoding.ShouldEqual(compare.Encoding);
 
             source.IsOpening.ShouldEqual(compare.IsOpening);
             source.IsClosing.ShouldEqual(compare.IsClosing);

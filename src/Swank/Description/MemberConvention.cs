@@ -46,6 +46,8 @@ namespace Swank.Description
                 Hidden = property.PropertyType.HasAttribute<HideAttribute>() ||
                     property.HasAttribute<HideAttribute>() ||
                     property.HasAttribute<XmlIgnoreAttribute>(),
+                Encoding = GetEncoding(property),
+                MaxLength = property.GetCustomAttribute<MaxLengthAttribute>()?.MaxLength,
                 Deprecated = obsolete != null,
                 DeprecationMessage = obsolete.WhenNotNull(x => x.Message).OtherwiseDefault(),
                 ArrayItem = new Description
@@ -62,6 +64,14 @@ namespace Swank.Description
                     ValueComments = dictionaryDescription.WhenNotNull(x => x.ValueComments).OtherwiseDefault()
                 }
             };
+        }
+
+        private Encoding? GetEncoding(PropertyInfo property)
+        {
+            if (property.HasAttribute<AsciiEncodingAttribute>()) return Encoding.ASCII;
+            if (property.HasAttribute<UnicodeEncodingAttribute>()) return Encoding.Unicode;
+            if (property.HasAttribute<ISO8601EncodingAttribute>()) return Encoding.ISO8601;
+            return null;
         }
     }
 

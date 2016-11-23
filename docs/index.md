@@ -284,6 +284,8 @@ The following are all the built in attributes.
 | `StatusCode` | Adds status codes, used on action methods. |
 | `SampleValue` | Sets the sample value which is displayed in the XML and json samples. Used on members and action parameters. |
 | `DefaultValue` | Specifies a default value, used on members and querystring action parameters. |
+| `MaxLength` | Specifies max length of a string, used on members. |
+| `UnicodeEncoding`, `AsciiEncoding`, `ISO8601Encoding` | Specifies the encoding, used on members. Yeah, I know unicode itself isn't an encoding, just indicates that the field supports unicode characters as opposed to ASCII. |
 | `Optional` | Indicates that something is optional, used on members and querystring action parameters. |
 | `OptionalForPost` | Indicates that a member is optional for `POST` otherwise required. |
 | `OptionalForPut` | Indicates that a member is optional for `PUT` otherwise required. |

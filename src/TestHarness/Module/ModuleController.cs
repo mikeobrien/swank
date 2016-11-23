@@ -14,6 +14,7 @@ namespace TestHarness.Module
         public class Model
         {
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
+            [MaxLength(50), UnicodeEncoding]
             public string Value { get; set; }
             [Comments("Member comments. Raw denim aesthetic synth nesciunt. :trollface:")]
             [DefaultValue("fark")]

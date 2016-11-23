@@ -350,11 +350,17 @@
                         {{#isRequest}}
                             {{^optional}}<span class="badge swank-required">Required</span>{{/optional}}
                             {{#optional}}<span class="badge swank-optional">Optional</span>{{/optional}}
+                            {{#if maxLength}}
+                                <span class="label label-default">Max length: <code>{{maxLength}}</code></span>
+                            {{/if}}
+                            {{#if encoding}}
+                                <span class="label label-default"><code>{{encoding}}</code></span>
+                            {{/if}}
+                            {{#if defaultValue}}
+                                <span class="label label-default">Default: <code>{{defaultValue}}</code></span>
+                            {{/if}}
                         {{/isRequest}}
                         {{#nullable}}<span class="badge swank-nullable">Nullable</span>{{/nullable}}
-                        {{#if defaultValue}}
-                            <span class="badge badge-inverse">Default: <code>{{defaultValue}}</code></span>
-                        {{/if}}
                     {{/isMember}}
                     {{{comments}}}
                 </p>

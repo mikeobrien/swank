@@ -260,7 +260,8 @@ namespace Swank.Web.Handlers.App
                         if (lastMember) x.IsLastMember = true;
                         if (!member.Type.IsSimple) x.IsOpening = true;
                         x.Optional = member.Optional;
-
+                        x.MaxLength = member.MaxLength;
+                        x.Encoding = member.Encoding;
                         if (member.Deprecated)
                         {
                             x.IsDeprecated = true;

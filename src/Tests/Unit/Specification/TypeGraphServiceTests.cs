@@ -484,6 +484,65 @@ namespace Tests.Unit.Specification
                 type: x => should_be_simple_type(x, typeof(string), "string", ""));
         }
 
+        public class ComplexTypeWithEncodings
+        {
+            public string None { get; set; }
+
+            [AsciiEncoding]
+            public string Ascii { get; set; }
+        }
+
+        [Test]
+        public void should_return_null_when_no_member_encoding_specified()
+        {
+            var member = should_be_complex_type(Builder.BuildTypeGraphService()
+                .BuildForMessage(false, typeof(ComplexTypeWithEncodings),
+                    _endpointDescription, null), 2)
+                .Members.Single(x => x.Name == nameof(ComplexTypeWithEncodings.None));
+
+            member.Encoding.ShouldBeNull();
+        }
+
+        [Test]
+        public void should_return_encoding_when_specified()
+        {
+            var member = should_be_complex_type(Builder.BuildTypeGraphService()
+                .BuildForMessage(false, typeof(ComplexTypeWithEncodings),
+                    _endpointDescription, null), 2)
+                .Members.Single(x => x.Name == nameof(ComplexTypeWithEncodings.Ascii));
+
+            member.Encoding.ShouldEqual("ASCII");
+        }
+
+        public class ComplexTypeWithMaxLength
+        {
+            public string None { get; set; }
+
+            [MaxLength(50)]
+            public string MaxLength { get; set; }
+        }
+
+        [Test]
+        public void should_return_null_when_no_member_max_length_specified()
+        {
+            var member = should_be_complex_type(Builder.BuildTypeGraphService()
+                .BuildForMessage(false, typeof(ComplexTypeWithMaxLength),
+                    _endpointDescription, null), 2)
+                .Members.Single(x => x.Name == nameof(ComplexTypeWithMaxLength.None));
+
+            member.MaxLength.ShouldBeNull();
+        }
+
+        [Test] public void should_return_max_length_when_specified()
+        {
+            var member = should_be_complex_type(Builder.BuildTypeGraphService()
+                .BuildForMessage(false, typeof(ComplexTypeWithMaxLength),
+                    _endpointDescription, null), 2)
+                .Members.Single(x => x.Name == nameof(ComplexTypeWithMaxLength.MaxLength));
+
+            member.MaxLength.ShouldEqual(50);
+        }
+
         public class ComplexTypeWithDefaultValue
         {
             [DefaultValue(3.14159)]
@@ -767,7 +826,8 @@ namespace Tests.Unit.Specification
         public void should_match_member(Member member, string name,
             string comments = null, string defaultValue = null,
             string sampleValue = null, bool optional = false, 
-            bool deprecated = false, string deprecatedMessage = null, 
+            bool deprecated = false, string deprecatedMessage = null,
+            string encoding = null, int? maxLength = null, 
             Action<DataType> type = null)
         {
             member.Name.ShouldEqual(name);
@@ -778,6 +838,8 @@ namespace Tests.Unit.Specification
             member.Type.ShouldNotBeNull();
             member.Deprecated.ShouldEqual(deprecated);
             member.DeprecationMessage.ShouldEqual(deprecatedMessage);
+            member.MaxLength.ShouldEqual(maxLength);
+            member.Encoding.ShouldEqual(encoding);
             type?.Invoke(member.Type);
         }
 

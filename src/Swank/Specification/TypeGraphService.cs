@@ -264,7 +264,9 @@ namespace Swank.Specification
                         Deprecated = x.Description.Deprecated,
                         DeprecationMessage = x.Description.DeprecationMessage,
                         Type = BuildGraph(x.Type, requestGraph, endpoint,
-                            dataType, x.Ancestors, x.Description)
+                            dataType, x.Ancestors, x.Description),
+                        MaxLength = x.Description?.MaxLength,
+                        Encoding = x.Description?.Encoding?.ToString()
                     },
 
                 }).Member).ToList();

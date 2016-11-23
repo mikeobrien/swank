@@ -117,6 +117,54 @@ namespace Tests.Unit.Description
 
             [Obsolete("DO NOT seek the treasure!")]
             public string DeprecatedWithMessage { get; set; }
+
+            [AsciiEncoding]
+            public string AsciiEncoding { get; set; }
+
+            [UnicodeEncoding]
+            public string UTF8Encoding { get; set; }
+
+            [ISO8601Encoding]
+            public string ISO8601Encoding { get; set; }
+
+            [MaxLength(50)]
+            public string MaxLength { get; set; }
+        }
+
+        [Test]
+        public void should_return_no_max_length_if_none_specified()
+        {
+            GetDescription(x => x.NoDescription).MaxLength.ShouldBeNull();
+        }
+
+        [Test]
+        public void should_return_max_length_if_specified()
+        {
+            GetDescription(x => x.MaxLength).MaxLength.ShouldEqual(50);
+        }
+
+        [Test]
+        public void should_return_no_encoding_if_none_specified()
+        {
+            GetDescription(x => x.NoDescription).Encoding.ShouldBeNull();
+        }
+
+        [Test]
+        public void should_return_ascii_encoding_if_specified()
+        {
+            GetDescription(x => x.AsciiEncoding).Encoding.ShouldEqual(Encoding.ASCII);
+        }
+
+        [Test]
+        public void should_return_utf8_encoding_if_specified()
+        {
+            GetDescription(x => x.UTF8Encoding).Encoding.ShouldEqual(Encoding.Unicode);
+        }
+
+        [Test]
+        public void should_return_iso8601_encoding_if_specified()
+        {
+            GetDescription(x => x.ISO8601Encoding).Encoding.ShouldEqual(Encoding.ISO8601);
         }
 
         [Test]

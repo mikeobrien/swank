@@ -61,6 +61,8 @@ namespace Swank.Web.Handlers.App
         public string DefaultValue { get; set; }
         public bool? Optional { get; set; }
         public bool Nullable { get; set; }
+        public int? MaxLength { get; set; }
+        public string Encoding { get; set; }
         public string Whitespace { get; set; }
         public bool? IsDeprecated { get; set; }
         public string DeprecationMessage { get; set; }
