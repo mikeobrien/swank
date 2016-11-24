@@ -45,6 +45,11 @@ namespace Tests.Unit.Description
             public void Method<T1, T2>(
                 Dictionary<int?, List<T2>> parameter1, 
                 string parameter2, T1 parameter3) { }
+
+            /// <summary>method summary</summary>
+            /// <remarks>method remarks</remarks>
+            /// <returns>return summary</returns>
+            public void MethodNoParams() { }
         }
 
         [Test]
@@ -102,6 +107,19 @@ namespace Tests.Unit.Description
             comments.Parameters["parameter1"].ShouldEqual("param 1 summary");
             comments.Parameters["parameter2"].ShouldEqual("param 2 summary");
             comments.Parameters["parameter3"].ShouldEqual("param 3 summary");
+        }
+
+        [Test]
+        public void should_get_method_with_no_params_comments()
+        {
+            var comments = _comments.GetMethod(typeof(Type<string>).GetMethod("MethodNoParams"));
+            comments.Assembly.ShouldEqual("Tests");
+            comments.Name.ShouldEqual("M:Tests.Unit.Description" +
+                ".XmlCommentsTests.Type`1.MethodNoParams");
+            comments.Summary.ShouldEqual("method summary");
+            comments.Remarks.ShouldEqual("method remarks");
+            comments.Returns.ShouldEqual("return summary");
+            comments.Parameters.ShouldBeEmpty();
         }
     }
 }

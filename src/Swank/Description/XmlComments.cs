@@ -78,10 +78,16 @@ namespace Swank.Description
             var arguments = method.GetGenericArguments().ToList();
             var genericArgumentPrefix = arguments.Any() ? "``" + arguments.Count : "";
             var name = "M:" + GetTypeFullName(method.DeclaringType) + "." + method.Name + 
-                genericArgumentPrefix + "(" + method.GetParameters()
-                    .Select(x => GetTypeName(x.ParameterType, arguments)).Join(",") + ")";
+                genericArgumentPrefix + GetMethodSignature(method, arguments);
             return _comments.Value.FirstOrDefault(x =>
                 x.Assembly == assembly && x.Name == name);
+        }
+
+        private string GetMethodSignature(MethodInfo method, List<Type> arguments)
+        {
+            var parameters = method.GetParameters();
+            return !parameters.Any() ? "" : "(" + parameters.Select(x => 
+                GetTypeName(x.ParameterType, arguments)).Join(",") + ")";
         }
 
         private string GetTypeName(Type type, List<Type> arguments)
