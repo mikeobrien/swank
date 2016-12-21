@@ -1169,6 +1169,16 @@ namespace Swank.Configuration
         }
 
         /// <summary>
+        /// Camel case member names.
+        /// </summary>
+        public ConfigurationDsl CamelCaseMemberNames()
+        {
+            _configuration.MemberOverrides.Add(x => 
+                x.Member.Name = x.Member.Name.ToCamelCase());
+            return this;
+        }
+
+        /// <summary>
         /// Overrides members.
         /// </summary>
         public ConfigurationDsl OverrideMembers(Action<MemberOverrideContext> @override)

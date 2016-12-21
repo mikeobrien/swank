@@ -27,12 +27,6 @@ namespace Swank.Extensions
             return !string.IsNullOrEmpty(value);
         }
 
-        public static string InitialCap(this string value)
-        {
-            if (value.IsNullOrEmpty()) return value;
-            return value[0].ToString().ToUpper() + (value.Length > 1 ? value.Substring(1) : "");
-        }
-
         public static bool EqualsIgnoreCase(this string value, string compare)
         {
             return value.Equals(compare, StringComparison.OrdinalIgnoreCase);
@@ -82,14 +76,6 @@ namespace Swank.Extensions
             return lower ? result.ToLower() : result;
         }
 
-        public static string InitialCase(this string value, bool upper)
-        {
-            if (value.IsNullOrEmpty()) return value;
-            var inital = value.Substring(0, 1);
-            var tail = value.Length > 1 ? value.Substring(1) : "";
-            return (upper ? inital.ToUpper() : inital.ToLower()) + tail;
-        }
-
         private static readonly Regex PascalCaseToSentenceRegex = new Regex(@"
             (?<=[A-Z])(?=[A-Z][a-z]) | 
             (?<=[^A-Z])(?=[A-Z]) | 
@@ -107,7 +93,34 @@ namespace Swank.Extensions
             var stringValue = value?.ToString();
             if (stringValue.IsNullOrEmpty()) return stringValue;
             return stringValue.SplitPascalCasedSentence()
-                .Select(x => x.InitialCase(true)).Join(" ");
+                .Select(x => x.InitialCap()).Join(" ");
+        }
+
+        public static string InitialCap(this string value)
+        {
+            if (value.IsNullOrEmpty()) return value;
+            return value[0].ToString().ToUpper() + 
+                (value.Length > 1 ? value.Substring(1) : "");
+        }
+
+        public static string ToCamelCase(this string value)
+        {
+            if (string.IsNullOrEmpty(value) ||
+                !char.IsUpper(value[0])) return value;
+
+            var chars = value.ToCharArray();
+
+            for (var i = 0; i < chars.Length; i++)
+            {
+                if (i == 1 && !char.IsUpper(chars[i])) break;
+
+                var hasNext = i + 1 < chars.Length;
+                if (i > 0 && hasNext && !char.IsUpper(chars[i + 1])) break;
+
+                chars[i] = char.ToLowerInvariant(chars[i]);
+            }
+
+            return new string(chars);
         }
     }
 }
