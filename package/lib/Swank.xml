@@ -1,0 +1,622 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Swank</name>
+    </assembly>
+    <members>
+        <member name="M:Swank.Configuration.ConfigurationDsl.IsInDebugMode">
+            <summary>
+            Specifies that Swank is in debug mode. This mode 
+            will display template error messages.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.IsInDebugModeWhenAppIsInDebugMode">
+            <summary>
+            Specifies that Swank is in debug mode when the calling assembly is 
+            in debug mode. This mode will display template error messages.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.IgnoreFolders">
+            <summary>
+            Overrides the configured virtual path provider to ignore
+            physical folders that match Swank urls.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.AppliesTo``1">
+            <summary>
+            Includes the assembly of the specified type.
+            This call is additive, so you can specify multiple assemblies.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.AppliesTo(System.Type)">
+            <summary>
+            Includes the assembly of the specified type.
+            This call is additive, so you can specify multiple assemblies..
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.AppliesTo(System.Reflection.Assembly[])">
+            <summary>
+            Includes the specified assemblies.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithAppTemplateResource(System.String)">
+            <summary>
+            Sets a custom app template from an embedded resource. 
+            Must be Razor template. If the extension is not 
+            specified it must have a .cshtml extension.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithAppTemplateFromVirtualPath(System.String)">
+            <summary>
+            Sets a custom app template from a virtual path. Must be Razor template.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithAppTemplate(System.String)">
+            <summary>
+            Sets a custom app template. Must be Razor template.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithAppAt(System.String)">
+            <summary>
+            Url of the UI.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithApiAt(System.String)">
+            <summary>
+            The url used in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSpecificationAtUrl(System.String)">
+            <summary>
+            Url of the specification.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithFavIconAt(System.String)">
+            <summary>
+            Url of the favicon.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithPageTitle(System.String)">
+            <summary>
+            The title of the page. Defaults to the name if not set.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithHeader(System.String)">
+            <summary>
+            The name of the displayed in the page header.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithLogoAt(System.String)">
+            <summary>
+            Url of the logo displayed in the page header.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.AddXmlComments">
+            <summary>
+            Adds xml comments from the bin folder of the calling assembly.
+            Expects the file name to follow the standard convention of Assembly.xml.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.AddXmlComments(System.String)">
+            <summary>
+            Adds xml comments from a virtual path.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithOverviewResource(System.String)">
+            <summary>
+            Sets the overview embedded resource. If the extension 
+            is not specified it must have a .md extension.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithOverviewFromVirtualPath(System.String)">
+            <summary>
+            Sets the virtual path of the overview.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithOverview(System.String)">
+            <summary>
+            Sets the overview.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithOverviewLink(System.String)">
+            <summary>
+            Adds an overview fragment link. Defaults the 
+            fragment to the name snake cased.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithOverviewLink(System.String,System.String)">
+            <summary>
+            Adds an overview fragment link.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithCopyright(System.String)">
+            <summary>
+            Sets the copyright which is displayed in the footer of page. 
+            The token {year} is replaced by the current year.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.TemplateNamespaceIncludesModule">
+            <summary>
+            Specifies that the namespace in the template model includes the module name.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithTemplateResource(System.String,System.String,System.String)">
+            <summary>
+            Adds a template embedded resource. If the extension is not 
+            specified it must have a .mustache or .cshtml extension.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithTemplateResources(System.String,System.String,System.String)">
+            <summary>
+            Adds template embedded resources in the specified namespace. 
+            They must have a .mustache or .cshtml extension.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithTemplateFromVirtualPath(System.String,System.String,System.String)">
+            <summary>
+            Adds a template from a virtual path. 
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithTemplatesInVirtualPath(System.String,System.String,System.String)">
+            <summary>
+            Adds templates from a virtual path.  
+            They must have a .mustache or .cshtml extension.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithMustacheTemplate(System.String,System.String,System.String)">
+            <summary>
+            Adds a mustache template.  
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithRazorTemplate(System.String,System.String,System.String)">
+            <summary>
+            Adds a Razor template.  
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithStylesheets(System.String[])">
+            <summary>
+            Specify stylesheets to be included in the documentation page.
+            This can be used to override the appearance of the page.
+            You can use application relative paths a la ~/styles/style.css.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithScripts(System.String[])">
+            <summary>
+            Specify scripts to be included in the documentation page.
+            This can be used to override the behavior of the page.
+            You can use application relative paths a la ~/scripts/script.js.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.HideJsonData">
+            <summary>
+            Do not show json data samples.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.HideXmlData">
+            <summary>
+            Do not show xml data samples.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithActionNamespaceConvention(System.Func{System.Web.Http.Description.ApiDescription,System.Collections.Generic.List{System.String}})">
+            <summary>
+            Specifies a convention for generating the namespace of actions.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithActionNameConvention(System.Func{System.Web.Http.Description.ApiDescription,System.String})">
+            <summary>
+            Specifies a convention for generating the name of actions.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.Where(System.Func{System.Web.Http.Description.ApiDescription,System.Boolean})">
+            <summary>
+            Specifies an action filter.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithDefaultDictionaryKeyName(System.String)">
+            <summary>
+            The data example dictionary key name.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithNumericEnum">
+            <summary>
+            Indicates that enum values should be numeric.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithCodeExampleTheme(Swank.Configuration.CodeExampleTheme)">
+            <summary>
+            Specifes the highlight.js theme to use for code samples.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.ClearCodeExamples">
+            <summary>
+            Removes the stock code examples. 
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithCodeExampleResource(System.String,System.String,Swank.Configuration.CodeExampleLanguage)">
+            <summary>
+            Adds a code example embedded resource. 
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithCodeExampleResources(System.String)">
+            <summary>
+            Adds code example embedded resources and optional comments under the specified namespace.
+            These must be named as [highlight.js language].[md|cshtml|mustache].
+            The name defaults to the filename.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithCodeExampleFromVirtualPath(System.String,System.String,Swank.Configuration.CodeExampleLanguage)">
+            <summary>
+            Adds a code example from a relative or virtual path.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithCodeExamplesInVirtualPath(System.String)">
+            <summary>
+            Adds code examples and optional comments under a virtual path.
+            These must be named as [highlight.js language].[md|cshtml|mustache].
+            The name defaults to the filename.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithMustacheCodeExample(System.String,Swank.Configuration.CodeExampleLanguage,System.String,System.String)">
+            <summary>
+            Adds a mustache code example to the documentation.  
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithRazorCodeExample(System.String,Swank.Configuration.CodeExampleLanguage,System.String,System.String)">
+            <summary>
+            Adds a Razor code example to the documentation.  
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleDateTimeFormat(System.String)">
+            <summary>
+            The format of default and sample DateTime values displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleIntegerFormat(System.String)">
+            <summary>
+            The format of default and sample integer values displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleRealFormat(System.String)">
+            <summary>
+            The format of default and sample real values displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleTimeSpanFormat(System.String)">
+            <summary>
+            The format of default and sample TimeSpan values displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleGuidFormat(System.String)">
+            <summary>
+            The format of default and sample Guid values displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleStringValue(System.String)">
+            <summary>
+            Sample string value displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleBoolValue(System.Boolean)">
+            <summary>
+            Sample boolean value displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleDateTimeValue(System.DateTime)">
+            <summary>
+            Sample DateTime value displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleIntegerValue(System.Int32)">
+            <summary>
+            Sample integer value displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleRealValue(System.Decimal)">
+            <summary>
+            Sample real value displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleTimeSpanValue(System.TimeSpan)">
+            <summary>
+            Sample TimeSpan value displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleGuidValue(System.Guid)">
+            <summary>
+            Sample Guid value displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithSampleUriValue(System.Uri)">
+            <summary>
+            Sample URI value displayed in the documentation.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithModuleConvention``1">
+            <summary>
+            Sets the module convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithModuleConvention``2(System.Action{``1})">
+            <summary>
+            Sets the module convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithResourceIdentifier(System.Func{System.Web.Http.Description.ApiDescription,System.String})">
+            <summary>
+            Sets the resource identifier convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithResourceConvention``1">
+            <summary>
+            Sets the resource convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithResourceConvention``2(System.Action{``1})">
+            <summary>
+            Sets the resource convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithEndpointConvention``1">
+            <summary>
+            Sets the endpoint convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithEndpointConvention``2(System.Action{``1})">
+            <summary>
+            Sets the endpoint convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithMemberConvention``1">
+            <summary>
+            Sets the member convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithMemberConvention``2(System.Action{``1})">
+            <summary>
+            Sets the member convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithEnumConvention``1">
+            <summary>
+            Sets the enum convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithEnumConvention``2(System.Action{``1})">
+            <summary>
+            Sets the enum convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithEnumOptionConvention``1">
+            <summary>
+            Sets the enum option convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithEnumOptionConvention``2(System.Action{``1})">
+            <summary>
+            Sets the enum option convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithStatusCodeConvention``1">
+            <summary>
+            Sets the status code convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithStatusCodeConvention``2(System.Action{``1})">
+            <summary>
+            Sets the status code convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithHeaderConvention``1">
+            <summary>
+            Sets the header convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithHeaderConvention``2(System.Action{``1})">
+            <summary>
+            Sets the header convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithTypeConvention``1">
+            <summary>
+            Sets the type convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithTypeConvention``2(System.Action{``1})">
+            <summary>
+            Sets the type convention.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithDefaultModuleName(System.String)">
+            <summary>
+            Specifies the default module name.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WhenModuleOrphaned(Swank.Configuration.OrphanedEndpoints)">
+            <summary>
+            Determines what happens when a module is not defined for a resource.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WithDefaultResource(System.Func{System.Web.Http.Description.ApiDescription,Swank.Description.ResourceDescription})">
+            <summary>
+            Defines a default resource that endpoints are added to when none are defined for it.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.WhenResourceOrphaned(Swank.Configuration.OrphanedEndpoints)">
+            <summary>
+            Determines what happens when a resource is not defined for an endpoint.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.DoItForTheLulz">
+            <summary>
+            This indicates that you would like to do it for the lulz.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideModules(System.Action{Swank.Specification.ModuleOverrideContext})">
+            <summary>
+            Overrides modules.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideModulesWhen(System.Action{Swank.Specification.ModuleOverrideContext},System.Func{Swank.Specification.ModuleOverrideContext,System.Boolean})">
+            <summary>
+            Overrides modules when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideResources(System.Action{Swank.Specification.ResourceOverrideContext})">
+            <summary>
+            Overrides resources.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideResourcesWhen(System.Action{Swank.Specification.ResourceOverrideContext},System.Func{Swank.Specification.ResourceOverrideContext,System.Boolean})">
+            <summary>
+            Overrides resources when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideEndpoints(System.Action{Swank.Specification.EndpointOverrideContext})">
+            <summary>
+            Overrides endpoints.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideEndpointsWhen(System.Action{Swank.Specification.EndpointOverrideContext},System.Func{Swank.Specification.EndpointOverrideContext,System.Boolean})">
+            <summary>
+            Overrides endpoints when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideUrlParameters(System.Action{Swank.Specification.UrlParameterOverrideContext})">
+            <summary>
+            Overrides url parameters.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideUrlParametersWhen(System.Action{Swank.Specification.UrlParameterOverrideContext},System.Func{Swank.Specification.UrlParameterOverrideContext,System.Boolean})">
+            <summary>
+            Overrides url parameters when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideQuerystring(System.Action{Swank.Specification.QuerystringOverrideContext})">
+            <summary>
+            Overrides querystrings.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideQuerystringWhen(System.Action{Swank.Specification.QuerystringOverrideContext},System.Func{Swank.Specification.QuerystringOverrideContext,System.Boolean})">
+            <summary>
+            Overrides querystrings when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideParameters(System.Action{Swank.Specification.IParameterOverrideContext})">
+            <summary>
+            Overrides properties. Properties include members, url parameters 
+            and querystring parameters.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideParametersWhen(System.Action{Swank.Specification.IParameterOverrideContext},System.Func{Swank.Specification.IParameterOverrideContext,System.Boolean})">
+            <summary>
+            Overrides parameters when a condition is met. Parameters include 
+            url parameters and querystring parameters.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideStatusCodes(System.Action{Swank.Specification.StatusCodeOverrideContext})">
+            <summary>
+            Overrides status codes.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideStatusCodesWhen(System.Action{Swank.Specification.StatusCodeOverrideContext},System.Func{Swank.Specification.StatusCodeOverrideContext,System.Boolean})">
+            <summary>
+            Overrides status codes when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideHeaders(System.Action{Swank.Specification.HeaderOverrideContext})">
+            <summary>
+            Overrides headers.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideHeadersWhen(System.Action{Swank.Specification.HeaderOverrideContext},System.Func{Swank.Specification.HeaderOverrideContext,System.Boolean})">
+            <summary>
+            Overrides headers when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideRequestHeaders(System.Action{Swank.Specification.HeaderOverrideContext})">
+            <summary>
+            Overrides request headers.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideRequestHeadersWhen(System.Action{Swank.Specification.HeaderOverrideContext},System.Func{Swank.Specification.HeaderOverrideContext,System.Boolean})">
+            <summary>
+            Overrides request headers when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideResponseHeaders(System.Action{Swank.Specification.HeaderOverrideContext})">
+            <summary>
+            Overrides response headers.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideResponseHeadersWhen(System.Action{Swank.Specification.HeaderOverrideContext},System.Func{Swank.Specification.HeaderOverrideContext,System.Boolean})">
+            <summary>
+            Overrides response headers when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideRequest(System.Action{Swank.Specification.MessageOverrideContext})">
+            <summary>
+            Overrides requests.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideRequestWhen(System.Action{Swank.Specification.MessageOverrideContext},System.Func{Swank.Specification.MessageOverrideContext,System.Boolean})">
+            <summary>
+            Overrides requests when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideResponse(System.Action{Swank.Specification.MessageOverrideContext})">
+            <summary>
+            Overrides responses.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideResponseWhen(System.Action{Swank.Specification.MessageOverrideContext},System.Func{Swank.Specification.MessageOverrideContext,System.Boolean})">
+            <summary>
+            Overrides responses when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideMessage(System.Action{Swank.Specification.MessageOverrideContext})">
+            <summary>
+            Overrides both requests and responses.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideMessageWhen(System.Action{Swank.Specification.MessageOverrideContext},System.Func{Swank.Specification.MessageOverrideContext,System.Boolean})">
+            <summary>
+            Overrides both requests and responses when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideTypes(System.Action{Swank.Specification.TypeOverrideContext})">
+            <summary>
+            Overrides types.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideTypesWhen(System.Action{Swank.Specification.TypeOverrideContext},System.Func{Swank.Specification.TypeOverrideContext,System.Boolean})">
+            <summary>
+            Overrides types when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.CamelCaseMemberNames">
+            <summary>
+            Camel case member names.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideMembers(System.Action{Swank.Specification.MemberOverrideContext})">
+            <summary>
+            Overrides members.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideMembersWhen(System.Action{Swank.Specification.MemberOverrideContext},System.Func{Swank.Specification.MemberOverrideContext,System.Boolean})">
+            <summary>
+            Overrides members when a condition is met.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideOptions(System.Action{Swank.Specification.OptionOverrideContext})">
+            <summary>
+            Overrides options.
+            </summary>
+        </member>
+        <member name="M:Swank.Configuration.ConfigurationDsl.OverrideOptionsWhen(System.Action{Swank.Specification.OptionOverrideContext},System.Func{Swank.Specification.OptionOverrideContext,System.Boolean})">
+            <summary>
+            Overrides options when a condition is met.
+            </summary>
+        </member>
+    </members>
+</doc>

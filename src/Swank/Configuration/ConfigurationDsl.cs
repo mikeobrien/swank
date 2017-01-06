@@ -256,8 +256,140 @@ namespace Swank.Configuration
         }
 
         /// <summary>
-        /// Sets the copyright which is displayed in the footer of page. 
-        /// The token {year} is replaced by the current year.
+        /// Adds the basic authentication scheme.
+        /// </summary>
+        public ConfigurationDsl WithBasicAuthenticationScheme()
+        {
+            _configuration.AuthenticationSchemes.Add(new AuthenticationScheme
+            {
+                Name = "Basic",
+                Components = new List<AuthenticationComponent>
+                {
+                    new AuthenticationComponent
+                    {
+                        Name = "Authorization",
+                        ClientSideGenerator = "CreateBasicAuthHeader",
+                        Location = AuthenticationLocation.Header,
+                        Parameters = new List<AuthenticationParameter>
+                        {
+                            new AuthenticationParameter
+                            {
+                                Name = "Username"
+                            },
+                            new AuthenticationParameter
+                            {
+                                Name = "Password",
+                                Hide = true
+                            }
+                        }
+                    }
+                }
+            });
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the token authentication scheme.
+        /// </summary>
+        public ConfigurationDsl WithTokenAuthenticationScheme()
+        {
+            _configuration.AuthenticationSchemes.Add(new AuthenticationScheme
+            {
+                Name = "Token",
+                Components = new List<AuthenticationComponent>
+                {
+                    new AuthenticationComponent
+                    {
+                        Name = "Authorization",
+                        ClientSideGenerator = "CreateTokenAuthHeader",
+                        Location = AuthenticationLocation.Header,
+                        Parameters = new List<AuthenticationParameter>
+                        {
+                            new AuthenticationParameter
+                            {
+                                Name = "Token"
+                            }
+                        }
+                    }
+                }
+            });
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a custom authentication scheme.
+        /// </summary>
+        public ConfigurationDsl WithCustomAuthenticationScheme(AuthenticationScheme scheme)
+        {
+            _configuration.AuthenticationSchemes.Add(scheme);
+            return this;
+        }
+
+        /// <summary>
+        /// Hides the client section.
+        /// </summary>
+        public ConfigurationDsl HideClientSection(string copyright)
+        {
+            _configuration.HideClientSection = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Hides the examples section.
+        /// </summary>
+        public ConfigurationDsl HideExamplesSection(string copyright)
+        {
+            _configuration.HideExamplesSection = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Hides the querystring section.
+        /// </summary>
+        public ConfigurationDsl HideQueryStringSection(string copyright)
+        {
+            _configuration.HideQueryStringSection = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Hides the request headers section.
+        /// </summary>
+        public ConfigurationDsl HideRequestHeadersSection(string copyright)
+        {
+            _configuration.HideRequestHeadersSection = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Hides the request section.
+        /// </summary>
+        public ConfigurationDsl HideRequestSection(string copyright)
+        {
+            _configuration.HideRequestSection = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Hides the response section.
+        /// </summary>
+        public ConfigurationDsl HideResponseSection(string copyright)
+        {
+            _configuration.HideResponseSection = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Hides the status code section.
+        /// </summary>
+        public ConfigurationDsl HideStatusCodeSection(string copyright)
+        {
+            _configuration.HideStatusCodeSection = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a copyright. The {year} token is replaced by the current year.
         /// </summary>
         public ConfigurationDsl WithCopyright(string copyright)
         {

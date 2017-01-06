@@ -53,6 +53,7 @@ namespace Swank.Configuration
                 .FromVirtualPath("~/Overview.md"));
             XmlComments = new List<IAsset>();
             Copyright = $"Copyright &copy; {DateTime.Now.Year}";
+            AuthenticationSchemes = new List<AuthenticationScheme>();
             Templates = new List<WebTemplate>();
             TemplateNamespaceIncludesModule = false;
             Assets = new List<WebAsset>(WebAsset.FromResources(
@@ -176,6 +177,7 @@ namespace Swank.Configuration
         public IAsset Overview { get; set; }
         public List<OverviewLink> OverviewLinks { get; set; }
         public string Copyright { get; set; }
+        public List<AuthenticationScheme> AuthenticationSchemes { get; set; }
         public List<WebAsset> Assets { get; }
         public List<WebTemplate> Templates { get; }
         public bool TemplateNamespaceIncludesModule { get; set; }
@@ -188,6 +190,14 @@ namespace Swank.Configuration
         public Func<ApiDescription, bool> Filter { get; set; }
         public Func<ApiDescription, List<string>> ActionNamespace { get; set; }
         public Func<ApiDescription, string> ActionName { get; set; }
+
+        public bool HideQueryStringSection { get; set; }
+        public bool HideRequestHeadersSection { get; set; }
+        public bool HideRequestSection { get; set; }
+        public bool HideResponseSection { get; set; }
+        public bool HideStatusCodeSection { get; set; }
+        public bool HideExamplesSection { get; set; }
+        public bool HideClientSection { get; set; }
 
         public OrphanedEndpoints OrphanedModuleEndpoint { get; set; }
         public OrphanedEndpoints OrphanedResourceEndpoint { get; set; }
