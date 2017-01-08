@@ -255,7 +255,6 @@
     <EmbeddedResource Include="Web\Content\css\highlight\xt256.css" />
     <EmbeddedResource Include="Web\Content\css\highlight\zenburn.css" />
     <EmbeddedResource Include="Web\Content\css\ie10-viewport-bug-workaround.css" />
-    <EmbeddedResource Include="Web\Content\js\app.js" />
     <EmbeddedResource Include="Web\Content\js\clipboard.js" />
     <EmbeddedResource Include="Web\Content\js\column-tab-panes.js" />
     <EmbeddedResource Include="Web\Content\js\cookie.js" />
@@ -1166,6 +1165,18 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Web\Content\js\handlebars.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\Content\js\base64.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\Content\js\vkbeautify.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\Content\js\swank.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\Content\img\barber-pole.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -16,7 +16,7 @@ namespace Swank.Extensions
             _paths = paths;
         }
 
-        public static void Initialize(params string[] paths)
+        public static void Initialize(IEnumerable<string> paths)
         {
             HostingEnvironment.RegisterVirtualPathProvider(
                 new IgnorePaths(paths.Select(x => x.TrimStart('/')
@@ -30,7 +30,8 @@ namespace Swank.Extensions
 
         public override bool DirectoryExists(string virtualDir)
         {
-            if (_paths.Any(x => x.StartsWith(virtualDir, StringComparison.OrdinalIgnoreCase))) return false;
+            if (_paths.Any(x => virtualDir.StartsWith(x, 
+                StringComparison.OrdinalIgnoreCase))) return false;
             return Previous.DirectoryExists(virtualDir);
         }
 

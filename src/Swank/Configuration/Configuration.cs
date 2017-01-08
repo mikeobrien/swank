@@ -59,7 +59,7 @@ namespace Swank.Configuration
             Assets = new List<WebAsset>(WebAsset.FromResources(
                 Assembly.GetExecutingAssembly().AsList(),
                 "Swank.Web.Content", null, null, ".js", ".css", ".eot", 
-                    ".svg", ".ttf", ".woff", ".woff2", ".png", ".jpg"));
+                    ".svg", ".ttf", ".woff", ".woff2", ".png", ".jpg", ".gif"));
 
             Stylesheets = new List<LazyUrl>
             {
@@ -83,7 +83,9 @@ namespace Swank.Configuration
                 Assets.FindByFilename("clipboard.js").ToLazyUrl(this),
                 Assets.FindByFilename("cookie.js").ToLazyUrl(this),
                 Assets.FindByFilename("handlebars.js").ToLazyUrl(this),
-                Assets.FindByFilename("app.js").ToLazyUrl(this)
+                Assets.FindByFilename("base64.js").ToLazyUrl(this),
+                Assets.FindByFilename("vkbeautify.js").ToLazyUrl(this),
+                Assets.FindByFilename("swank.js").ToLazyUrl(this)
             };
 
             IEPolyfills = new List<LazyUrl>
@@ -165,6 +167,7 @@ namespace Swank.Configuration
 
         public bool DebugMode { get; set; }
         public bool IgnoreFolders { get; set; }
+        public string[] IgnoreFolderUrls { get; set; }
         public string AppUrl { get; set; }
         public string SpecificationUrl { get; set; }
         public RazorTemplate AppTemplate { get; set; }
@@ -191,13 +194,19 @@ namespace Swank.Configuration
         public Func<ApiDescription, List<string>> ActionNamespace { get; set; }
         public Func<ApiDescription, string> ActionName { get; set; }
 
-        public bool HideQueryStringSection { get; set; }
-        public bool HideRequestHeadersSection { get; set; }
-        public bool HideRequestSection { get; set; }
-        public bool HideResponseSection { get; set; }
         public bool HideStatusCodeSection { get; set; }
-        public bool HideExamplesSection { get; set; }
-        public bool HideClientSection { get; set; }
+        public bool HideCodeExamplesSection { get; set; }
+        public bool HideTestDriveSection { get; set; }
+        public bool HideQueryStringSection { get; set; }
+        public bool HideUrlParametersSection { get; set; }
+
+        public bool HideRequestSection { get; set; }
+        public bool HideRequestHeadersSection { get; set; }
+        public bool HideRequestBodySection { get; set; }
+
+        public bool HideResponseSection { get; set; }
+        public bool HideResponseHeadersSection { get; set; }
+        public bool HideResponseBodySection { get; set; }
 
         public OrphanedEndpoints OrphanedModuleEndpoint { get; set; }
         public OrphanedEndpoints OrphanedResourceEndpoint { get; set; }

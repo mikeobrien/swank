@@ -72,8 +72,10 @@
             right: header.viewport.width - header.right,
             height: header.height,
             position: position,
-            'margin-top': '0'
+            'margin-top': '0',
+            'z-index': 999
         });
+        header.element.trigger("sticky", [$(header.element), $(stickyHeader[0])]);
         stickyHeader.show();
         return stickyHeader;
     }

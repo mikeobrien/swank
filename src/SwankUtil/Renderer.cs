@@ -98,7 +98,7 @@ namespace SwankUtil
                 $"Could not find endpoint id {endpointId}.");
             template.CompileRazor<CodeExampleModel>();
             var result = FormatRazorError(() => AppResourceHandler.MapEndpoint(
-                    url, endpoint, codeExamples, bodyDescriptionFactory)
+                    configuration, url, endpoint, codeExamples, bodyDescriptionFactory)
                 .CodeExamples.First().Example);
             Console.WriteLine("Saving results...");
             File.WriteAllText(outputPath, result);

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
+using Swank.Extensions;
 using Swank.Specification;
 
 namespace Swank.Web.Handlers.App
@@ -36,6 +38,10 @@ namespace Swank.Web.Handlers.App
         public string Comments { get; set; }
         public List<string> Namespace { get; set; }
         public string Method { get; set; }
+        public bool IsGet => Method.EqualsIgnoreCase(HttpMethod.Get.Method);
+        public bool IsPost => Method.EqualsIgnoreCase(HttpMethod.Post.Method);
+        public bool IsPut => Method.EqualsIgnoreCase(HttpMethod.Put.Method);
+        public bool IsDelete => Method.EqualsIgnoreCase(HttpMethod.Delete.Method);
         public string UrlTemplate { get; set; }
         public bool Secure { get; set; }
         public List<UrlParameter> UrlParameters { get; set; }

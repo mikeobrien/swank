@@ -212,17 +212,22 @@ namespace Swank.Specification
                 .Select(x =>
                 {
                     var description = _parameterConvention.GetDescription(x);
+                    var name = description.WhenNotNull(y => y.Name).OtherwiseDefault();
                     return _configuration.UrlParameterOverrides.Apply(new UrlParameterOverrideContext
                     {
                         ApiDescription = endpoint,
                         Description = description,
                         UrlParameter = new UrlParameter
                         {
-                            Name = description.WhenNotNull(y => y.Name).OtherwiseDefault(),
+                            Name = name,
                             Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
                             Type = _typeGraphService.BuildForParameter(x.ParameterDescriptor
                                 .ParameterType, endpointDescription, description, endpoint),
-                            SampleValue = description.WhenNotNull(y => y.SampleValue).OtherwiseDefault()
+                            SampleValue = description.WhenNotNull(y => y.SampleValue).OtherwiseDefault(),
+                            IsAuth = _configuration.AuthenticationSchemes
+                                .SelectMany(y => y.Components)
+                                .Any(y => y.Name.EqualsIgnoreCase(name) &&
+                                    y.Location == AuthenticationLocation.UrlParameter)
                         }
                     }).UrlParameter;
                 }).ToList();
@@ -241,13 +246,14 @@ namespace Swank.Specification
                 .Where(x => !x.Description.Hidden)
                 .Select(x =>
                 {
+                    var name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault();
                     return _configuration.QuerystringOverrides.Apply(new QuerystringOverrideContext
                     {
                         ApiDescription = endpoint,
                         Description = x.Description,
                         Querystring = new QuerystringParameter
                         {
-                            Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
+                            Name = name,
                             Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
                             Type = _typeGraphService.BuildForParameter(x.Parameter.ParameterDescriptor
                                 .ParameterType, endpointDescription, x.Description, endpoint),
@@ -255,7 +261,11 @@ namespace Swank.Specification
                                 .ToSampleValueString(_configuration)).OtherwiseDefault(),
                             SampleValue = x.Description.WhenNotNull(y => y.SampleValue).OtherwiseDefault(),
                             MultipleAllowed = x.Description.MultipleAllowed,
-                            Required = !x.Description.Optional
+                            Required = !x.Description.Optional,
+                            IsAuth = _configuration.AuthenticationSchemes
+                                .SelectMany(y => y.Components)
+                                .Any(y => y.Name.EqualsIgnoreCase(name) &&
+                                    y.Location == AuthenticationLocation.Querystring)
                         }
                     }).Querystring;
                 }).ToList();
@@ -343,7 +353,11 @@ namespace Swank.Specification
                         Name = x.Name,
                         Comments = x.Comments,
                         Optional = direction == HttpDirection.Request && x.Optional,
-                        Required = direction == HttpDirection.Request && !x.Optional
+                        Required = direction == HttpDirection.Request && !x.Optional,
+                        IsAuth = _configuration.AuthenticationSchemes
+                            .SelectMany(y => y.Components)
+                            .Any(y => y.Name.EqualsIgnoreCase(x.Name) && 
+                                y.Location == AuthenticationLocation.Header)
                     }
                 }).Header)
                 .OrderBy(x => x.Name).ToList();

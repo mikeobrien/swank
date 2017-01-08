@@ -12,6 +12,10 @@ body {
     height: 100%;
 }
 
+textarea {
+    border-width: 0;
+}
+
 .emoji {
     height: 20px;
     width: 20px;
@@ -27,17 +31,16 @@ h5:first-child {
     margin-top: 0;
 }
 
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-weight: bold;
+}
+
 .table {
     background-color: #fff;
 }
 
 .table thead tr th {
     vertical-align: middle;
-}
-
-.btn {
-    border: 0;
-    border-radius: 0;
 }
 
 pre:last-child,
@@ -90,6 +93,50 @@ pre {
 .panel-default > .panel-heading {
     color: #525252;
     background-color: #fff;
+}
+
+input[type="radio"], input[type="checkbox"] {
+    margin-top: -1px;
+    vertical-align: middle;
+}
+
+label > span {
+    vertical-align: middle;
+}
+
+.dropdown-menu a {
+    cursor: hand;
+    cursor: pointer;
+}
+
+/* ------ Dropzone ------ */
+
+.dropzone { 
+    border: 2px dashed #0087F7; 
+    border-radius: 5px; 
+    background: white; 
+}
+
+.dropzone .dz-message { 
+    font-weight: 400; 
+    font-size: 14pt;
+}
+
+.dropzone .dz-message .note { 
+    font-size: 0.8em; 
+    font-weight: 200; 
+    display: block; 
+    margin-top: 1.4rem; 
+}
+
+.dz-error-mark g {
+    fill-opacity: 1,
+    fill: red;
+}
+
+.dz-success-mark g {
+    fill-opacity: 1,
+    fill: green;
 }
 
 /* ------ GitHub Markdown Overrides ------ */
@@ -237,12 +284,12 @@ pre {
     border-color: #c1c1c1;
 }
 
-.swank-endpoint table:not(.swank-options):not(.swank-endpoint-header-fields) > tbody > tr > td:first-child {
+.swank-name {
     min-width: 130px;
     white-space: nowrap;
 }
 
-.swank-endpoint table:not(.swank-message) > tbody > tr > td:nth-child(2) {
+.swank-description {
     width: 100%;
 }
 
@@ -301,7 +348,7 @@ pre {
     font-size: 13px;
 }
 
-.swank-endpoint .value {
+.swank-value {
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
     letter-spacing: 0;
 }
@@ -326,9 +373,14 @@ pre {
 
 .swank-endpoint-header {
     margin-top: 20px;
+    border-width: 0;
     cursor: hand;
     cursor: pointer;
-    color: #3e3e3e;
+}
+
+.swank-endpoint-header table {
+    width: 100%;
+    border-width: 0;
 }
 
 .swank-get .swank-endpoint-header {
@@ -345,11 +397,6 @@ pre {
 
 .swank-delete .swank-endpoint-header {
     background-color: #ecd9d9;
-}
-
-table.swank-endpoint-header-fields {
-    width: 100%;
-    border-width: 0;
 }
 
 .swank-endpoint-method {
@@ -425,6 +472,169 @@ table.swank-endpoint-header-fields {
     padding: 6px 10px;
     white-space: nowrap;
     font-weight: bold;
+}
+
+/* Test drive */
+
+.swank-test-drive-toggle {
+    text-transform: uppercase;
+    color: white;
+    font-size: 0.8em;
+    text-align: center;
+    text-decoration: none;
+    padding: 9px 10px;
+    width: 100px;
+}
+
+.swank-get .swank-test-drive-toggle {
+    background-color: #6ba2ce;
+}
+
+.swank-post .swank-test-drive-toggle {
+    background-color: #60af82;
+}
+
+.swank-put .swank-test-drive-toggle {
+    background-color: #c19d6c;
+}
+
+.swank-delete .swank-test-drive-toggle {
+    background-color: #d25f5f;
+}
+
+.swank-test-drive {
+    text-align: center;
+}
+
+.swank-test-drive table {
+    border-width: 0;
+}
+
+.swank-test-drive td {
+    text-align: left;
+}
+
+.swank-test-drive table,
+.swank-test-drive textarea,
+.swank-test-drive input[type="text"],
+.swank-test-drive input[type="password"] {
+    width: 100%;
+}
+
+.swank-test-drive-request-options, 
+.swank-test-drive-request-data {
+    padding-right: 20px;
+}
+
+.swank-test-drive-request-data {
+    width: 35%;
+}
+
+.swank-test-drive > table > tbody > tr > td,
+.swank-auth-schemes > table > tbody > tr > td:first-child {
+    vertical-align: top;
+}
+
+.swank-auth-schemes > table > tbody > tr > td:last-child,
+.swank-auth-schemes td > table > tbody > tr > td:last-child,
+.swank-test-drive-request-options > table > tbody > tr > td:last-child {
+    width: 100%;
+    padding-left: 10px;
+}
+
+.swank-auth-schemes label {
+    padding-top: 5px;
+}
+
+.swank-test-drive-request-options {
+    width: 350px;
+}
+
+.swank-test-drive-request-options td {
+    padding-bottom: 5px;
+}
+
+.swank-endpoint .swank-test-drive .tab-content {
+    background-color: #fff;
+}
+
+.swank-test-drive label {
+    white-space: nowrap;
+}
+
+.swank-test-drive-execute {
+    text-transform: uppercase;
+    font-weight: bold;
+    height: 50px;
+    width: 100%;
+}
+
+pre, .swank-test-drive textarea {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.swank-test-drive .tab-pane {
+    min-height: 100px;
+}
+
+pre {
+    max-height: 600px;
+}
+
+.swank-test-drive-response-body iframe {
+    width: 100%;
+    min-height: 300px;
+    border-width: 0;
+}
+
+.swank-test-drive textarea {
+    max-height: 600px;
+}
+
+.swank-test-drive-status { 
+    height: 35px;
+    border-color: #c1c1c1;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    background-color: #fff;
+}
+
+.swank-test-drive-panels {
+    margin-bottom: 20px;
+}
+
+.swank-test-drive-status {
+    padding: 6px;   
+}
+
+.swank-test-drive-status-100 {
+    color: #0040fb;
+}
+
+.swank-test-drive-status-200 {
+    color: #0fa523;
+}
+
+.swank-test-drive-status-300 {
+    color: #0040fb;
+}
+
+.swank-test-drive-status-400 {
+    color: #fb0000;
+}
+
+.swank-test-drive-status-500 {
+    color: #fb0000;
+}
+
+.swank-parameter-name {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-weight: bold;
+}
+
+.swank-test-drive-busy {
+    background-image: url(../../img/barber-pole.gif/);
+    background-repeat: repeat;
 }
 
 /* Endpoint content */
@@ -507,7 +717,7 @@ table.swank-endpoint-header-fields {
     border-width: 1px;
     border-style: solid;
     border-color: #c1c1c1;
-    background-color: #f5f5f5;
+    background-color: #fff;
 }
 
 /* Endpoint sample data */
@@ -602,7 +812,6 @@ th.swank-sample-data-selector-container {
 
 .swank-code-example {
     padding: 0;
-    border: #c1c1c1 1px solid;
 }
 
 .swank-code-example-copy {

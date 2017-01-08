@@ -1,4 +1,5 @@
 ﻿@model Swank.Web.Handlers.App.AppModel
+@using Swank.Configuration;
 @using Swank.Extensions;
 
 <!DOCTYPE html>
@@ -8,27 +9,27 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    @if (@Model.FavIconUrl.IsNotNullOrEmpty())
-    {
+        @if (@Model.FavIconUrl.IsNotNullOrEmpty())
+        {
         <link rel="icon" href="@Model.FavIconUrl">
-    }
+        }
 
-    @if (@Model.Title.IsNotNullOrEmpty())
-    {
+        @if (@Model.Title.IsNotNullOrEmpty())
+        {
         <title>@Model.Title</title>
-    }
+        }
 
-    @foreach (var url in Model.Stylesheets)
-    {
+        @foreach (var url in Model.Stylesheets)
+        {
         <link href="@url" rel="stylesheet">
-    }
+        }
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
-    @foreach (var url in Model.IEPolyfills)
-    {
+        @foreach (var url in Model.IEPolyfills)
+        {
             <script src="@url"></script>
-    }
+        }
         <![endif]-->
     
         <script>
@@ -39,6 +40,26 @@
                     {
                         @:'@module.Name': '@Raw(@module.Overview.JavaScriptStringEncode())',
                     }
+                },
+                authSchemes: {
+                    @foreach (var scheme in Model.AuthenticationSchemes)
+                    {<text>
+                        '@scheme.Name': {
+                            components: [
+                            @foreach (var component in scheme.Components)
+                            {<text>
+                                {
+                                    name: '@component.Name',
+                                    header: @((component.Location == AuthenticationLocation.Header).ToString().ToLower()),
+                                    querystring: @((component.Location == AuthenticationLocation.Querystring).ToString().ToLower()),
+                                    urlParameter: @((component.Location == AuthenticationLocation.UrlParameter).ToString().ToLower()),
+                                    generate: @Raw(component.ClientSideGenerator),
+                                    parameters: [@Raw(component.Parameters.Select(x => "'" + x.Name + "'").Join(", "))]
+                                },
+                            </text>}                               
+                            ]
+                        },
+                    </text>}
                 }
             };
         </script>
@@ -147,6 +168,7 @@
 
     <script type="text/html" id="swank-resource-template">
         <h3 class="swank-resource-header">{{name}}</h3>
+
         {{#overview}}
         <div class="swank-resource-description">{{{.}}}</div>
         {{/overview}}
@@ -155,72 +177,82 @@
     
         <div class="swank-endpoint swank-{{method}}">
 
-            <div class="sticky swank-endpoint-header" data-toggle="collapse" data-target="#Endpoint-{{id}}">
+            <div class="sticky swank-endpoint-header" data-target="#Endpoint-{{id}}">
                 <!-- Screw it, I'm no longer fighting this troglodytic abomination that is CSS 
-                    to do something that a table does exactly what I want right out of the box. -->
-                <table class="swank-endpoint-header-fields"><tr>
-                  <td class="swank-endpoint-method">{{method}}</td>  
-                  <td class="swank-endpoint-url">{{{replace urlTemplate '/(\{.*?\})/g' 
-                    '&lt;span class="swank-endpoint-parameter">$1&lt;/span>'}}}</td>
-                  {{#secure}}  
-                  <td class="swank-endpoint-secure">
-                    <span class="glyphicon glyphicon-lock" alt="Secure"></span>
-                  </td>  
-                  {{/secure}} 
-                  <td class="swank-endpoint-name">{{name}}</td>  
+                to do something that a table does exactly what I want right out of the box. -->
+                <table><tr>
+                    <td class="swank-endpoint-method swank-doc-toggle">{{method}}</td>  
+                    <td class="swank-endpoint-url swank-doc-toggle">{{{replace urlTemplate '/(\{.*?\})/g' 
+                        '&lt;span class="swank-endpoint-parameter">$1&lt;/span>'}}}</td>
+                    {{#secure}}  
+                    <td class="swank-endpoint-secure swank-doc-toggle">
+                        <span class="glyphicon glyphicon-lock" alt="Secure"></span>
+                    </td>  
+                    {{/secure}} 
+                    <td class="swank-endpoint-name swank-doc-toggle">{{name}}</td> 
+
+	                @if (!@Model.HideTestDrive)
+	                {
+                    <td class="swank-test-drive-toggle">Test Drive</td> 
+                    }
                 </tr></table>
             </div>
 
             <div id="Endpoint-{{id}}" class="collapse swank-endpoint-body">
-
-                {{#if comments}}
-                <div class="swank-endpoint-description">{{{comments}}}</div>
-                {{/if}}
-            
-                {{#if urlParameters}}
-                    {{> urlParameters}}
-                {{/if}}
-            
-                {{#if querystringParameters}}
-                    {{> querystringParameters}}
-                {{/if}}
-            
-                {{#request}}
-                    {{#if headers}}
-                        <h4>Request Headers</h4>
-                        {{> headers}}
-                    {{/if}}
-
-                    {{#either comments body}}
-                        <h4>Request</h4>
-                        {{> message isRequest=true}}
-                    {{/either}}
-                {{/request}}
-
-                {{#response}}
-                    {{#if headers}}
-                        <h4>Response Headers</h4>
-                        {{> headers}}
-                    {{/if}}
-
-                    {{#either comments body}}
-                        <h4>Response</h4>
-                        {{> message isRequest=false}}
-                    {{/either}}
-                {{/response}}
-
-                {{#if statusCodes}}
-                    {{> statusCodes}}
-                {{/if}}
-
-                {{#if codeExamples}}
-                    {{> codeExamples}}
-                {{/if}}
- 
+            	{{> endpoint}}
+                {{> testDrive}}
             </div>
          </div>
 
         {{/endpoints}}
+    </script>
+
+    <script type="text/html" id="swank-endpoint-template">
+        <div class="swank-documentation">
+            {{#if comments}}
+            <div class="swank-endpoint-description">{{{comments}}}</div>
+            {{/if}}
+        
+            {{#if urlParameters}}
+                {{> urlParameters}}
+            {{/if}}
+        
+            {{#if querystringParameters}}
+                {{> querystringParameters}}
+            {{/if}}
+        
+            {{#request}}
+                {{#if headers}}
+                    <h4>Request Headers</h4>
+                    {{> headers}}
+                {{/if}}
+
+                {{#either comments body}}
+                    <h4>Request</h4>
+                    {{> message isRequest=true}}
+                {{/either}}
+            {{/request}}
+
+            {{#response}}
+                {{#if headers}}
+                    <h4>Response Headers</h4>
+                    {{> headers}}
+                {{/if}}
+
+                {{#either comments body}}
+                    <h4>Response</h4>
+                    {{> message isRequest=false}}
+                {{/either}}
+            {{/response}}
+
+            {{#if statusCodes}}
+                {{> statusCodes}}
+            {{/if}}
+
+            {{#if codeExamples}}
+                {{> codeExamples}}
+            {{/if}}
+        </div>
     </script>
 
     <script type="text/html" id="swank-url-parameters-template">
@@ -229,8 +261,8 @@
             <tbody>
                 {{#urlParameters}}
                 <tr>
-                    <td class="value"><strong>{{name}}</strong></td>
-                    <td>
+                    <td class="swank-value swank-name"><strong>{{name}}</strong></td>
+                    <td class="swank-description">
                         <p><code>{{type.name}}</code>{{{comments}}}</p>
                         {{#type}}
                             {{#enumeration}}
@@ -250,8 +282,8 @@
             <tbody>
                 {{#querystringParameters}}
                 <tr>
-                    <td class="value"><strong>{{name}}</strong></td>
-                    <td>
+                    <td class="swank-value swank-name"><strong>{{name}}</strong></td>
+                    <td class="swank-description">
                         <p><code>{{type.name}}</code>
                         {{#required}}<span class="badge swank-required">Required</span>{{/required}}
                         {{^required}}<span class="badge swank-optional">Optional</span>{{/required}}
@@ -279,8 +311,8 @@
             <tbody>
                 {{#headers}}
                 <tr>
-                    <td class="value"><strong>{{name}}</strong></td>
-                    <td>
+                    <td class="swank-value swank-name"><strong>{{name}}</strong></td>
+                    <td class="swank-description">
                         <p>
                         {{#optional}}<span class="badge swank-optional">Optional</span>{{/optional}}
                         {{#required}}<span class="badge swank-required">Required</span>{{/required}}
@@ -307,7 +339,7 @@
                     <tr>
                         <th class="swank-sample-data-selector-container">
 
-                            <ul class="nav nav-tabs swank-sample-data-selector">
+                            <ul class="nav nav-tabs swank-sample-data-selector swank-data-format-selector">
                                 <li class="@(@Model.DisplayJsonData ? "active" : "hide")">
                                     <a data-format="json" href="#1" data-toggle="tab">{}</a>
                                 </li>
@@ -457,8 +489,8 @@
             <tbody>
                 {{#statusCodes}}
                 <tr>
-                    <td class="value"><strong>{{code}} {{name}}</strong></td>
-                    <td><p>{{{comments}}}</p></td>
+                    <td class="swank-value swank-name"><strong>{{code}} {{name}}</strong></td>
+                    <td class="swank-description"><p>{{{comments}}}</p></td>
                 </tr>
                 {{/statusCodes}}
             </tbody>
@@ -516,4 +548,309 @@
             </tbody>
         </table>
     </script>
+
+    <script type="text/html" id="swank-test-drive-template">
+        <div class="swank-test-drive" data-method="{{method}}" data-url="{{urlTemplate}}">
+        <table class="swank-test-drive-panels">
+        <tr>
+            <td class="swank-test-drive-request-options">
+                @if (Model.AuthenticationSchemes.Any())
+                {<text>
+                    {{#secure}} 
+                    {{> testDriveAuthScheme}}
+                    {{/secure}}
+                </text>}
+
+                {{> testDriveHeaders}}
+            
+                {{#any urlParameters '!isAuth'}}
+                    {{> testDriveUrlParameters}}
+                {{/any}}
+
+                {{#any querystringParameters '!isAuth'}}
+                    {{> testDriveQuerystring}}
+                {{/any}}
+            </td>
+
+            {{#unless isGet}}
+            <td class="swank-test-drive-request-data">
+                {{> testDriveData }}  
+            </td>
+            {{/unless}}
+
+            <td class="swank-test-drive-response">
+                {{> testDriveResponse }}  
+            </td>
+        </tr>
+        </table>
+        <table><tr>
+        <td><button class="swank-test-drive-execute">{{method}}</button></td>
+        </tr></table>
+        </div>
+    </script>
+
+    <script type="text/html" id="swank-test-drive-response-template">
+        <h4>Response</h4>
+        {{#request}}
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="active"><a href="#test-drive-response-headers-{{../id}}" data-toggle="tab">Headers</a></li>
+            <li><a href="#test-drive-response-body-{{../id}}" data-toggle="tab">Body</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="test-drive-response-headers-{{../id}}">
+                <pre><code class="swank-test-drive-response-headers"></code></pre>
+            </div>
+            <div class="tab-pane swank-test-drive-response-body" id="test-drive-response-body-{{../id}}">
+            </div>
+        </div>
+        {{/request}}
+    </script>
+
+    <script type="text/html" id="swank-test-drive-data-template">
+        <h4>Request Body</h4>
+        {{#request}}
+        <ul class="nav nav-tabs swank-data-format-selector" role="tablist">
+            <li class="@(@Model.DisplayJsonData ? "active" : "hide")"><a href="#test-drive-json-{{../id}}" data-format="json" data-toggle="tab">{}</a></li>
+            <li class="@(@Model.DisplayXmlData ? (@Model.DisplayJsonData ? "" : "active") : "hide")"><a href="#test-drive-xml-{{../id}}" data-format="xml" data-toggle="tab">&lt;/&gt;</a></li>
+            <li><a href="#test-drive-text-{{../id}}" data-format="text" data-toggle="tab">Text</a></li>
+            <li><a href="#test-drive-base64-{{../id}}" data-format="base64" data-toggle="tab">Base64</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane @(@Model.DisplayJsonData ? "active" : "hide") swank-test-drive-json-request" id="test-drive-json-{{../id}}">
+                <textarea name="json" rows="{{body.length}}">{{#body}}{{> testDriveJsonData}}&#13;&#10;{{/body}}</textarea>
+            </div>
+            <div class="tab-pane @(@Model.DisplayXmlData ? (@Model.DisplayJsonData ? "" : "active") : "hide") swank-test-drive-xml-request" id="test-drive-xml-{{../id}}">
+                <textarea name="xml" rows="{{body.length}}">{{#body}}{{> testDriveXmlData}}&#13;&#10;{{/body}}</textarea>
+            </div>
+            <div class="tab-pane swank-test-drive-text-request" id="test-drive-text-{{../id}}">
+                <textarea name="text" rows="10"></textarea>
+            </div>
+            <div class="tab-pane swank-test-drive-base64-request" id="test-drive-base64-{{../id}}">
+                <textarea name="base64" rows="10"></textarea>
+            </div>
+        </div>
+        {{/request}}
+    </script>
+
+    <script type="text/html" id="swank-test-drive-json-data-template">
+        {{{replace whitespace ' ' '&#32;'}}}
+        {{^isClosing}}
+            {{#isMember}}
+                "{{name}}":&#32;
+            {{/isMember}}
+            {{#isDictionaryEntry}}
+                "[{{name}}]":&#32;
+            {{/isDictionaryEntry}}
+        {{/isClosing}}
+        {{#isSimpleType}}
+            {{#isString}}"{{sampleValue}}"{{/isString}}
+            {{#isBoolean}}{{sampleValue}}{{/isBoolean}}
+            {{#isNumeric}}{{sampleValue}}{{/isNumeric}}
+            {{#isDateTime}}"{{sampleValue}}"{{/isDateTime}}
+            {{#isDuration}}"{{sampleValue}}"{{/isDuration}}
+            {{#isGuid}}"{{sampleValue}}"{{/isGuid}}
+        {{/isSimpleType}}
+        {{#isOpening}}
+            {{#isArray}}[{{/isArray}}
+            {{#isComplexType}}&#123;{{/isComplexType}}
+            {{#isDictionary}}&#123;{{/isDictionary}}
+        {{/isOpening}}
+        {{#isClosing}}
+            {{#isArray}}]{{/isArray}}
+            {{#isComplexType}}&#125;{{/isComplexType}}
+            {{#isDictionary}}&#125;{{/isDictionary}}
+        {{/isClosing}}
+        {{#isMember}}
+            {{^isOpening}}
+                {{^isLastMember}},{{/isLastMember}}
+            {{/isOpening}}
+        {{/isMember}}
+    </script>
+
+    <script type="text/html" id="swank-test-drive-xml-data-template">
+        {{{replace whitespace ' ' '&#32;'}}}
+        &lt;
+            {{~#isClosing~}}/{{~/isClosing~}}
+            {{~#isDictionaryEntry~}}[{{name}}]{{~/isDictionaryEntry~}}
+            {{~^isDictionaryEntry~}}{{name}}{{~/isDictionaryEntry~}}
+        &gt;
+        {{#isSimpleType}}
+            {{sampleValue}}
+            &lt;/
+                {{~#isDictionaryEntry~}}[{{name}}]{{~/isDictionaryEntry~}}
+                {{~^isDictionaryEntry~}}{{name}}{{~/isDictionaryEntry~}}
+            &gt;
+        {{/isSimpleType}}
+    </script>
+
+    <script type="text/html" id="swank-test-drive-auth-scheme-template">
+
+        <h4>Authentication</h4>
+        <div class="swank-auth-schemes">
+        <table>
+            <tr>
+                <td>
+                    <label><input type="radio" name="auth-scheme-{{id}}" value="None">
+                     <span>None</span></label>
+                </td>
+                <td></td>
+            </tr>
+            @foreach(var scheme in Model.AuthenticationSchemes)
+            {
+            <tr>
+                <td>
+                    <label><input type="radio" name="auth-scheme-{{id}}" value="@scheme.Name">
+                    <span>@scheme.Name</span></label>
+                </td>
+                <td>
+                    @{
+                        var parameters = scheme.Components.SelectMany(x => x.Parameters);
+                    }
+                    @if (parameters.Count() > 1)
+                    {<text>
+                    <table>
+                    @foreach(var parameter in parameters)
+                    {
+                        <tr>
+                            <td>
+                                <div class="input-group">
+                                  <span class="input-group-addon">
+                                    <span>@parameter.Name</span>
+                                  </span>
+                                  <input name="@scheme.Name-@parameter.Name" type="@(parameter.Hide ? "password" : "text")" class="form-control">
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </table>
+                    </text>}
+                    else
+                    {
+                        var parameter = parameters.First();
+                    <text>
+                        <input name="@scheme.Name-@parameter.Name" type="@(parameter.Hide ? "password" : "text")" class="form-control">
+                    </text>}
+                </td>
+            </tr>
+            }
+        </table>
+        </div>
+    </script>
+
+    <script type="text/html" id="swank-test-drive-headers-template">
+        <h4>Request Headers</h4>
+        <table class="swank-test-drive-headers">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="input-group">
+                          <span class="input-group-addon">
+                            <input name="accept" type="checkbox" checked="checked"> <span class="swank-parameter-name">accept</span>
+                          </span>
+                          <input name="accept" type="text" class="form-control">
+                          <div class="input-group-btn">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+                            <ul class="dropdown-menu dropdown-menu-right select-text">
+                              <li><a>application/json</a></li>
+                              <li><a>application/xml</a></li>
+                              <li><a>text/plain</a></li>
+                              <li><a>application/octet-stream</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                    </td>
+                </tr>
+
+                {{#unless isGet}}
+                {{#unless isDelete}}
+                <tr>
+                    <td>
+                        <div class="input-group">
+                          <span class="input-group-addon">
+                            <input name="content-type" type="checkbox" checked="checked"> <span class="swank-parameter-name">content-type</span>
+                          </span>
+                          <input name="content-type" type="text" class="form-control">
+                          <div class="input-group-btn">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+                            <ul class="dropdown-menu dropdown-menu-right select-text">
+                              <li><a>application/json</a></li>
+                              <li><a>application/xml</a></li>
+                              <li><a>text/plain</a></li>
+                              <li><a>application/octet-stream</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                    </td>
+                </tr>
+                {{/unless}}
+                {{/unless}}
+
+                {{#request}}
+                {{#headers}}
+                {{#unless isAuth}}
+                {{#unless isContentType}}
+                {{#unless isAccept}}
+                <tr>
+                    <td>
+                        <div class="input-group">
+                          <span class="input-group-addon">
+                            <input name="{{name}}" type="checkbox" {{^optional}}checked="checked" disabled="disabled"{{/optional}}> <span class="swank-parameter-name">{{name}}</span>
+                          </span>
+                          <input name="{{name}}" type="text" value="{{type.sampleValue}}" class="form-control">
+                        </div>
+                    </td>
+                </tr>
+                {{/unless}}
+                {{/unless}}
+                {{/unless}}
+                {{/headers}}
+                {{/request}}
+            </tbody>
+        </table>
+    </script>
+
+    <script type="text/html" id="swank-test-drive-querystring-template">
+        <h4>Querystring Parameters</h4>
+        <table class="swank-test-drive-querystring">
+            <tbody>
+                {{#querystringParameters}}
+                {{#unless isAuth}}
+                <tr>
+                    <td>
+                        <div class="input-group">
+                          <span class="input-group-addon">
+                            <input name="{{name}}" type="checkbox" {{#required}}checked="checked" disabled="disabled"{{/required}}> <span class="swank-parameter-name">{{name}}</span>
+                          </span>
+                          <input name="{{name}}" type="text" value="{{type.sampleValue}}" class="form-control">
+                        </div>
+                    </td>
+                </tr>
+                {{/unless}}
+                {{/querystringParameters}}
+            </tbody>
+        </table> 
+    </script>
+
+    <script type="text/html" id="swank-test-drive-url-parameters-template">
+        <h4>Url Parameters</h4>
+        <table class="swank-test-drive-url-parameters">
+            <tbody>
+                {{#urlParameters}}
+                {{#unless isAuth}}
+                <tr>
+                    <td>
+                        <div class="input-group">
+                          <span class="input-group-addon">
+                            <span class="swank-parameter-name">{{name}}</span>
+                          </span>
+                          <input name="{{name}}" type="text" value="{{type.sampleValue}}" class="form-control">
+                        </div>
+                    </td>
+                </tr>
+                {{/unless}}
+                {{/urlParameters}}
+            </tbody>
+        </table> 
+    </script>
+
 </html>

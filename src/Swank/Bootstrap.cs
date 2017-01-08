@@ -82,7 +82,8 @@ namespace Swank
                 handler: container.GetInstance<SpecificationHandler>());
 
             if (configuration.IgnoreFolders)
-                IgnorePaths.Initialize(configuration.AppUrl, configuration.SpecificationUrl);
+                IgnorePaths.Initialize(configuration.IgnoreFolderUrls.Concat(
+                    new [] { configuration.AppUrl, configuration.SpecificationUrl }));
         }
     }
 }

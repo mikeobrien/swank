@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Should;
+using Swank.Configuration;
 using Tests.Common;
 using Tests.Unit.Specification.SpecificationService.EndpointTests.UrlParameters;
 
@@ -71,6 +72,31 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
             _spec.GetEndpoint<OptionController>(x => x.Get(null, Options.Option1))
                 .GetUrlParameter("urlParameter").Type.Enumeration.Options
                 .Any(x => x.Value == "Option2").ShouldBeFalse();
+        }
+
+        [Test]
+        [TestCase("urlParameter", AuthenticationLocation.UrlParameter, true)]
+        [TestCase("urlParameter", AuthenticationLocation.Header, false)]
+        [TestCase("urlParameter", AuthenticationLocation.Querystring, false)]
+        [TestCase("fark", AuthenticationLocation.UrlParameter, false)]
+        public void should_indicate_if_a_parameter_is_for_auth(string name,
+            AuthenticationLocation location, bool isAuth)
+        {
+            _spec = Builder.BuildSpec<NoCommentsController>(x => x.WithCustomAuthenticationScheme(
+                new AuthenticationScheme {
+                    Components = new List<AuthenticationComponent> {
+                        new AuthenticationComponent
+                        {
+                            Name = name,
+                            Location = location
+                        }
+                    }
+                }));
+            var parameter = _spec.GetEndpoint<NoCommentsController>
+                (x => x.Get(null, Guid.Empty))
+                .GetUrlParameter("urlParameter");
+
+            parameter.IsAuth.ShouldEqual(isAuth);
         }
     }
 }

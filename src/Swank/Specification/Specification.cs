@@ -46,6 +46,7 @@ namespace Swank.Specification
         public string Comments { get; set; }
         public DataType Type { get; set; }
         public string SampleValue { get; set; }
+        public bool IsAuth { get; set; }
     }
 
     public class QuerystringParameter : IDescription
@@ -57,6 +58,7 @@ namespace Swank.Specification
         public string DefaultValue { get; set; }
         public bool MultipleAllowed { get; set; }
         public bool Required { get; set; }
+        public bool IsAuth { get; set; }
     }
 
     public class StatusCode : IDescription
@@ -74,6 +76,7 @@ namespace Swank.Specification
         public bool Required { get; set; }
         public bool IsContentType => Name.EqualsIgnoreCase("content-type");
         public bool IsAccept => Name.EqualsIgnoreCase("accept");
+        public bool IsAuth { get; set; }
     }
 
     public class Message

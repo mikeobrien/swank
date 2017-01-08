@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Swank.Configuration;
 using Swank.Extensions;
 using Swank.Specification;
 
@@ -37,6 +38,8 @@ namespace Swank.Web.Handlers.App
         public List<string> IEPolyfills { get; set; }
         public bool DisplayJsonData { get; set; }
         public bool DisplayXmlData { get; set; }
+        public bool HideTestDrive { get; set; }
+        public List<AuthenticationScheme> AuthenticationSchemes { get; set; }
     }
 
     public class AppHandler : CachingHandlerBase
@@ -74,6 +77,8 @@ namespace Swank.Web.Handlers.App
                 IEPolyfills = _configuration.IEPolyfills.Select(x => x.GetUrl()).ToList(),
                 DisplayJsonData = _configuration.DisplayJsonData,
                 DisplayXmlData = _configuration.DisplayXmlData,
+                HideTestDrive = _configuration.HideTestDriveSection,
+                AuthenticationSchemes = _configuration.AuthenticationSchemes,
                 Modules = _specification.Generate().Select((m, i) => new ModuleModel
                 {
                     Index = i,

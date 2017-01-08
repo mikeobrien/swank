@@ -52,11 +52,13 @@ namespace Swank.Configuration
 
         /// <summary>
         /// Overrides the configured virtual path provider to ignore
-        /// physical folders that match Swank urls.
+        /// physical folders that match Swank urls. Additional 
+        /// urls can be passed if desired.
         /// </summary>
-        public ConfigurationDsl IgnoreFolders()
+        public ConfigurationDsl IgnoreFolders(params string[] urls)
         {
             _configuration.IgnoreFolders = true;
+            _configuration.IgnoreFolderUrls = urls;
             return this;
         }
 
@@ -268,19 +270,14 @@ namespace Swank.Configuration
                     new AuthenticationComponent
                     {
                         Name = "Authorization",
-                        ClientSideGenerator = "CreateBasicAuthHeader",
+                        ClientSideGenerator = @"function(username, password) { " + 
+                                "return 'Basic ' + base64.encode(username + ':' + password); " + 
+                            "}",
                         Location = AuthenticationLocation.Header,
                         Parameters = new List<AuthenticationParameter>
                         {
-                            new AuthenticationParameter
-                            {
-                                Name = "Username"
-                            },
-                            new AuthenticationParameter
-                            {
-                                Name = "Password",
-                                Hide = true
-                            }
+                            new AuthenticationParameter("Username"),
+                            new AuthenticationParameter("Password", true)
                         }
                     }
                 }
@@ -301,14 +298,11 @@ namespace Swank.Configuration
                     new AuthenticationComponent
                     {
                         Name = "Authorization",
-                        ClientSideGenerator = "CreateTokenAuthHeader",
+                        ClientSideGenerator = @"function(token) { return 'Token ' + token; }",
                         Location = AuthenticationLocation.Header,
                         Parameters = new List<AuthenticationParameter>
                         {
-                            new AuthenticationParameter
-                            {
-                                Name = "Token"
-                            }
+                            new AuthenticationParameter("Token")
                         }
                     }
                 }
@@ -326,27 +320,36 @@ namespace Swank.Configuration
         }
 
         /// <summary>
-        /// Hides the client section.
+        /// Hides the test drive section.
         /// </summary>
-        public ConfigurationDsl HideClientSection(string copyright)
+        public ConfigurationDsl HideTestDriveSection()
         {
-            _configuration.HideClientSection = true;
+            _configuration.HideTestDriveSection = true;
             return this;
         }
 
         /// <summary>
         /// Hides the examples section.
         /// </summary>
-        public ConfigurationDsl HideExamplesSection(string copyright)
+        public ConfigurationDsl HideCodeExamplesSection()
         {
-            _configuration.HideExamplesSection = true;
+            _configuration.HideCodeExamplesSection = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Hides the url parameters section.
+        /// </summary>
+        public ConfigurationDsl HideUrlParametersSection()
+        {
+            _configuration.HideUrlParametersSection = true;
             return this;
         }
 
         /// <summary>
         /// Hides the querystring section.
         /// </summary>
-        public ConfigurationDsl HideQueryStringSection(string copyright)
+        public ConfigurationDsl HideQueryStringSection()
         {
             _configuration.HideQueryStringSection = true;
             return this;
@@ -355,25 +358,52 @@ namespace Swank.Configuration
         /// <summary>
         /// Hides the request headers section.
         /// </summary>
-        public ConfigurationDsl HideRequestHeadersSection(string copyright)
+        public ConfigurationDsl HideRequestHeadersSection()
         {
             _configuration.HideRequestHeadersSection = true;
             return this;
         }
 
         /// <summary>
+        /// Hides the request body section.
+        /// </summary>
+        public ConfigurationDsl HideRequestBodySection()
+        {
+            _configuration.HideRequestBodySection = true;
+            return this;
+        }
+
+        /// <summary>
         /// Hides the request section.
         /// </summary>
-        public ConfigurationDsl HideRequestSection(string copyright)
+        public ConfigurationDsl HideRequestSection()
         {
             _configuration.HideRequestSection = true;
             return this;
         }
 
         /// <summary>
+        /// Hides the response headers section.
+        /// </summary>
+        public ConfigurationDsl HideResponseHeadersSection()
+        {
+            _configuration.HideResponseHeadersSection = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Hides the response body section.
+        /// </summary>
+        public ConfigurationDsl HideResponseBodySection()
+        {
+            _configuration.HideResponseBodySection = true;
+            return this;
+        }
+
+        /// <summary>
         /// Hides the response section.
         /// </summary>
-        public ConfigurationDsl HideResponseSection(string copyright)
+        public ConfigurationDsl HideResponseSection()
         {
             _configuration.HideResponseSection = true;
             return this;
@@ -382,7 +412,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Hides the status code section.
         /// </summary>
-        public ConfigurationDsl HideStatusCodeSection(string copyright)
+        public ConfigurationDsl HideStatusCodeSection()
         {
             _configuration.HideStatusCodeSection = true;
             return this;

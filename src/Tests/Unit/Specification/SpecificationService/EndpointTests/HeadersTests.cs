@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Should;
+using Swank.Configuration;
 using Tests.Common;
 
 namespace Tests.Unit.Specification.SpecificationService.EndpointTests
@@ -66,6 +68,33 @@ namespace Tests.Unit.Specification.SpecificationService.EndpointTests
 
             endpoint.Request.Headers.Count.ShouldEqual(0);
             endpoint.Response.Headers.Count.ShouldEqual(0);
+        }
+
+        [Test]
+        [TestCase("accept", AuthenticationLocation.Header, true)]
+        [TestCase("accept", AuthenticationLocation.UrlParameter, false)]
+        [TestCase("accept", AuthenticationLocation.Querystring, false)]
+        [TestCase("fark", AuthenticationLocation.Header, false)]
+        public void should_indicate_if_a_parameter_is_for_auth(string name,
+            AuthenticationLocation location, bool isAuth)
+        {
+            _spec = Builder.BuildSpec<HeaderDescriptions
+                .HeadersController>(x => x.WithCustomAuthenticationScheme(
+                new AuthenticationScheme
+                {
+                    Components = new List<AuthenticationComponent> {
+                        new AuthenticationComponent
+                        {
+                            Name = name,
+                            Location = location
+                        }
+                    }
+                }));
+            var parameter = _spec.GetEndpoint<HeaderDescriptions
+                .HeadersController>(x => x.Get(null))
+                .Request.Headers[0];
+
+            parameter.IsAuth.ShouldEqual(isAuth);
         }
     }
 }

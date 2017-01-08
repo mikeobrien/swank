@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Should;
+using Swank.Configuration;
 using Swank.Specification;
 using Tests.Common;
 using Tests.Unit.Specification.SpecificationService.EndpointTests.Querystrings;
+using OptionController = Tests.Unit.Specification.SpecificationService.EndpointTests.Querystrings.OptionController;
+using Options = Tests.Unit.Specification.SpecificationService.EndpointTests.Querystrings.Options;
 
 namespace Tests.Unit
     .Specification.SpecificationService.EndpointTests
@@ -139,6 +143,32 @@ namespace Tests.Unit
             _spec.GetEndpoint<OptionController>(x => x.Get(null, null, Options.Option1))
                 .GetQuerystring("querystring").Type.Enumeration.Options
                 .Any(x => x.Value == "Option2").ShouldBeFalse();
+        }
+
+        [Test]
+        [TestCase("querystring", AuthenticationLocation.Querystring, true)]
+        [TestCase("querystring", AuthenticationLocation.Header, false)]
+        [TestCase("querystring", AuthenticationLocation.UrlParameter, false)]
+        [TestCase("fark", AuthenticationLocation.Querystring, false)]
+        public void should_indicate_if_a_parameter_is_for_auth(string name,
+            AuthenticationLocation location, bool isAuth)
+        {
+            _spec = Builder.BuildSpec<Controller>(x => x.WithCustomAuthenticationScheme(
+                new AuthenticationScheme
+                {
+                    Components = new List<AuthenticationComponent> {
+                        new AuthenticationComponent
+                        {
+                            Name = name,
+                            Location = location
+                        }
+                    }
+                }));
+            var parameter = _spec.GetEndpoint<Controller>(x => x.Get(
+                null, null, null, null, null, null, null, null, 0, 0, null))
+                .GetQuerystring("querystring");
+
+            parameter.IsAuth.ShouldEqual(isAuth);
         }
     }
 }
