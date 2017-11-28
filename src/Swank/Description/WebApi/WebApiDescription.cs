@@ -16,6 +16,8 @@ namespace Swank.Description.WebApi
         {
             ActionMethod = apiDescription.GetMethodInfo();
             RequestParameter = GetRequestParameter(apiDescription);
+            ParameterDescriptions = apiDescription.ParameterDescriptions.Select(x => 
+                new WebApiParameterDescription(_apiDescription, x));
             _apiDescription = apiDescription;
         }
 
@@ -40,10 +42,7 @@ namespace Swank.Description.WebApi
         public string ResponseDocumentation => _apiDescription
             .ResponseDescription?.Documentation;
         public IParameterDescription RequestParameter { get; }
-        
-        public IEnumerable<IParameterDescription> ParameterDescriptions => 
-            _apiDescription.ParameterDescriptions.Select(x => 
-                new WebApiParameterDescription(_apiDescription, x));
+        public IEnumerable<IParameterDescription> ParameterDescriptions { get; }
 
         public T GetActionAttribute<T>() where T : Attribute =>
             _apiDescription.GetActionAttribute<T>();

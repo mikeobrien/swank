@@ -75,23 +75,6 @@ namespace Swank.Extensions
             return request.CreateResponse(statusCode)
                 .ToTaskCompletionSource();
         }
-  
-        public static Task<HttpResponseMessage> CreateErrorResponseTask(
-            this HttpRequestMessage request, HttpStatusCode statusCode, 
-            Exception exception)
-        {
-            return request.CreateResponse(statusCode, exception.Message).ToTaskCompletionSource();
-        }
-        
-        public static HttpResponseMessage CreateResponse(this HttpRequestMessage request, 
-            HttpStatusCode statusCode, string message = "")
-        {
-            return new HttpResponseMessage
-            {
-                StatusCode = statusCode,
-                Content = new StringContent(message)
-            };
-        }
 
         public static Task<HttpResponseMessage> CreateRedirectResponseTask(
             this HttpRequestMessage request, string url)

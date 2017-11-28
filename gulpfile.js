@@ -37,9 +37,10 @@ gulp.task('test', ['build'], function () {
     return gulp
         .src(['**/bin/**/*Tests.dll'], { read: false })
         .pipe(nunit({
-            teamcity: true,
+            executable: 'nunit3-console.exe',
             options: {
-                framework: 'net-4.5'
+                framework: 'net-4.5',
+                teamcity: true
             }
         }));
 });

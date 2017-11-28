@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Swank.Extensions;
@@ -28,15 +26,7 @@ namespace Swank.Web.Handlers
                     return request.CreateRedirectResponseTask(url + "/");
             }
 
-            try
-            {
-                return Send(request);
-            }
-            catch (Exception exception)
-            {
-                return request.CreateErrorResponseTask(HttpStatusCode
-                    .InternalServerError, exception);
-            }
+            return Send(request);
         }
     }
 }
