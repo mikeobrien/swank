@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using System.Web.Http.Description;
 using Swank.Extensions;
 
 namespace Swank.Description
 {
-    public class ResourceConvention : IDescriptionConvention<ApiDescription, ResourceDescription>
+    public class ResourceConvention : IDescriptionConvention<IApiDescription, ResourceDescription>
     {
         private readonly MarkerConvention<ResourceDescription> _descriptions;
         private readonly XmlComments _xmlComments;
@@ -16,7 +15,7 @@ namespace Swank.Description
             _xmlComments = xmlComments;
         }
 
-        public virtual ResourceDescription GetDescription(ApiDescription endpoint)
+        public virtual ResourceDescription GetDescription(IApiDescription endpoint)
         {
             if (endpoint.HasControllerAttribute<ResourceAttribute>())
             {
@@ -25,12 +24,12 @@ namespace Swank.Description
                 {
                     Name = resource.Name,
                     Comments = resource.Comments ??
-                        endpoint.GetControllerAssembly().FindResourceNamed(
-                            endpoint.GetControllerType().FullName.AddMarkdownExtension())
+                        endpoint.ControllerType.Assembly.FindResourceNamed(
+                            endpoint.ControllerType.FullName.AddMarkdownExtension())
                 };
             }
 
-            var xmlComments = _xmlComments.GetType(endpoint.GetControllerType());
+            var xmlComments = _xmlComments.GetType(endpoint.ControllerType);
 
             if (xmlComments != null && xmlComments.Summary.IsNotNullOrEmpty())
             {
@@ -38,13 +37,13 @@ namespace Swank.Description
                 {
                     Name = xmlComments.Summary,
                     Comments = xmlComments.Remarks ??
-                        endpoint.GetControllerAssembly().FindResourceNamed(
-                            endpoint.GetControllerType().FullName.AddMarkdownExtension())
+                        endpoint.ControllerType.Assembly.FindResourceNamed(
+                            endpoint.ControllerType.FullName.AddMarkdownExtension())
                 };
             }
 
-            return _descriptions.GetDescriptions(endpoint.GetControllerAssembly())
-                .Where(x => endpoint.GetControllerType().IsInNamespace(x))
+            return _descriptions.GetDescriptions(endpoint.ControllerType.Assembly)
+                .Where(x => endpoint.ControllerType.IsInNamespace(x))
                 .OrderByDescending(x => x.GetType().Namespace.Length)
                 .FirstOrDefault();
         }

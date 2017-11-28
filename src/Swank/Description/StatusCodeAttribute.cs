@@ -17,8 +17,8 @@ namespace Swank.Description
             Comments = comments;
         }
         
-        public string Name { get; private set; }
-        public string Comments { get; private set; }
-        public int Code { get; private set; }
+        public string Name { get; }
+        public string Comments { get; }
+        public int Code { get; }
     }
 }

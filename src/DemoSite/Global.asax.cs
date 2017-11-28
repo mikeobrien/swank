@@ -4,7 +4,6 @@ using System.Web;
 using System.Web.Http;
 using Swank;
 using Swank.Configuration;
-using Swank.Extensions;
 using Swank.Specification;
 
 namespace DemoSite
@@ -90,10 +89,10 @@ namespace DemoSite
                 .IsInDebugModeWhenAppIsInDebugMode()
                 .OverrideRequestWhen(
                     r => { r.Message.Type = null; r.Message.IsBinary = true; }, 
-                    r => r.ApiDescription.GetRequestType() == typeof(Stream))
+                    r => r.ApiDescription.RequestParameter?.Type == typeof(Stream))
                 .OverrideResponseWhen(
                     r => { r.Message.Type = null; r.Message.IsBinary = true; },
-                    r => r.ApiDescription.GetResponseType() == typeof(Stream)));
+                    r => r.ApiDescription.ResponseType == typeof(Stream)));
 
             configuration.MapHttpAttributeRoutes();
 

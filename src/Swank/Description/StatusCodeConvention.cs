@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web.Http.Description;
-using Swank.Extensions;
 
 namespace Swank.Description
 {
-    public class StatusCodeConvention : IDescriptionConvention<ApiDescription, List<StatusCodeDescription>>
+    public class StatusCodeConvention : IDescriptionConvention<IApiDescription, List<StatusCodeDescription>>
     {
-        public virtual List<StatusCodeDescription> GetDescription(ApiDescription endpoint)
+        public virtual List<StatusCodeDescription> GetDescription(IApiDescription endpoint)
         {
             return endpoint.GetControllerAndActionAttributes<StatusCodeAttribute>()
                 .Select(x => new StatusCodeDescription

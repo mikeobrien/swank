@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Bender;
+using Newtonsoft.Json;
 using Swank.Extensions;
 
 namespace Tests.Acceptance
@@ -43,7 +43,8 @@ namespace Tests.Acceptance
 
         public static Result<T> GetJson<T>(string relativeUrl)
         {
-            return Get(relativeUrl, "application/json", x => Deserialize.Json<T>(x, y => y.UseCamelCaseNaming()));
+            return Get(relativeUrl, "application/json", x => 
+                JsonConvert.DeserializeObject<T>(x.ReadAllText()));
         }
 
         private static Result<T> Get<T>(string relativeUrl, 
@@ -69,7 +70,11 @@ namespace Tests.Acceptance
             request.Method = "POST";
             request.ContentType = request.Accept = "application/json";
             using (var requestStream = request.GetRequestStream())
-                Serialize.JsonStream(data, requestStream);
+            {
+                var writer = new StreamWriter(requestStream);
+                writer.Write(JsonConvert.SerializeObject(data));
+                writer.Flush();
+            }
             using (var response = GetResponse(request))
             {
                 using (var responseStream = response.GetResponseStream())
@@ -77,8 +82,7 @@ namespace Tests.Acceptance
                     if ((int)response.StatusCode >= 300)
                         return new Result<TResponse>(response.StatusCode, responseStream.ReadAllText());
                     return new Result<TResponse>(response.StatusCode, 
-                        Deserialize.Json<TResponse>(responseStream, 
-                            x => x.Deserialization(y => y.IgnoreNameCase())));
+                        JsonConvert.DeserializeObject<TResponse>(responseStream.ReadAllText()));
                 }
             }
         }

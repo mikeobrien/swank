@@ -9,13 +9,16 @@ using System.Web.Http.Controllers;
 using System.Web.Http.Description;
 using System.Web.Http.Routing;
 using NSubstitute;
+using Swank.Description;
+using Swank.Description.WebApi;
 using Swank.Extensions;
+using IApiExplorer = Swank.Description.IApiExplorer;
 
 namespace Tests.Common
 {
     public static class ApiDescription<T>
     {
-        public static ApiDescription ForAction<TReturn>(
+        public static IApiDescription ForAction<TReturn>(
             Expression<Func<T, TReturn>> method,
             Action<ApiDescription> configure = null)
         {
@@ -28,7 +31,7 @@ namespace Tests.Common
         public static IApiExplorer Discover()
         {
             var apiExplorer = Substitute.For<IApiExplorer>();
-            apiExplorer.ApiDescriptions.Returns(new Collection<ApiDescription>(
+            apiExplorer.ApiDescriptions.Returns(new Collection<IApiDescription>(
                 typeof(T).Assembly.GetTypes()
                     .Where(x => x.IsInNamespace(typeof(T)) && 
                         x.Name.EndsWith("Controller"))
@@ -38,7 +41,7 @@ namespace Tests.Common
             return apiExplorer;
         }
 
-        private static ApiDescription ForAction(MethodInfo method, 
+        private static IApiDescription ForAction(MethodInfo method, 
             Action<ApiDescription> configure = null)
         {
             var actionDescriptor = new ReflectedHttpActionDescriptor(
@@ -81,7 +84,7 @@ namespace Tests.Common
                         ResponseType = method.ReturnType
                     });
             configure?.Invoke(description);
-            return description;
+            return new WebApiDescription(description);
         }
     }
 }

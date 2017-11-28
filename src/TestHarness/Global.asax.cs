@@ -6,7 +6,6 @@ using System.Web.Http;
 using Bender.Collections;
 using Swank;
 using Swank.Configuration;
-using Swank.Extensions;
 using Swank.Specification;
 
 namespace TestHarness
@@ -51,10 +50,10 @@ namespace TestHarness
                 }))
                 .OverrideRequestWhen(
                     r => { r.Message.Type = null; r.Message.IsBinary = true; }, 
-                    r => r.ApiDescription.GetRequestType() == typeof(Stream))
+                    r => r.ApiDescription.RequestParameter?.Type == typeof(Stream))
                 .OverrideResponseWhen(
                     r => { r.Message.Type = null; r.Message.IsBinary = true; },
-                    r => r.ApiDescription.GetRequestType() == typeof(Stream))
+                    r => r.ApiDescription.RequestParameter?.Type == typeof(Stream))
                 .OverrideRequestWhen(r => {
                     r.Message.Headers.AddItem(new Header { Name = "content-type", Comments = 
                         "Lorem markdownum formam reicerer adstitit capiunt " +

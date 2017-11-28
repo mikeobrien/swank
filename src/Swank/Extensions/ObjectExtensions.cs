@@ -7,6 +7,17 @@ namespace Swank.Extensions
 {
     public static class ObjectExtensions
     {
+        public static Lazy<TResult> ToLazy<TResult>(this Func<TResult> factory)
+        {
+            return new Lazy<TResult>(factory);
+        }
+
+        public static Lazy<TResult> ToLazy<T, TResult>(this T source, 
+            Func<T, TResult> factory)
+        {
+            return new Lazy<TResult>(() => factory(source));
+        }
+
         public static T ThenDo<T>(this T source, Action<T> action)
         {
             action(source);

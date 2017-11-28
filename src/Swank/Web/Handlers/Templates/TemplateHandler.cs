@@ -44,7 +44,7 @@ namespace Swank.Web.Handlers.Templates
                         StringComparer.OrdinalIgnoreCase)
             });
             return result == null 
-                ? request.CreateErrorResponseTask(HttpStatusCode.NotFound) 
+                ? request.CreateResponseTask(HttpStatusCode.NotFound) 
                 : result.CreateResponseTask(_template.MimeType);
         }
     }

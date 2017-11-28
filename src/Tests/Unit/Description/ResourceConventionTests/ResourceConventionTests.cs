@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Web.Http.Description;
 using Swank.Description;
 using NUnit.Framework;
 using Should;
@@ -11,7 +10,7 @@ namespace Tests.Unit.Description.ResourceConventionTests
     [TestFixture]
     public class ResourceConventionTests
     {
-        private IDescriptionConvention<ApiDescription, ResourceDescription> _resourceConvention;
+        private IDescriptionConvention<IApiDescription, ResourceDescription> _resourceConvention;
         private XmlComments _comments;
 
         [OneTimeSetUp]

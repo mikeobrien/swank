@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Should;
 using Swank.Configuration;
 using Swank.Description;
+using Swank.Description.WebApi;
 using Swank.Extensions;
 using Swank.Specification;
 using Swank.Web.Handlers.App;
@@ -26,7 +27,7 @@ namespace Tests.Unit.Web.Handlers.App
             return new BodyDescriptionService(configuration)
                 .Create(Builder.BuildTypeGraphService(configuration: configuration)
                     .BuildForMessage(requestGraph, type, new EndpointDescription { MethodName = "Get" }, 
-                        new ApiDescription()));
+                        new WebApiDescription(new ApiDescription())));
         }
 
         public List<BodyDefinitionModel> BuildDescription<T>(

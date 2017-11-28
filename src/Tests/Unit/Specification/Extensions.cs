@@ -6,9 +6,9 @@ using System.Web.Http.Description;
 using Swank;
 using Swank.Configuration;
 using Swank.Description;
-using Swank.Extensions;
 using Swank.Specification;
 using Tests.Common;
+using IApiExplorer = Swank.Description.IApiExplorer;
 
 namespace Tests.Unit.Specification
 {
@@ -28,7 +28,7 @@ namespace Tests.Unit.Specification
             return BuildSpec<TNamespace>(ConfigurationDsl.CreateConfig(x =>
             {
                 configure?.Invoke(x);
-                x.Where(y => y.GetControllerType().InNamespace<TNamespace>());
+                x.Where(y => y.ControllerType.InNamespace<TNamespace>());
             }));
         }
 
@@ -38,21 +38,21 @@ namespace Tests.Unit.Specification
             return MicroContainer.Create(x => x
                 .Register(configuration)
                 .Register<IApiExplorer>(ApiDescription<TNamespace>.Discover())
-                .Register<IDescriptionConvention<ApiDescription,
+                .Register<IDescriptionConvention<IApiDescription,
                     ModuleDescription>, ModuleConvention>()
-                .Register<IDescriptionConvention<ApiDescription,
+                .Register<IDescriptionConvention<IApiDescription,
                     ResourceDescription>, ResourceConvention>()
-                .Register<IDescriptionConvention<ApiDescription,
+                .Register<IDescriptionConvention<IApiDescription,
                     EndpointDescription>, EndpointConvention>()
                 .Register<IDescriptionConvention<Type,
                     TypeDescription>, TypeConvention>()
                 .Register<IDescriptionConvention<PropertyInfo,
                     MemberDescription>, MemberConvention>()
-                .Register<IDescriptionConvention<ApiParameterDescription,
+                .Register<IDescriptionConvention<IParameterDescription,
                     ParameterDescription>, ParameterConvention>()
-                .Register<IDescriptionConvention<ApiDescription,
+                .Register<IDescriptionConvention<IApiDescription,
                     List<StatusCodeDescription>>, StatusCodeConvention>()
-                .Register<IDescriptionConvention<ApiDescription,
+                .Register<IDescriptionConvention<IApiDescription,
                     List<HeaderDescription>>, HeaderConvention>()
                 .Register<IDescriptionConvention<Type,
                     EnumDescription>, EnumConvention>()

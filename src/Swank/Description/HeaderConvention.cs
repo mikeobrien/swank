@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web.Http.Description;
-using Swank.Extensions;
 
 namespace Swank.Description
 {
-    public class HeaderConvention : IDescriptionConvention<ApiDescription, List<HeaderDescription>>
+    public class HeaderConvention : IDescriptionConvention<IApiDescription, List<HeaderDescription>>
     {
-        public virtual List<HeaderDescription> GetDescription(ApiDescription endpoint)
+        public virtual List<HeaderDescription> GetDescription(IApiDescription endpoint)
         {
             return endpoint.GetControllerAndActionAttributes<HeaderAttribute>()
                 .Select(x => new HeaderDescription

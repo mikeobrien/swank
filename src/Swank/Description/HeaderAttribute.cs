@@ -27,8 +27,8 @@ namespace Swank.Description
             Optional = optional;
         }
         
-        public string Name { get; private set; }
-        public string Comments { get; private set; }
+        public string Name { get; }
+        public string Comments { get; }
         public bool Optional { get; set; }
     }
 }

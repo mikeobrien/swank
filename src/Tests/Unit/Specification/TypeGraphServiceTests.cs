@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http.Description;
-using Bender.Reflection;
 using Swank.Description;
 using Swank.Specification;
 using NUnit.Framework;
 using Should;
 using Swank.Configuration;
+using Swank.Description.WebApi;
+using Swank.Extensions;
 using Tests.Common;
 
 namespace Tests.Unit.Specification
@@ -269,7 +270,7 @@ namespace Tests.Unit.Specification
         {
             should_be_array_type(Builder.BuildTypeGraphService()
                 .BuildForMessage(false, type, _endpointDescription, null), 
-                    type.GetGenericEnumerableType());
+                    type.GetListElementType());
         }
 
         [Comments("This *is* an array.")]
@@ -567,7 +568,7 @@ namespace Tests.Unit.Specification
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
                 .BuildForMessage(true, typeof(ComplexTypeWithDefaultValue),
-                    _endpointDescription, new ApiDescription()), 1)
+                    _endpointDescription, new WebApiDescription(new ApiDescription())), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -581,7 +582,7 @@ namespace Tests.Unit.Specification
             var member = should_be_complex_type(Builder
                 .BuildTypeGraphService(x => x.SampleRealFormat = "0.0")
                 .BuildForMessage(true, typeof(ComplexTypeWithDefaultValue),
-                    _endpointDescription, new ApiDescription()), 1)
+                    _endpointDescription, new WebApiDescription(new ApiDescription())), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -613,7 +614,7 @@ namespace Tests.Unit.Specification
         {
             var member = should_be_complex_type(Builder.BuildTypeGraphService()
                 .BuildForMessage(true, typeof(ComplexTypeWithSampleValue),
-                    _endpointDescription, new ApiDescription()), 1)
+                    _endpointDescription, new WebApiDescription(new ApiDescription())), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -627,7 +628,7 @@ namespace Tests.Unit.Specification
             var member = should_be_complex_type(Builder
                 .BuildTypeGraphService(x => x.SampleRealFormat = "0.0")
                 .BuildForMessage(true, typeof(ComplexTypeWithSampleValue),
-                    _endpointDescription, new ApiDescription()), 1)
+                    _endpointDescription, new WebApiDescription(new ApiDescription())), 1)
                 .Members.Single();
 
             should_match_member(member, "Member",
@@ -688,7 +689,7 @@ namespace Tests.Unit.Specification
             string property, bool optional, string dataType, 
                 string sampleValue, HttpMethod method)
         {
-            var apiDescription = new ApiDescription { HttpMethod = method };
+            var apiDescription = new WebApiDescription(new ApiDescription { HttpMethod = method });
             var members = should_be_complex_type(Builder.BuildTypeGraphService()
                 .BuildForMessage(true, typeof(ComplexTypeWithOptionalMember),
                     _endpointDescription, apiDescription), 9).Members;
@@ -1067,7 +1068,7 @@ namespace Tests.Unit.Specification
             string methodName = "Get", bool requestGraph = false)
         {
             return service.BuildForMessage(requestGraph, typeof(T), new EndpointDescription
-                { MethodName = methodName }, new ApiDescription());
+                { MethodName = methodName }, new WebApiDescription(new ApiDescription()));
         }
 
         public static DataType BuildForParameter<T>(this TypeGraphService service,
@@ -1085,7 +1086,7 @@ namespace Tests.Unit.Specification
             return service.BuildForParameter(type, 
                 new EndpointDescription { MethodName = methodName },
                 new ParameterDescription { Name = parameterName, Type = parameterType }, 
-                new ApiDescription());
+                new WebApiDescription(new ApiDescription()));
         }
 
         public static Member Member(this List<Member> members, string name)

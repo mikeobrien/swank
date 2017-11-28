@@ -1,5 +1,4 @@
-﻿using System.Web.Http.Description;
-using Swank.Description;
+﻿using Swank.Description;
 using NUnit.Framework;
 using Should;
 using Tests.Common;
@@ -11,7 +10,7 @@ namespace Tests.Unit.Description.ModuleConventionTests
     {
         public const string SchedulesModuleComments = 
             "<p><strong>These are schedules yo!</strong></p>";
-        private IDescriptionConvention<ApiDescription, ModuleDescription> _moduleConvention;
+        private IDescriptionConvention<IApiDescription, ModuleDescription> _moduleConvention;
 
         [SetUp]
         public void Setup()

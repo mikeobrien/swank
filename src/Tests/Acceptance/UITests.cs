@@ -60,7 +60,7 @@ namespace Tests.Acceptance
                 data.ShouldContain("<script src=\"/api/js/highlight.js/\"></script>");
                 data.ShouldContain("<script src=\"/api/js/clipboard.js/\"></script>");
                 data.ShouldContain("<script src=\"/api/js/cookie.js/\"></script>");
-                data.ShouldContain("<script src=\"/api/js/app.js/\"></script>");
+                data.ShouldContain("<script src=\"/api/js/swank.js/\"></script>");
         
                 data.ShouldContain($"<footer class=\"swank-footer\">Copyright &copy; {DateTime.Now.Year} Setec Astronomy</footer>");
             }
@@ -161,7 +161,7 @@ namespace Tests.Acceptance
 
             endpoint.Request.IsBinary.ShouldBeFalse();
 
-            endpoint.Request.Headers.Count.ShouldEqual(2);
+            endpoint.Request.Headers.Count.ShouldEqual(3);
 
             var header = endpoint.Request.Headers.First();
             header.Comments.ShouldStartWith("Request header 1.");

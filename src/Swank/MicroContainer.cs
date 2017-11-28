@@ -36,6 +36,12 @@ namespace Swank
             return this;
         }
 
+        public RegistrationDsl Register<TPlugin>(Type type)
+        {
+            _registrations.Add(typeof(TPlugin), type);
+            return this;
+        }
+
         public RegistrationDsl Register<TPlugin, TConcrete>()
         {
             _registrations.Add(typeof(TPlugin), typeof(TConcrete));
@@ -99,9 +105,8 @@ namespace Swank
                         .FirstOrDefault(y => y.Value is Type && 
                             y.Key == x.ParameterType).Value;
                     var parameterType = (Type)typeRegistration ?? x.ParameterType;
-                    return _factories.Select(y => y(parameterType))
-                        .FirstOrDefault() ?? GetInstance(parameterType, 
-                            instances, new List<Type>(ancestors) { type });
+                    return _factories.Select(y => y(parameterType)).FirstOrDefault() ?? 
+                        GetInstance(parameterType, instances, new List<Type>(ancestors) { type });
                 }).ToArray());
 
             _cache.Add(newInstance);

@@ -10,6 +10,6 @@ namespace Swank.Description
             Value = value;
         }
 
-        public object Value { get; private set; }
+        public object Value { get; }
     }
 }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Web.Http.Description;
 using Swank.Description;
 using Swank.Description.CodeExamples;
+using Swank.Description.WebApi;
 using Swank.Extensions;
 using Swank.Specification;
 using Swank.Web.Assets;
@@ -22,12 +22,12 @@ namespace Swank.Configuration
         public const string DefaultCodeExampleTheme = "github-gist.css";
         public const string DefaultDefaultModuleName = "Resources"; // yo dawg I heard you like defaults...
 
-        public static readonly Func<ApiDescription, List<string>> DefaultActionNamespace = x => 
+        public static readonly Func<IApiDescription, List<string>> DefaultActionNamespace = x => 
             x.GetActionAttribute<ActionNamespaceAttribute>()?.Namespace ??
             x.GetActionAttribute<ActionNameAttribute>()?.Namespace ??
-            x.Route.GetNamespaceFromRoute().DistinctSiblings().ToList();
-        public static readonly Func<ApiDescription, string> DefaultActionName = x =>
-            x.GetActionAttribute<ActionNameAttribute>()?.Name ?? x.GetMethodInfo().Name;
+            x.RouteTemplate.GetNamespaceFromRoute().DistinctSiblings().ToList();
+        public static readonly Func<IApiDescription, string> DefaultActionName = x =>
+            x.GetActionAttribute<ActionNameAttribute>()?.Name ?? x.ActionMethod.Name;
 
         public class OverviewLink
         {
@@ -45,6 +45,7 @@ namespace Swank.Configuration
 
         public Configuration(Assembly assembly)
         {
+            ApiExplorer = typeof(WebApiExplorer);
             AppUrl = "api";
             SpecificationUrl = "api/spec";
             AppliesToAssemblies = new List<Assembly> { assembly };
@@ -99,7 +100,7 @@ namespace Swank.Configuration
             Filter = x => true;
             DefaultModuleName = DefaultDefaultModuleName;
             OrphanedModuleEndpoint = OrphanedEndpoints.UseDefault;
-            DefaultResourceIdentifier = x => x.Route.GetRouteResourceIdentifier();
+            DefaultResourceIdentifier = x => x.RouteTemplate.GetRouteResourceIdentifier();
             OrphanedResourceEndpoint = OrphanedEndpoints.UseDefault;
             DefaultDictionaryKeyName = "key";
             EnumFormat = EnumFormat.AsString;
@@ -131,11 +132,11 @@ namespace Swank.Configuration
             SampleGuidValue = Guid.Empty;
             SampleUriValue = new Uri("http://www.google.com");
 
-            ModuleConvention = new Service<IDescriptionConvention<ApiDescription, 
+            ModuleConvention = new Service<IDescriptionConvention<IApiDescription, 
                 ModuleDescription>> { Type = typeof(ModuleConvention) };
-            ResourceConvention = new Service<IDescriptionConvention<ApiDescription, 
+            ResourceConvention = new Service<IDescriptionConvention<IApiDescription, 
                 ResourceDescription>> { Type = typeof(ResourceConvention) };
-            EndpointConvention = new Service<IDescriptionConvention<ApiDescription, 
+            EndpointConvention = new Service<IDescriptionConvention<IApiDescription, 
                 EndpointDescription>> { Type = typeof(EndpointConvention) };
             MemberConvention = new Service<IDescriptionConvention<PropertyInfo, 
                 MemberDescription>> { Type = typeof(MemberConvention) };
@@ -143,9 +144,9 @@ namespace Swank.Configuration
                 EnumDescription>> { Type = typeof(EnumConvention) };
             EnumOptionConvention = new Service<IDescriptionConvention<FieldInfo, 
                 OptionDescription>> { Type = typeof(OptionConvention) };
-            StatusCodeConvention = new Service<IDescriptionConvention<ApiDescription, 
+            StatusCodeConvention = new Service<IDescriptionConvention<IApiDescription, 
                 List<StatusCodeDescription>>> { Type = typeof(StatusCodeConvention) };
-            HeaderConvention = new Service<IDescriptionConvention<ApiDescription, 
+            HeaderConvention = new Service<IDescriptionConvention<IApiDescription, 
                 List<HeaderDescription>>> { Type = typeof(HeaderConvention) };
             TypeConvention = new Service<IDescriptionConvention<Type, 
                 TypeDescription>> { Type = typeof(TypeConvention) };
@@ -164,7 +165,8 @@ namespace Swank.Configuration
             MemberOverrides = new List<Action<MemberOverrideContext>>();
             OptionOverrides = new List<Action<OptionOverrideContext>>();
         }
-
+        
+        public Type ApiExplorer { get; set; }
         public bool DebugMode { get; set; }
         public bool IgnoreFolders { get; set; }
         public string[] IgnoreFolderUrls { get; set; }
@@ -190,9 +192,9 @@ namespace Swank.Configuration
         public bool DisplayJsonData { get; set; }
         public bool DisplayXmlData { get; set; }
         public List<Assembly> AppliesToAssemblies { get; }
-        public Func<ApiDescription, bool> Filter { get; set; }
-        public Func<ApiDescription, List<string>> ActionNamespace { get; set; }
-        public Func<ApiDescription, string> ActionName { get; set; }
+        public Func<IApiDescription, bool> Filter { get; set; }
+        public Func<IApiDescription, List<string>> ActionNamespace { get; set; }
+        public Func<IApiDescription, string> ActionName { get; set; }
 
         public bool HideStatusCodeSection { get; set; }
         public bool HideCodeExamplesSection { get; set; }
@@ -211,8 +213,8 @@ namespace Swank.Configuration
         public OrphanedEndpoints OrphanedModuleEndpoint { get; set; }
         public OrphanedEndpoints OrphanedResourceEndpoint { get; set; }
         public string DefaultModuleName { get; set; }
-        public Func<ApiDescription, ResourceDescription> DefaultResourceFactory { get; set; }
-        public Func<ApiDescription, string> DefaultResourceIdentifier { get; set; }
+        public Func<IApiDescription, ResourceDescription> DefaultResourceFactory { get; set; }
+        public Func<IApiDescription, string> DefaultResourceIdentifier { get; set; }
 
         public string DefaultDictionaryKeyName { get; set; }
 
@@ -235,15 +237,15 @@ namespace Swank.Configuration
         public Guid SampleGuidValue { get; set; }
         public Uri SampleUriValue { get; set; }
 
-        public Service<IDescriptionConvention<ApiDescription, 
+        public Service<IDescriptionConvention<IApiDescription, 
             ModuleDescription>> ModuleConvention { get; }
-        public Service<IDescriptionConvention<ApiDescription, 
+        public Service<IDescriptionConvention<IApiDescription, 
             ResourceDescription>> ResourceConvention { get; }
-        public Service<IDescriptionConvention<ApiDescription, 
+        public Service<IDescriptionConvention<IApiDescription, 
             EndpointDescription>> EndpointConvention { get; }
-        public Service<IDescriptionConvention<ApiDescription, 
+        public Service<IDescriptionConvention<IApiDescription, 
             List<StatusCodeDescription>>> StatusCodeConvention { get; }
-        public Service<IDescriptionConvention<ApiDescription, 
+        public Service<IDescriptionConvention<IApiDescription, 
             List<HeaderDescription>>> HeaderConvention { get; }
         public Service<IDescriptionConvention<Type, TypeDescription>> 
             TypeConvention { get; }

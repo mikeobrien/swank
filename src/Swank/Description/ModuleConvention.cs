@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using System.Web.Http.Description;
 using Swank.Extensions;
 
 namespace Swank.Description
 {
-    public class ModuleConvention : IDescriptionConvention<ApiDescription, ModuleDescription>
+    public class ModuleConvention : IDescriptionConvention<IApiDescription, ModuleDescription>
     {
         private readonly MarkerConvention<ModuleDescription> _descriptions;
 
@@ -13,10 +12,10 @@ namespace Swank.Description
             _descriptions = descriptions;
         }
 
-        public virtual ModuleDescription GetDescription(ApiDescription endpoint)
+        public virtual ModuleDescription GetDescription(IApiDescription endpoint)
         {
-            return _descriptions.GetDescriptions(endpoint.GetControllerAssembly())
-                .FirstOrDefault(x => endpoint.GetControllerType().IsInNamespace(x));
+            return _descriptions.GetDescriptions(endpoint.ControllerType.Assembly)
+                .FirstOrDefault(x => endpoint.ControllerType.IsInNamespace(x));
         }
     }
 }

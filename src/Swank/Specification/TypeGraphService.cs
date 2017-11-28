@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Web.Http.Description;
 using Swank.Description;
 using Swank.Extensions;
 
@@ -29,7 +28,7 @@ namespace Swank.Specification
         }
 
         public DataType BuildForMessage(bool requestGraph, Type type, 
-            EndpointDescription description, ApiDescription endpoint)
+            EndpointDescription description, IApiDescription endpoint)
         {
             var @namespace = description.MethodName;
             var logicalName = @namespace + (requestGraph ? "Request" : "Response");
@@ -41,7 +40,7 @@ namespace Swank.Specification
         public DataType BuildForParameter(Type type,
             EndpointDescription endpointDescription,
             ParameterDescription parameterDescription, 
-            ApiDescription endpoint)
+            IApiDescription endpoint)
         {
             var @namespace = endpointDescription.MethodName;
             var dataType = BuildGraph(type, true, endpoint, @namespace: @namespace);
@@ -51,7 +50,7 @@ namespace Swank.Specification
         private DataType BuildGraph(
             Type type,
             bool requestGraph,
-            ApiDescription endpoint,
+            IApiDescription endpoint,
             DataType parent = null,
             IEnumerable<Type> ancestors = null,
             MemberDescription memberDescription = null,
@@ -155,7 +154,7 @@ namespace Swank.Specification
             Type type,
             TypeDescription typeDescription,
             bool requestGraph,
-            ApiDescription endpoint,
+            IApiDescription endpoint,
             IEnumerable<Type> ancestors,
             MemberDescription memberDescription,
             DataType parent = null,
@@ -191,7 +190,7 @@ namespace Swank.Specification
             Type type,
             TypeDescription typeDescription,
             bool requestGraph,
-            ApiDescription endpoint,
+            IApiDescription endpoint,
             IEnumerable<Type> ancestors,
             MemberDescription memberDescription,
             DataType parent = null,
@@ -222,7 +221,7 @@ namespace Swank.Specification
             DataType dataType,
             Type type,
             bool requestGraph,
-            ApiDescription endpoint,
+            IApiDescription endpoint,
             IEnumerable<Type> ancestors,
             string logicalName,
             string @namespace)

@@ -52,7 +52,7 @@ namespace Swank.Web.Handlers.App
                 .FirstOrDefault();
 
             if (resource == null) return message
-                .CreateErrorResponseTask(HttpStatusCode.NotFound);
+                .CreateResponseTask(HttpStatusCode.NotFound);
 
             return resource.CreateJsonResponseTask();
         }

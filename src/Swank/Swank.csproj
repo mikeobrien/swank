@@ -55,13 +55,11 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
@@ -83,6 +81,9 @@
     <Compile Include="Description\ActionNameAttribute.cs" />
     <Compile Include="Description\ArrayDescriptionAttribute.cs" />
     <Compile Include="Description\Assert.cs" />
+    <Compile Include="Description\IApiExplorer.cs" />
+    <Compile Include="Description\IApiDescription.cs" />
+    <Compile Include="Description\IParameterDescription.cs" />
     <Compile Include="Description\MaxLengthAttribute.cs" />
     <Compile Include="Description\EncodingAttributes.cs" />
     <Compile Include="Description\CodeExamples\CodeExample.cs" />
@@ -117,11 +118,15 @@
     <Compile Include="Description\StatusCodeConvention.cs" />
     <Compile Include="Description\BinaryAttribute.cs" />
     <Compile Include="Description\TypeConvention.cs" />
+    <Compile Include="Description\WebApi\WebApiDescription.cs" />
+    <Compile Include="Description\WebApi\WebApiParameterDescription.cs" />
+    <Compile Include="Description\WebApi\WebApiExplorer.cs" />
     <Compile Include="Description\XmlComments.cs" />
     <Compile Include="Extensions\Func.cs" />
     <Compile Include="Extensions\IgnorePaths.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
+    <Compile Include="Extensions\WebApiExtensions.cs" />
     <Compile Include="MicroContainer.cs" />
     <Compile Include="Extensions\Mime.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
@@ -131,6 +136,7 @@
     <Compile Include="Extensions\TemplatingExtensions.cs" />
     <Compile Include="Extensions\Xml.cs" />
     <Compile Include="Extensions\WebExtensions.cs" />
+    <Compile Include="Registry.cs" />
     <Compile Include="Specification\Markdown.cs" />
     <Compile Include="Specification\OverrideContexts.cs" />
     <Compile Include="Web\Handlers\App\AppResourceHandler.cs" />

@@ -19,7 +19,7 @@ namespace Swank.Web.Handlers
         {
             var asset = _asset.Load();
             return asset == null
-                ? request.CreateErrorResponseTask(HttpStatusCode.NotFound)
+                ? request.CreateResponseTask(HttpStatusCode.NotFound)
                 : asset.CreateResponseTask(_asset.MimeType);
         }
     }

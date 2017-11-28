@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Web.Http.Description;
 using Swank.Configuration;
 using Swank.Description;
 using Swank.Extensions;
@@ -24,7 +23,7 @@ namespace Swank.Specification
             _optionConvention = optionConvention;
         }
 
-        public Enumeration BuildOptions(Type type, ApiDescription endpoint, bool request)
+        public Enumeration BuildOptions(Type type, IApiDescription endpoint, bool request)
         {
             type = type.GetNullableUnderlyingType();
             if (!type.IsEnum) return null;

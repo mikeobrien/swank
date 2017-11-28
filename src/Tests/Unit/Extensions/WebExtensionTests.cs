@@ -1,7 +1,5 @@
-﻿using System;
-using System.Web.Http.Description;
+﻿using System.Web.Http.Description;
 using System.Web.Http.Routing;
-using NSubstitute;
 using NUnit.Framework;
 using Should;
 using Swank.Extensions;
@@ -19,9 +17,7 @@ namespace Tests.Unit.Extensions
         public void should_get_resource_identifier_from_pattern(
             string template, string resourceIdentifier)
         {
-            var route = Substitute.For<IHttpRoute>();
-            route.RouteTemplate.Returns(template);
-            route.GetRouteResourceIdentifier().ShouldEqual(resourceIdentifier);
+            template.GetRouteResourceIdentifier().ShouldEqual(resourceIdentifier);
         }
 
         [Test]
@@ -70,7 +66,7 @@ namespace Tests.Unit.Extensions
         [Test]
         public void should_generate_namespace_from_route_template()
         {
-            new HttpRoute("level1/{param1}/level2/{param2}")
+            "level1/{param1}/level2/{param2}"
                 .GetNamespaceFromRoute().ShouldOnlyContain("level1", "level2");
         }
 

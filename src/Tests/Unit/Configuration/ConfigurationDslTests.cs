@@ -9,12 +9,12 @@ using Should;
 using Swank.Configuration;
 using Swank.Description;
 using Swank.Description.CodeExamples;
+using Swank.Description.WebApi;
 using Swank.Extensions;
 using Swank.Specification;
 using Swank.Web.Assets;
 using Swank.Web.Templates;
 using TestHarness.Module;
-using Tests.Common;
 
 namespace Tests.Unit.Configuration
 {
@@ -366,12 +366,12 @@ namespace Tests.Unit.Configuration
         public void should_filter_api_descriptions(
             string route, bool matches)
         {
-            _dsl.Where(x => x.Route.RouteTemplate == route);
+            _dsl.Where(x => x.RouteTemplate == route);
 
-            _configuration.Filter(new ApiDescription
+            _configuration.Filter(new WebApiDescription(new ApiDescription
             {
                 Route = new HttpRoute("url/path1")
-            }).ShouldEqual(matches);
+            })).ShouldEqual(matches);
         }
 
         [Test]
@@ -876,7 +876,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_set_default_resource_factory()
         {
-            Func<ApiDescription, ResourceDescription> factory = x => null;
+            Func<IApiDescription, ResourceDescription> factory = x => null;
 
             _dsl.WithDefaultResource(factory);
 

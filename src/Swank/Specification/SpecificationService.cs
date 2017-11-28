@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Web.Http.Description;
 using Swank.Configuration;
 using Swank.Description;
 using Swank.Extensions;
@@ -14,7 +13,7 @@ namespace Swank.Specification
     {
         private class EndpointMapping
         {
-            public ApiDescription Endpoint { get; set; }
+            public IApiDescription Endpoint { get; set; }
             public ModuleDescription Module { get; set; }
             public ResourceDescription Resource { get; set; }
         }
@@ -34,24 +33,24 @@ namespace Swank.Specification
 
         private readonly Configuration.Configuration _configuration;
         private readonly IApiExplorer _apiExplorer;
-        private readonly IDescriptionConvention<ApiDescription, ModuleDescription> _moduleConvention;
-        private readonly IDescriptionConvention<ApiDescription, ResourceDescription> _resourceConvention;
-        private readonly IDescriptionConvention<ApiDescription, EndpointDescription> _endpointConvention;
-        private readonly IDescriptionConvention<ApiParameterDescription, ParameterDescription> _parameterConvention;
-        private readonly IDescriptionConvention<ApiDescription, List<StatusCodeDescription>> _statusCodeConvention;
-        private readonly IDescriptionConvention<ApiDescription, List<HeaderDescription>> _headerConvention;
+        private readonly IDescriptionConvention<IApiDescription, ModuleDescription> _moduleConvention;
+        private readonly IDescriptionConvention<IApiDescription, ResourceDescription> _resourceConvention;
+        private readonly IDescriptionConvention<IApiDescription, EndpointDescription> _endpointConvention;
+        private readonly IDescriptionConvention<IParameterDescription, ParameterDescription> _parameterConvention;
+        private readonly IDescriptionConvention<IApiDescription, List<StatusCodeDescription>> _statusCodeConvention;
+        private readonly IDescriptionConvention<IApiDescription, List<HeaderDescription>> _headerConvention;
         private readonly TypeGraphService _typeGraphService;
         private readonly Lazy<List<Module>> _specification;
 
         public SpecificationService(
             Configuration.Configuration configuration,
             IApiExplorer apiExplorer,
-            IDescriptionConvention<ApiDescription, ModuleDescription> moduleConvention,
-            IDescriptionConvention<ApiDescription, ResourceDescription> resourceConvention,
-            IDescriptionConvention<ApiDescription, EndpointDescription> endpointConvention,
-            IDescriptionConvention<ApiParameterDescription, ParameterDescription> parameterConvention,
-            IDescriptionConvention<ApiDescription, List<StatusCodeDescription>> statusCodeConvention,
-            IDescriptionConvention<ApiDescription, List<HeaderDescription>> headerConvention,
+            IDescriptionConvention<IApiDescription, ModuleDescription> moduleConvention,
+            IDescriptionConvention<IApiDescription, ResourceDescription> resourceConvention,
+            IDescriptionConvention<IApiDescription, EndpointDescription> endpointConvention,
+            IDescriptionConvention<IParameterDescription, ParameterDescription> parameterConvention,
+            IDescriptionConvention<IApiDescription, List<StatusCodeDescription>> statusCodeConvention,
+            IDescriptionConvention<IApiDescription, List<HeaderDescription>> headerConvention,
             TypeGraphService typeGraphService)
         {
             _configuration = configuration;
@@ -78,14 +77,14 @@ namespace Swank.Specification
             return GetModules(mappings).ThenDo(Markdown.Apply);
         }
 
-        private List<EndpointMapping> GetEndpointMapping(IEnumerable<ApiDescription> endpoints)
+        private List<EndpointMapping> GetEndpointMapping(IEnumerable<IApiDescription> apiDescriptions)
         {
-            return endpoints
+            return apiDescriptions
                 .Where(x => 
-                    x.GetControllerAssembly() != Assembly.GetExecutingAssembly() &&
+                    x.ControllerType.Assembly != Assembly.GetExecutingAssembly() &&
                     (!_configuration.AppliesToAssemblies.Any() || 
                         _configuration.AppliesToAssemblies
-                            .Any(y => y == x.GetControllerAssembly())) && 
+                            .Any(y => y == x.ControllerType.Assembly)) && 
                     !x.HasControllerOrActionAttribute<HideAttribute>() &&
                     _configuration.Filter(x))
                 .Select(x => new
@@ -108,14 +107,14 @@ namespace Swank.Specification
                 }).ToList();
         }
         
-        private ResourceDescription CreateDefaultResource(ApiDescription endpoint)
+        private ResourceDescription CreateDefaultResource(IApiDescription apiDescription)
         {
-            return _configuration.DefaultResourceFactory?.Invoke(endpoint) ??
+            return _configuration.DefaultResourceFactory?.Invoke(apiDescription) ??
                 new ResourceDescription
                 {
-                    Name = _configuration.DefaultResourceIdentifier(endpoint),
-                    Comments = endpoint.GetControllerAssembly().FindResourceNamed(
-                        endpoint.GetControllerType().FullName.AddMarkdownExtension())
+                    Name = _configuration.DefaultResourceIdentifier(apiDescription),
+                    Comments = apiDescription.ControllerType.Assembly.FindResourceNamed(
+                        apiDescription.ControllerType.FullName.AddMarkdownExtension())
                 };
         }
 
@@ -125,16 +124,16 @@ namespace Swank.Specification
             {
                 var orphanedModuleActions = mappings.Where(x => x.Module == null).ToList();
                 if (orphanedModuleActions.Any()) throw new OrphanedModuleActionException(
-                    orphanedModuleActions.Select(x => x.Endpoint.GetControllerType()
-                        .FullName + "." + x.Endpoint.GetMethodInfo().Name));
+                    orphanedModuleActions.Select(x => x.Endpoint.ControllerType
+                        .FullName + "." + x.Endpoint.ActionMethod.Name));
             }
 
             if (_configuration.OrphanedResourceEndpoint == OrphanedEndpoints.Fail)
             {
                 var orphanedActions = mappings.Where(x => x.Resource == null).ToList();
                 if (orphanedActions.Any()) throw new OrphanedResourceActionException(
-                    orphanedActions.Select(x => x.Endpoint.GetControllerType()
-                        .FullName + "." + x.Endpoint.GetMethodInfo().Name));
+                    orphanedActions.Select(x => x.Endpoint.ControllerType
+                        .FullName + "." + x.Endpoint.ActionMethod.Name));
             }
         }
 
@@ -172,9 +171,9 @@ namespace Swank.Specification
                 .OrderBy(x => x.Name?.Trim('/')).ToList();
         }
 
-        private List<Endpoint> GetEndpoints(IEnumerable<ApiDescription> endpoints)
+        private List<Endpoint> GetEndpoints(IEnumerable<IApiDescription> apiDescriptions)
         {
-            return endpoints
+            return apiDescriptions
                 .Select(endpoint =>
                 {
                     var description = _endpointConvention.GetDescription(endpoint);
@@ -184,7 +183,7 @@ namespace Swank.Specification
                         Description = description,
                         Endpoint = new Endpoint
                         {
-                            Id = endpoint.ID.Hash(),
+                            Id = endpoint.Id.Hash(),
                             Name = description.WhenNotNull(y => y.Name).OtherwiseDefault(),
                             Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
                             Namespace = description.Namespace,
@@ -204,25 +203,24 @@ namespace Swank.Specification
                 .ThenBy(x => HttpVerbRank(x.Method)).ToList();
         }
 
-        private List<UrlParameter> GetUrlParameters(ApiDescription endpoint, 
+        private List<UrlParameter> GetUrlParameters(IApiDescription apiDescription, 
             EndpointDescription endpointDescription)
         {
-            return endpoint.ParameterDescriptions
-                .Where(x => x.IsUrlParameter(endpoint))
+            return apiDescription.ParameterDescriptions
+                .Where(x => x.IsUrlParameter)
                 .Select(x =>
                 {
                     var description = _parameterConvention.GetDescription(x);
                     var name = description.WhenNotNull(y => y.Name).OtherwiseDefault();
                     return _configuration.UrlParameterOverrides.Apply(new UrlParameterOverrideContext
                     {
-                        ApiDescription = endpoint,
+                        ApiDescription = apiDescription,
                         Description = description,
                         UrlParameter = new UrlParameter
                         {
                             Name = name,
                             Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
-                            Type = _typeGraphService.BuildForParameter(x.ParameterDescriptor
-                                .ParameterType, endpointDescription, description, endpoint),
+                            Type = _typeGraphService.BuildForParameter(x.Type, endpointDescription, description, apiDescription),
                             SampleValue = description.WhenNotNull(y => y.SampleValue).OtherwiseDefault(),
                             IsAuth = _configuration.AuthenticationSchemes
                                 .SelectMany(y => y.Components)
@@ -233,11 +231,11 @@ namespace Swank.Specification
                 }).ToList();
         }
 
-        private List<QuerystringParameter> GetQuerystringParameters(ApiDescription endpoint, 
+        private List<QuerystringParameter> GetQuerystringParameters(IApiDescription apiDescription, 
             EndpointDescription endpointDescription)
         {
-            return endpoint.ParameterDescriptions
-                .Where(x => x.IsQuerystring(endpoint))
+            return apiDescription.ParameterDescriptions
+                .Where(x => x.IsQuerystring)
                 .Select(x => new
                 {
                     Parameter = x,
@@ -249,14 +247,14 @@ namespace Swank.Specification
                     var name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault();
                     return _configuration.QuerystringOverrides.Apply(new QuerystringOverrideContext
                     {
-                        ApiDescription = endpoint,
+                        ApiDescription = apiDescription,
                         Description = x.Description,
                         Querystring = new QuerystringParameter
                         {
                             Name = name,
                             Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
-                            Type = _typeGraphService.BuildForParameter(x.Parameter.ParameterDescriptor
-                                .ParameterType, endpointDescription, x.Description, endpoint),
+                            Type = _typeGraphService.BuildForParameter(x.Parameter.Type, 
+                                endpointDescription, x.Description, apiDescription),
                             DefaultValue = x.Description.DefaultValue.WhenNotNull(y => y
                                 .ToSampleValueString(_configuration)).OtherwiseDefault(),
                             SampleValue = x.Description.WhenNotNull(y => y.SampleValue).OtherwiseDefault(),
@@ -271,61 +269,61 @@ namespace Swank.Specification
                 }).ToList();
         }
 
-        private Message GetRequest(ApiDescription endpoint, EndpointDescription description)
+        private Message GetRequest(IApiDescription apiDescription, EndpointDescription description)
         {
             var data = new Message();
-            var requestDescription = endpoint.GetRequestDescription();
+            var requestDescription = apiDescription.RequestParameter;
 
             if (requestDescription != null && 
-                (endpoint.HttpMethod == HttpMethod.Post ||
-                endpoint.HttpMethod == HttpMethod.Put ||
-                endpoint.HttpMethod == HttpMethod.Delete))
+                (apiDescription.HttpMethod == HttpMethod.Post ||
+                apiDescription.HttpMethod == HttpMethod.Put ||
+                apiDescription.HttpMethod == HttpMethod.Delete))
             {
-                data.Type = _typeGraphService.BuildForMessage(true, requestDescription
-                    .ParameterDescriptor.ParameterType, description, endpoint);
+                data.Type = _typeGraphService.BuildForMessage(true, 
+                    requestDescription.Type, description, apiDescription);
             }
 
             data.Comments = description.RequestComments;
-            data.Headers = GetHeaders(endpoint, HttpDirection.Request);
+            data.Headers = GetHeaders(apiDescription, HttpDirection.Request);
             data.IsBinary = description.BinaryRequest;
 
             return _configuration.RequestOverrides.Apply(new MessageOverrideContext
             {
-                ApiDescription = endpoint,
+                ApiDescription = apiDescription,
                 Description = description,
                 Message = data
             }).Message;
         }
 
-        private Message GetResponse(ApiDescription endpoint, EndpointDescription description)
+        private Message GetResponse(IApiDescription apiDescription, EndpointDescription description)
         {
             var data = new Message();
-            var responseType = endpoint.GetResponseType();
+            var responseType = apiDescription.ResponseType;
 
             if (responseType != null)
             {
                 data.Type = _typeGraphService.BuildForMessage(
-                    false, responseType, description, endpoint);
+                    false, responseType, description, apiDescription);
             }
 
             data.Comments = description.ResponseComments;
-            data.Headers = GetHeaders(endpoint, HttpDirection.Response);
+            data.Headers = GetHeaders(apiDescription, HttpDirection.Response);
             data.IsBinary = description.BinaryResponse;
 
             return _configuration.ResponseOverrides.Apply(new MessageOverrideContext
             {
-                ApiDescription = endpoint,
+                ApiDescription = apiDescription,
                 Description = description,
                 Message = data
             }).Message;
         }
 
-        private List<StatusCode> GetStatusCodes(ApiDescription endpoint)
+        private List<StatusCode> GetStatusCodes(IApiDescription apiDescription)
         {
-            return _statusCodeConvention.GetDescription(endpoint)
+            return _statusCodeConvention.GetDescription(apiDescription)
                 .Select(x => _configuration.StatusCodeOverrides.Apply(new StatusCodeOverrideContext
                 {
-                    ApiDescription = endpoint,
+                    ApiDescription = apiDescription,
                     Description = x,
                     StatusCode = new StatusCode
                     {
@@ -337,16 +335,16 @@ namespace Swank.Specification
                 .OrderBy(x => x.Code).ToList();
         }
 
-        private List<Header> GetHeaders(ApiDescription endpoint, HttpDirection direction)
+        private List<Header> GetHeaders(IApiDescription apiDescription, HttpDirection direction)
         {
             var overrides = direction == HttpDirection.Request
                 ? _configuration.RequestHeaderOverrides
                 : _configuration.ResponseHeaderOverrides;
-            return _headerConvention.GetDescription(endpoint)
+            return _headerConvention.GetDescription(apiDescription)
                 .Where(x => x.Direction == direction)
                 .Select(x => overrides.Apply(new HeaderOverrideContext
                 {
-                    ApiDescription = endpoint,
+                    ApiDescription = apiDescription,
                     Description = x,
                     Header = new Header
                     {

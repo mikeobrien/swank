@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Web.Http;
-using System.Web.Http.Description;
 using Swank.Configuration;
-using Swank.Description;
 using Swank.Extensions;
 using Swank.Web.Handlers;
 using Swank.Web.Handlers.App;
@@ -21,29 +19,8 @@ namespace Swank
                 .Configuration(Assembly.GetCallingAssembly());
             configure?.Invoke(new ConfigurationDsl(configuration));
 
-            var container = MicroContainer.Create(x => x
-                .RegisterFactory(httpConfiguration.GetInstance)
-                .Register(configuration)
-                .Register<IDescriptionConvention<ApiDescription, 
-                    ModuleDescription>, ModuleConvention>()
-                .Register<IDescriptionConvention<ApiDescription,
-                    ResourceDescription>, ResourceConvention>()
-                .Register<IDescriptionConvention<ApiDescription,
-                    EndpointDescription>, EndpointConvention>()
-                .Register<IDescriptionConvention<Type,
-                    TypeDescription>, TypeConvention>()
-                .Register<IDescriptionConvention<PropertyInfo,
-                    MemberDescription>, MemberConvention>()
-                .Register<IDescriptionConvention<ApiParameterDescription,
-                    ParameterDescription>, ParameterConvention>()
-                .Register<IDescriptionConvention<ApiDescription,
-                    List<StatusCodeDescription>>, StatusCodeConvention>()
-                .Register<IDescriptionConvention<ApiDescription,
-                    List<HeaderDescription>>, HeaderConvention>()
-                .Register<IDescriptionConvention<Type,
-                    EnumDescription>, EnumConvention>()
-                .Register<IDescriptionConvention<FieldInfo,
-                    OptionDescription>, OptionConvention>());
+            var container = Registry.CreateContainer(configuration, 
+                httpConfiguration.GetInstance);
 
             configuration.Assets.ForEach(x =>
             {
@@ -82,7 +59,7 @@ namespace Swank
                 handler: container.GetInstance<SpecificationHandler>());
 
             if (configuration.IgnoreFolders)
-                IgnorePaths.Initialize(configuration.IgnoreFolderUrls.Concat(
+                IgnorePaths.Initialize(Enumerable.Concat(configuration.IgnoreFolderUrls, 
                     new [] { configuration.AppUrl, configuration.SpecificationUrl }));
         }
     }

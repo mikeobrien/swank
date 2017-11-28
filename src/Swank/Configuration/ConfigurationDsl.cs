@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Web.Http.Description;
 using Swank.Description;
 using Swank.Description.CodeExamples;
 using Swank.Extensions;
@@ -28,6 +27,15 @@ namespace Swank.Configuration
             var configurationDsl = new ConfigurationDsl(configuration);
             configure?.Invoke(configurationDsl);
             return configuration;
+        }
+
+        /// <summary>
+        /// Specifies the api explorer type.
+        /// </summary>
+        public ConfigurationDsl WithApiExplorer<T>() where T : IApiExplorer
+        {
+            _configuration.ApiExplorer = typeof(T);
+            return this;
         }
 
         /// <summary>
@@ -552,7 +560,7 @@ namespace Swank.Configuration
         /// Specifies a convention for generating the namespace of actions.
         /// </summary>
         public ConfigurationDsl WithActionNamespaceConvention(
-            Func<ApiDescription, List<string>> @namespace)
+            Func<IApiDescription, List<string>> @namespace)
         {
             _configuration.ActionNamespace = @namespace;
             return this;
@@ -562,7 +570,7 @@ namespace Swank.Configuration
         /// Specifies a convention for generating the name of actions.
         /// </summary>
         public ConfigurationDsl WithActionNameConvention(
-            Func<ApiDescription, string> name)
+            Func<IApiDescription, string> name)
         {
             _configuration.ActionName = name;
             return this;
@@ -571,7 +579,7 @@ namespace Swank.Configuration
         /// <summary>
         /// Specifies an action filter.
         /// </summary>
-        public ConfigurationDsl Where(Func<ApiDescription, bool> filter)
+        public ConfigurationDsl Where(Func<IApiDescription, bool> filter)
         {
             _configuration.Filter = filter;
             return this;
@@ -808,7 +816,7 @@ namespace Swank.Configuration
         /// Sets the module convention.
         /// </summary>
         public ConfigurationDsl WithModuleConvention<T>() where T :
-            IDescriptionConvention<ApiDescription, ModuleDescription>
+            IDescriptionConvention<IApiDescription, ModuleDescription>
         {
             return WithModuleConvention<T, object>(null);
         }
@@ -817,7 +825,7 @@ namespace Swank.Configuration
         /// Sets the module convention.
         /// </summary>
         public ConfigurationDsl WithModuleConvention<T, TConfig>(Action<TConfig> configure)
-            where T : IDescriptionConvention<ApiDescription, ModuleDescription>
+            where T : IDescriptionConvention<IApiDescription, ModuleDescription>
             where TConfig : class, new()
         {
             _configuration.ModuleConvention.Type = typeof(T);
@@ -829,7 +837,7 @@ namespace Swank.Configuration
         /// Sets the resource identifier convention.
         /// </summary>
         public ConfigurationDsl WithResourceIdentifier(
-            Func<ApiDescription, string> identifier)
+            Func<IApiDescription, string> identifier)
         {
             _configuration.DefaultResourceIdentifier = identifier;
             return this;
@@ -839,7 +847,7 @@ namespace Swank.Configuration
         /// Sets the resource convention.
         /// </summary>
         public ConfigurationDsl WithResourceConvention<T>() where T :
-            IDescriptionConvention<ApiDescription, ResourceDescription>
+            IDescriptionConvention<IApiDescription, ResourceDescription>
         {
             return WithResourceConvention<T, object>(null);
         }
@@ -848,7 +856,7 @@ namespace Swank.Configuration
         /// Sets the resource convention.
         /// </summary>
         public ConfigurationDsl WithResourceConvention<T, TConfig>(Action<TConfig> configure)
-            where T : IDescriptionConvention<ApiDescription, ResourceDescription>
+            where T : IDescriptionConvention<IApiDescription, ResourceDescription>
             where TConfig : class, new()
         {
             _configuration.ResourceConvention.Type = typeof(T);
@@ -860,7 +868,7 @@ namespace Swank.Configuration
         /// Sets the endpoint convention.
         /// </summary>
         public ConfigurationDsl WithEndpointConvention<T>() where T :
-            IDescriptionConvention<ApiDescription, EndpointDescription>
+            IDescriptionConvention<IApiDescription, EndpointDescription>
         {
             return WithEndpointConvention<T, object>(null);
         }
@@ -869,7 +877,7 @@ namespace Swank.Configuration
         /// Sets the endpoint convention.
         /// </summary>
         public ConfigurationDsl WithEndpointConvention<T, TConfig>(Action<TConfig> configure)
-            where T : IDescriptionConvention<ApiDescription, EndpointDescription>
+            where T : IDescriptionConvention<IApiDescription, EndpointDescription>
             where TConfig : class, new()
         {
             _configuration.EndpointConvention.Type = typeof(T);
@@ -944,7 +952,7 @@ namespace Swank.Configuration
         /// Sets the status code convention.
         /// </summary>
         public ConfigurationDsl WithStatusCodeConvention<T>() where T :
-            IDescriptionConvention<ApiDescription, List<StatusCodeDescription>>
+            IDescriptionConvention<IApiDescription, List<StatusCodeDescription>>
         {
             return WithStatusCodeConvention<T, object>(null);
         }
@@ -953,7 +961,7 @@ namespace Swank.Configuration
         /// Sets the status code convention.
         /// </summary>
         public ConfigurationDsl WithStatusCodeConvention<T, TConfig>(Action<TConfig> configure)
-            where T : IDescriptionConvention<ApiDescription, List<StatusCodeDescription>>
+            where T : IDescriptionConvention<IApiDescription, List<StatusCodeDescription>>
             where TConfig : class, new()
         {
             _configuration.StatusCodeConvention.Type = typeof(T);
@@ -965,7 +973,7 @@ namespace Swank.Configuration
         /// Sets the header convention.
         /// </summary>
         public ConfigurationDsl WithHeaderConvention<T>() where T :
-            IDescriptionConvention<ApiDescription, List<HeaderDescription>>
+            IDescriptionConvention<IApiDescription, List<HeaderDescription>>
         {
             return WithHeaderConvention<T, object>(null);
         }
@@ -974,7 +982,7 @@ namespace Swank.Configuration
         /// Sets the header convention.
         /// </summary>
         public ConfigurationDsl WithHeaderConvention<T, TConfig>(Action<TConfig> configure)
-            where T : IDescriptionConvention<ApiDescription, List<HeaderDescription>>
+            where T : IDescriptionConvention<IApiDescription, List<HeaderDescription>>
             where TConfig : class, new()
         {
             _configuration.HeaderConvention.Type = typeof(T);
@@ -1032,7 +1040,7 @@ namespace Swank.Configuration
         /// Defines a default resource that endpoints are added to when none are defined for it.
         /// </summary>
         public ConfigurationDsl WithDefaultResource(
-            Func<ApiDescription, ResourceDescription> factory)
+            Func<IApiDescription, ResourceDescription> factory)
         {
             _configuration.DefaultResourceFactory = factory;
             return this;

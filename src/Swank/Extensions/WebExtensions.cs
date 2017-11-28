@@ -4,17 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
-using System.Web.Http;
-using System.Web.Http.Controllers;
-using System.Web.Http.Description;
-using System.Web.Http.Routing;
+using System.Web.Http.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -22,100 +19,6 @@ namespace Swank.Extensions
 {
     public static class WebExtensions
     {
-        public static object GetInstance(this HttpConfiguration configuration, Type type)
-        {
-            return configuration.DependencyResolver.GetService(type) ??
-                (configuration.Services.IsSingleService(type) ? 
-                    configuration.Services.GetService(type) : null);
-        }
-
-        public static bool HasParameter<T>(this ApiDescription description)
-        {
-            return description.ParameterDescriptions
-                .Any(p => p.ParameterDescriptor.ParameterType == typeof(T));
-        }
-
-        public static MethodInfo GetMethodInfo(this ApiParameterDescription description)
-        {
-            return description.ParameterDescriptor.ActionDescriptor.GetMethodInfo();
-        }
-
-        public static MethodInfo GetMethodInfo(this ApiDescription description)
-        {
-            return description.ActionDescriptor.GetMethodInfo();
-        }
-
-        public static MethodInfo GetMethodInfo(this HttpActionDescriptor descriptor)
-        {
-            var reflectedDescriptor = descriptor as ReflectedHttpActionDescriptor;
-            if (reflectedDescriptor == null)
-                throw new InvalidOperationException("Only supports ReflectedHttpActionDescriptor.");
-            return reflectedDescriptor.MethodInfo;
-        }
-
-        public static bool HasControllerAttribute<T>(this ApiDescription description)
-            where T : Attribute
-        {
-            return description.ActionDescriptor.ControllerDescriptor
-                    .ControllerType.GetCustomAttributes<T>().Any();
-        }
-
-        public static bool HasControllerOrActionAttribute<T>(this ApiDescription description)
-            where T : Attribute
-        {
-            return description.GetControllerAndActionAttributes<T>().Any();
-        }
-
-        public static IEnumerable<T> GetControllerAndActionAttributes<T>(
-            this ApiDescription description) where T : Attribute
-        {
-            return description.ActionDescriptor.GetCustomAttributes<T>(true)
-                .Concat(description.ActionDescriptor.ControllerDescriptor
-                    .ControllerType.GetCustomAttributes<T>());
-        }
-
-        public static T GetActionAttribute<T>(this ApiDescription description)
-            where T : Attribute
-        {
-            return description.ActionDescriptor.GetCustomAttributes<T>(true).FirstOrDefault();
-        }
-
-        public static T GetControllerAttribute<T>(this ApiDescription description)
-            where T : Attribute
-        {
-            return description.ActionDescriptor.ControllerDescriptor
-                .ControllerType.GetCustomAttributes<T>().FirstOrDefault();
-        }
-
-        public static bool HasAttribute<T>(this ApiParameterDescription description)
-            where T : Attribute
-        {
-            return description.ParameterDescriptor?.GetCustomAttributes<T>().Any() ?? false;
-        }
-
-        public static T GetAttribute<T>(this ApiParameterDescription description)
-            where T : Attribute
-        {
-            return description.ParameterDescriptor?.GetCustomAttributes<T>().FirstOrDefault();
-        }
-
-        public static ApiParameterDescription GetBodyParameter(this ApiDescription endpoint)
-        {
-            return endpoint.ParameterDescriptions.FirstOrDefault(
-                x => x.Source == ApiParameterSource.FromBody);
-        }
-
-        public static Type GetControllerType(this ApiDescription description)
-        {
-            return description.ActionDescriptor.ControllerDescriptor.ControllerType;
-        }
-
-        public static Assembly GetControllerAssembly(this ApiDescription description)
-        {
-            return description.ActionDescriptor.ControllerDescriptor
-                .ControllerType.Assembly;
-        }
-
         public static Task<HttpResponseMessage> CreateTextResponseTask(this string content)
         {
             return content.CreateResponseTask("text/plain");
@@ -166,10 +69,10 @@ namespace Swank.Extensions
             }.ToTaskCompletionSource();
         }
 
-        public static Task<HttpResponseMessage> CreateErrorResponseTask(
+        public static Task<HttpResponseMessage> CreateResponseTask(
             this HttpRequestMessage request, HttpStatusCode statusCode)
         {
-            return request.CreateErrorResponse(statusCode, "")
+            return request.CreateResponse(statusCode)
                 .ToTaskCompletionSource();
         }
   
@@ -177,7 +80,17 @@ namespace Swank.Extensions
             this HttpRequestMessage request, HttpStatusCode statusCode, 
             Exception exception)
         {
-            return request.CreateErrorResponse(statusCode, exception).ToTaskCompletionSource();
+            return request.CreateResponse(statusCode, exception.Message).ToTaskCompletionSource();
+        }
+        
+        public static HttpResponseMessage CreateResponse(this HttpRequestMessage request, 
+            HttpStatusCode statusCode, string message = "")
+        {
+            return new HttpResponseMessage
+            {
+                StatusCode = statusCode,
+                Content = new StringContent(message)
+            };
         }
 
         public static Task<HttpResponseMessage> CreateRedirectResponseTask(
@@ -198,47 +111,11 @@ namespace Swank.Extensions
             return source.Task;
         }
 
-        public static string GetRouteResourceIdentifier(this IHttpRoute route)
+        public static List<string> GetNamespaceFromRoute(this string routeTemplate)
         {
-            return "/" + Regex.Replace(route.RouteTemplate, "/*\\{.*?\\}", "").Trim('/');
-        }
-
-        public static List<string> GetNamespaceFromRoute(this IHttpRoute route)
-        {
-            var routeTemplate = route.RouteTemplate.Split('?').First();
+            routeTemplate = routeTemplate.Split('?').First();
             return routeTemplate.Split(new [] { '/' }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(x => !x.Contains("{") && !x.Contains("}")).ToList();
-        }
-
-        public static Type GetRequestType(this ApiDescription endpoint)
-        {
-            return endpoint.GetRequestDescription()?.ParameterDescriptor?.ParameterType;
-        }
-
-        public static Type GetResponseType(this ApiDescription endpoint)
-        {
-            return endpoint.ResponseDescription.ResponseType ??
-                endpoint.ResponseDescription.DeclaredType;
-        }
-
-        public static ApiParameterDescription GetRequestDescription(this ApiDescription endpoint)
-        {
-            return endpoint.ParameterDescriptions.FirstOrDefault(
-                x => x.Source == ApiParameterSource.FromBody && 
-                    !x.ParameterDescriptor.IsOptional);
-        }
-
-        public static bool IsUrlParameter(this ApiParameterDescription parameter, ApiDescription endpoint)
-        {
-            return parameter.Source == ApiParameterSource.FromUri &&
-                (endpoint.Route.RouteTemplate.Contains($"{{{parameter.Name}}}") ||
-                endpoint.Route.RouteTemplate.Contains($"{{*{parameter.Name}}}"));
-        }
-
-        public static bool IsQuerystring(this ApiParameterDescription parameter, ApiDescription endpoint)
-        {
-            return parameter.Source == ApiParameterSource.FromUri &&
-                !parameter.IsUrlParameter(endpoint);
         }
 
         public static string EnsureRooted(this string url)
@@ -318,15 +195,6 @@ namespace Swank.Extensions
         public static string JavaScriptStringEncode(this string value)
         {
             return HttpUtility.JavaScriptStringEncode(value);
-        }
-
-        public static object GetUrlParameter(
-            this HttpRequestMessage request, string name)
-        {
-            var route = request.GetRouteData();
-            if (route == null) return null;
-            return route.Values.ContainsKey(name) ? 
-                route.Values[name] : null;
         }
 
         public static string SerializeJson<T>(this T source)
