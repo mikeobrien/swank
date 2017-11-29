@@ -5,7 +5,7 @@ using Swank.Extensions;
 
 namespace Swank.Description
 {
-    public class ParameterConvention : IDescriptionConvention<IParameterDescription, ParameterDescription>
+    public class ParameterConvention : IDescriptionConvention<IApiParameterDescription, ParameterDescription>
     {
         private readonly Configuration.Configuration _configuration;
         private readonly XmlComments _xmlComments;
@@ -18,7 +18,7 @@ namespace Swank.Description
             _xmlComments = xmlComments;
         }
 
-        public virtual ParameterDescription GetDescription(IParameterDescription parameter)
+        public virtual ParameterDescription GetDescription(IApiParameterDescription parameter)
         {
             var description = parameter.GetAttribute<DescriptionAttribute>();
             var type = parameter.Type;
@@ -48,7 +48,7 @@ namespace Swank.Description
             };
         }
 
-        private static string GetDefaultValue(IParameterDescription parameter)
+        private static string GetDefaultValue(IApiParameterDescription parameter)
         {
             var value = parameter.DefaultValue;
             if (value == null) return null;
@@ -67,7 +67,7 @@ namespace Swank.Description
             return value.ToString();
         }
 
-        public bool IsOptional(IParameterDescription parameter)
+        public bool IsOptional(IApiParameterDescription parameter)
         {
             return !parameter.HasAttribute<RequiredAttribute>() && 
                 parameter.IsOptional;

@@ -59,6 +59,15 @@ namespace Swank.Configuration
         }
 
         /// <summary>
+        /// Indicates that module sections should be collapsed when first displayed.
+        /// </summary>
+        public ConfigurationDsl CollapseModules()
+        {
+            _configuration.CollapseModules = true;
+            return this;
+        }
+
+        /// <summary>
         /// Overrides the configured virtual path provider to ignore
         /// physical folders that match Swank urls. Additional 
         /// urls can be passed if desired.

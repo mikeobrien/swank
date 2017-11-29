@@ -18,6 +18,7 @@ namespace Swank.Web.Handlers.App
         public string Name { get; set; }
         public string Overview { get; set; }
         public bool HasOverview { get; set; }
+        public bool Collapsed { get; set; }
         public List<string> Resources { get; set; }
     }
 
@@ -84,6 +85,7 @@ namespace Swank.Web.Handlers.App
                     Index = i,
                     Name = m.Name,
                     Overview = m.Comments,
+                    Collapsed = _configuration.CollapseModules,
                     Resources = m.Resources.Select(r => r.Name.TrimStart('/')).ToList()
                 }).ToList()
             });

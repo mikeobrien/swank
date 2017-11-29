@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Http.Description;
 using Swank.Extensions;
 
 namespace Swank.Description.WebApi
 {
-    public class WebApiParameterDescription : IParameterDescription
+    public class WebApiParameterDescription : IApiParameterDescription
     {
         private readonly ApiParameterDescription _parameterDescription;
 
@@ -29,6 +30,9 @@ namespace Swank.Description.WebApi
 
         public T GetAttribute<T>() where T : Attribute =>
             _parameterDescription.GetAttribute<T>();
+
+        public IEnumerable<T> GetAttributes<T>() where T : Attribute =>
+            _parameterDescription.GetAttributes<T>();
 
         public bool HasAttribute<T>() where T : Attribute =>
             _parameterDescription.HasAttribute<T>();

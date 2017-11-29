@@ -48,7 +48,7 @@ namespace Tests.Unit.Specification
                     TypeDescription>, TypeConvention>()
                 .Register<IDescriptionConvention<PropertyInfo,
                     MemberDescription>, MemberConvention>()
-                .Register<IDescriptionConvention<IParameterDescription,
+                .Register<IDescriptionConvention<IApiParameterDescription,
                     ParameterDescription>, ParameterConvention>()
                 .Register<IDescriptionConvention<IApiDescription,
                     List<StatusCodeDescription>>, StatusCodeConvention>()

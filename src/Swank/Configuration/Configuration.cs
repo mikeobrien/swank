@@ -178,6 +178,7 @@ namespace Swank.Configuration
         public string Title { get; set; }
         public string Name { get; set; }
         public string LogoUrl { get; set; }
+        public bool CollapseModules { get; set; }
         public List<IAsset> XmlComments { get; set; }
         public IAsset Overview { get; set; }
         public List<OverviewLink> OverviewLinks { get; set; }

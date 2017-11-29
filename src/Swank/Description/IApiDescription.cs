@@ -15,15 +15,20 @@ namespace Swank.Description
         string RelativePath { get; }
         MethodInfo ActionMethod { get; }
         Type ControllerType { get; }
-        IParameterDescription RequestParameter { get; }
+        IApiParameterDescription RequestParameter { get; }
         Type ResponseType { get; }
         string ResponseDocumentation { get; }
-        IEnumerable<IParameterDescription> ParameterDescriptions { get; }
+        IEnumerable<IApiParameterDescription> ParameterDescriptions { get; }
 
         T GetActionAttribute<T>() where T : Attribute;
         T GetControllerAttribute<T>() where T : Attribute;
+        T GetControllerOrActionAttribute<T>() where T : Attribute;
+        IEnumerable<T> GetActionAttributes<T>() where T : Attribute;
+        IEnumerable<T> GetControllerAttributes<T>() where T : Attribute;
+        IEnumerable<T> GetControllerAndActionAttributes<T>() where T : Attribute;
+
+        bool HasActionAttribute<T>() where T : Attribute;
         bool HasControllerAttribute<T>() where T : Attribute;
         bool HasControllerOrActionAttribute<T>() where T : Attribute;
-        IEnumerable<T> GetControllerAndActionAttributes<T>() where T : Attribute;
     }
 }

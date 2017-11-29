@@ -83,7 +83,7 @@
     <Compile Include="Description\Assert.cs" />
     <Compile Include="Description\IApiExplorer.cs" />
     <Compile Include="Description\IApiDescription.cs" />
-    <Compile Include="Description\IParameterDescription.cs" />
+    <Compile Include="Description\IApiParameterDescription.cs" />
     <Compile Include="Description\MaxLengthAttribute.cs" />
     <Compile Include="Description\EncodingAttributes.cs" />
     <Compile Include="Description\CodeExamples\CodeExample.cs" />

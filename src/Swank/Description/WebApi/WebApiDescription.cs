@@ -21,7 +21,7 @@ namespace Swank.Description.WebApi
             _apiDescription = apiDescription;
         }
 
-        private static IParameterDescription GetRequestParameter(ApiDescription apiDescription)
+        private static IApiParameterDescription GetRequestParameter(ApiDescription apiDescription)
         {
             var requestParameter = apiDescription.GetRequestDescription();
             return requestParameter == null 
@@ -41,14 +41,26 @@ namespace Swank.Description.WebApi
         public Type ResponseType => _apiDescription.GetResponseType();
         public string ResponseDocumentation => _apiDescription
             .ResponseDescription?.Documentation;
-        public IParameterDescription RequestParameter { get; }
-        public IEnumerable<IParameterDescription> ParameterDescriptions { get; }
+        public IApiParameterDescription RequestParameter { get; }
+        public IEnumerable<IApiParameterDescription> ParameterDescriptions { get; }
 
         public T GetActionAttribute<T>() where T : Attribute =>
             _apiDescription.GetActionAttribute<T>();
 
         public T GetControllerAttribute<T>() where T : Attribute =>
             _apiDescription.GetControllerAttribute<T>();
+
+        public T GetControllerOrActionAttribute<T>() where T : Attribute =>
+            _apiDescription.GetControllerOrActionAttribute<T>();
+
+        public IEnumerable<T> GetActionAttributes<T>() where T : Attribute =>
+            _apiDescription.GetControllerAttributes<T>();
+
+        public IEnumerable<T> GetControllerAttributes<T>() where T : Attribute =>
+            _apiDescription.GetActionAttributes<T>();
+
+        public bool HasActionAttribute<T>() where T : Attribute =>
+            _apiDescription.HasActionAttribute<T>();
 
         public bool HasControllerAttribute<T>() where T : Attribute =>
             _apiDescription.HasControllerAttribute<T>();

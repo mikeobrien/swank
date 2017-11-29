@@ -44,10 +44,10 @@ namespace Tests.Acceptance
                 data.ShouldContain("<a href=\"#bindings\">Bindings</a>");
                 data.ShouldContain("<a href=\"#data-types\">Data Types</a>");
 
-                data.ShouldContain("<a href=\"#ModulePanel-0\" data-toggle=\"collapse\"> Module </a>");
+                data.ShouldContain("<a href=\"#ModulePanel-0\" class=\"\" data-toggle=\"collapse\"> Module </a>");
                 data.ShouldContain("<a href=\"#modules/Module\">Overview</a>");
                 data.ShouldContain("<a href=\"#resources/module/resource\">module/resource</a>");
-                data.ShouldContain("<a href=\"#ModulePanel-1\" data-toggle=\"collapse\"> Resources </a>");
+                data.ShouldContain("<a href=\"#ModulePanel-1\" class=\"\" data-toggle=\"collapse\"> Resources </a>");
                 data.ShouldContain("<a href=\"#resources/resource/comments\">resource/comments</a>");
                 data.ShouldContain("<a href=\"#resources/xml/comments\">xml/comments</a>");
 

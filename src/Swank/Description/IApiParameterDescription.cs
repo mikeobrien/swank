@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Swank.Description
 {
-    public interface IParameterDescription
+    public interface IApiParameterDescription
     {
         string Name { get; }
         string Documentation { get; }
@@ -15,6 +16,7 @@ namespace Swank.Description
         MethodInfo ActionMethod { get; }
 
         T GetAttribute<T>() where T : Attribute;
+        IEnumerable<T> GetAttributes<T>() where T : Attribute;
         bool HasAttribute<T>() where T : Attribute;
     }
 }

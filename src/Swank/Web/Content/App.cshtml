@@ -120,10 +120,10 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a href="#ModulePanel-@module.Index" data-toggle="collapse"> @module.Name </a>
+                                <a href="#ModulePanel-@module.Index" class="@(module.Collapsed ? "collapsed" : "")" data-toggle="collapse"> @module.Name </a>
                             </h4>
                         </div>
-                        <div class="panel-collapse collapse in" id="ModulePanel-@module.Index">
+                        <div class="panel-collapse collapse @(module.Collapsed ? "" : "in")" id="ModulePanel-@module.Index">
                             <ul class="list-group">
                                     
                                 @if (module.Overview.IsNotNullOrEmpty())

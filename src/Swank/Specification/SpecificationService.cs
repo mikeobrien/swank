@@ -36,7 +36,7 @@ namespace Swank.Specification
         private readonly IDescriptionConvention<IApiDescription, ModuleDescription> _moduleConvention;
         private readonly IDescriptionConvention<IApiDescription, ResourceDescription> _resourceConvention;
         private readonly IDescriptionConvention<IApiDescription, EndpointDescription> _endpointConvention;
-        private readonly IDescriptionConvention<IParameterDescription, ParameterDescription> _parameterConvention;
+        private readonly IDescriptionConvention<IApiParameterDescription, ParameterDescription> _parameterConvention;
         private readonly IDescriptionConvention<IApiDescription, List<StatusCodeDescription>> _statusCodeConvention;
         private readonly IDescriptionConvention<IApiDescription, List<HeaderDescription>> _headerConvention;
         private readonly TypeGraphService _typeGraphService;
@@ -48,7 +48,7 @@ namespace Swank.Specification
             IDescriptionConvention<IApiDescription, ModuleDescription> moduleConvention,
             IDescriptionConvention<IApiDescription, ResourceDescription> resourceConvention,
             IDescriptionConvention<IApiDescription, EndpointDescription> endpointConvention,
-            IDescriptionConvention<IParameterDescription, ParameterDescription> parameterConvention,
+            IDescriptionConvention<IApiParameterDescription, ParameterDescription> parameterConvention,
             IDescriptionConvention<IApiDescription, List<StatusCodeDescription>> statusCodeConvention,
             IDescriptionConvention<IApiDescription, List<HeaderDescription>> headerConvention,
             TypeGraphService typeGraphService)

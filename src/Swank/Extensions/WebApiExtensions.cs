@@ -18,10 +18,22 @@ namespace Swank.Extensions
                        configuration.Services.GetService(type) : null);
         }
 
+        public static bool HasActionAttribute<T>(this ApiDescription description)
+            where T : Attribute
+        {
+            return description.GetActionAttributes<T>().Any();
+        }
+
         public static T GetActionAttribute<T>(this ApiDescription description)
             where T : Attribute
         {
-            return description.ActionDescriptor.GetCustomAttributes<T>(true).FirstOrDefault();
+            return description.GetActionAttributes<T>().FirstOrDefault();
+        }
+
+        public static IEnumerable<T> GetActionAttributes<T>(this ApiDescription description)
+            where T : Attribute
+        {
+            return description.ActionDescriptor.GetCustomAttributes<T>(true);
         }
 
         public static MethodInfo GetMethodInfo(this ApiDescription description)
@@ -46,6 +58,12 @@ namespace Swank.Extensions
             where T : Attribute
         {
             return description.GetControllerAndActionAttributes<T>().Any();
+        }
+
+        public static T GetControllerOrActionAttribute<T>(this ApiDescription description)
+            where T : Attribute
+        {
+            return description.GetControllerAndActionAttributes<T>().FirstOrDefault();
         }
 
         public static IEnumerable<T> GetControllerAndActionAttributes<T>(
@@ -78,15 +96,20 @@ namespace Swank.Extensions
         public static bool HasControllerAttribute<T>(this ApiDescription description)
             where T : Attribute
         {
-            return description.ActionDescriptor.ControllerDescriptor
-                .ControllerType.GetCustomAttributes<T>().Any();
+            return description.GetControllerAttributes<T>().Any();
         }
 
         public static T GetControllerAttribute<T>(this ApiDescription description)
             where T : Attribute
         {
+            return description.GetControllerAttributes<T>().FirstOrDefault();
+        }
+
+        public static IEnumerable<T> GetControllerAttributes<T>(this ApiDescription description)
+            where T : Attribute
+        {
             return description.ActionDescriptor.ControllerDescriptor
-                .ControllerType.GetCustomAttributes<T>().FirstOrDefault();
+                .ControllerType.GetCustomAttributes<T>();
         }
 
         public static bool HasAttribute<T>(this ApiParameterDescription description)
@@ -98,7 +121,13 @@ namespace Swank.Extensions
         public static T GetAttribute<T>(this ApiParameterDescription description)
             where T : Attribute
         {
-            return description.ParameterDescriptor?.GetCustomAttributes<T>().FirstOrDefault();
+            return description.GetAttributes<T>().FirstOrDefault();
+        }
+
+        public static IEnumerable<T> GetAttributes<T>(this ApiParameterDescription description)
+            where T : Attribute
+        {
+            return description.ParameterDescriptor?.GetCustomAttributes<T>();
         }
         
         public static ApiParameterDescription GetRequestDescription(this ApiDescription endpoint)

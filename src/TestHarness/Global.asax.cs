@@ -18,6 +18,7 @@ namespace TestHarness
             //configuration.EnableSwank();
             configuration.Swank(x => x
                 //.WithAppAt("")
+                //.CollapseModules()
                 .IgnoreFolders("~/")
                 .WithFavIconAt("/img/favicon.png")
                 .WithPageTitle("Setec Astronomy")
