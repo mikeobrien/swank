@@ -136,32 +136,32 @@ namespace Tests.Unit.Web.Handlers.App
                 x => x.Last().Closing());
         }
 
-        public class ComplexTypeWithOptionalMember
+        public class ComplexTypeWithRequiredMembers
         {
-            public string OptionalMember { get; set; }
-            public int RequiredMember { get; set; }
+            public string Reference { get; set; }
+            public int Value { get; set; }
         }
         
         [Test]
-        public void should_create_complex_type_with_optional_members()
+        public void should_create_complex_type_with_required_members()
         {
-            var description = BuildDescription<ComplexTypeWithOptionalMember>(requestGraph: true);
+            var description = BuildDescription<ComplexTypeWithRequiredMembers>(requestGraph: true);
 
             description.ShouldBeIndexed().ShouldTotal(4);
 
-            description[0].ShouldBeComplexType("ComplexTypeWithOptionalMember", 0,
+            description[0].ShouldBeComplexType("ComplexTypeWithRequiredMembers", 0,
                 x => x.First().Opening().Namespace("Get").FullNamespace("Get")
                     .LogicalName("GetRequest"));
 
-            description[1].ShouldBeSimpleTypeMember("OptionalMember",
+            description[1].ShouldBeSimpleTypeMember("Reference",
                 "string", 1, "", x => x.IsString(),
-                x => x.Optional());
+                x => x.Required());
 
-            description[2].ShouldBeSimpleTypeMember("RequiredMember",
+            description[2].ShouldBeSimpleTypeMember("Value",
                 "int", 1, "0", x => x.IsNumeric(),
-                x => x.Optional().IsLastMember());
+                x => x.Required().IsLastMember());
 
-            description[3].ShouldBeComplexType("ComplexTypeWithOptionalMember", 0,
+            description[3].ShouldBeComplexType("ComplexTypeWithRequiredMembers", 0,
                 x => x.Last().Closing());
         }
 
@@ -183,7 +183,7 @@ namespace Tests.Unit.Web.Handlers.App
                     .LogicalName("GetRequest"));
 
             description[1].ShouldBeSimpleTypeMember("NonNullableMember",
-                "int", 1, "0", x => x.IsNumeric(), x => x.Optional());
+                "int", 1, "0", x => x.IsNumeric(), x => x.Required());
 
             description[2].ShouldBeSimpleTypeMember("NullableMember",
                 "int", 1, "0", x => x.IsNumeric().IsNullable(),
@@ -288,7 +288,7 @@ namespace Tests.Unit.Web.Handlers.App
 
             description[1].ShouldBeSimpleTypeMember("DefaultValueMember",
                 "string", 1, "", x => x.IsString(),
-                x => x.Default("zero").Optional().IsLastMember());
+                x => x.Default("zero").Required().IsLastMember());
 
             description[2].ShouldBeComplexType("ComplexTypeWithDefaultValueMember", 0,
                 x => x.Last().Closing());

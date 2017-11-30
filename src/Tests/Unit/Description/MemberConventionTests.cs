@@ -64,8 +64,9 @@ namespace Tests.Unit.Description
 
             public int? OptionalNullable { get; set; }
             
-            public int RequiredNonNullable { get; set; }
+            public int OptionalNonNullable { get; set; }
 
+            [Optional]
             public string Optional { get; set; }
 
             [Required]
@@ -239,13 +240,13 @@ namespace Tests.Unit.Description
         }
 
         [Test]
-        public void should_return_optional_if_not_specified_and_reference()
+        public void should_not_set_optional_if_not_specified_and_reference()
         {
-            GetDescription(x => x.OptionalReference).Optional.ShouldEqual(OptionalScope.All);
+            GetDescription(x => x.OptionalReference).Optional.ShouldBeNull();
         }
 
         [Test]
-        public void should_return_optional_if_not_specified()
+        public void should_return_optional_if_nullable_and_not_specified()
         {
             GetDescription(x => x.OptionalNullable).Optional.ShouldEqual(OptionalScope.All);
         }

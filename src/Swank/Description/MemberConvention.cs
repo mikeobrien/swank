@@ -42,7 +42,7 @@ namespace Swank.Description
                 SampleValue = property.GetCustomAttribute<SampleValueAttribute>()
                     .WhenNotNull(x => x.Value.ToSampleValueString(_configuration))
                     .Otherwise(property.PropertyType.GetSampleValue(_configuration)),
-                Optional = property.GetOptionalScope() ?? OptionalScope.All,
+                Optional = property.GetOptionalScope(),
                 Hidden = property.PropertyType.HasAttribute<HideAttribute>() ||
                     property.HasAttribute<HideAttribute>() ||
                     property.HasAttribute<XmlIgnoreAttribute>(),
@@ -80,11 +80,12 @@ namespace Swank.Description
         public static OptionalScope? GetOptionalScope(this PropertyInfo property)
         {
             if (property.HasAttribute<RequiredAttribute>()) return OptionalScope.None;
+            if (property.HasAttribute<OptionalAttribute>()) return OptionalScope.All;
             if (property.HasAttribute<OptionalForPostAttribute>()) return OptionalScope.Post;
             if (property.HasAttribute<OptionalForPutAttribute>()) return OptionalScope.Put;
             if (property.HasAttribute<RequiredForPutAttribute>()) return OptionalScope.AllButPut;
             if (property.HasAttribute<RequiredForPostAttribute>()) return OptionalScope.AllButPost;
-            return OptionalScope.All;
+            return property.PropertyType.IsNullable() ? OptionalScope.All : (OptionalScope?)null;
         }
     }
 }

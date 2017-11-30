@@ -257,9 +257,10 @@ namespace Swank.Specification
                         SampleValue = x.Description
                             .WhenNotNull(y => y.SampleValue)
                                 .OtherwiseDefault(),
-                        Optional = requestGraph && x.Description
-                            .WhenNotNull(y => y.Optional.IsOptional(endpoint.HttpMethod))
-                            .OtherwiseDefault(),
+                        Optional = requestGraph && 
+                            (x.Description?.Optional ?? 
+                            _configuration.DefaultOptionalScope)
+                                .IsOptional(endpoint.HttpMethod),
                         Deprecated = x.Description.Deprecated,
                         DeprecationMessage = x.Description.DeprecationMessage,
                         Type = BuildGraph(x.Type, requestGraph, endpoint,

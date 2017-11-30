@@ -613,6 +613,15 @@ namespace Swank.Configuration
         }
 
         /// <summary>
+        /// Specifies the default optional scope for all model properties.
+        /// </summary>
+        public ConfigurationDsl WithDefaultOptionalScope(OptionalScope scope)
+        {
+            _configuration.DefaultOptionalScope = scope;
+            return this;
+        }
+
+        /// <summary>
         /// Specifes the highlight.js theme to use for code samples.
         /// </summary>
         public ConfigurationDsl WithCodeExampleTheme(CodeExampleTheme theme)

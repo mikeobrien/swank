@@ -572,7 +572,7 @@ namespace Tests.Unit.Specification
                 .Members.Single();
 
             should_match_member(member, "Member",
-                defaultValue: "3.14", sampleValue: "0.00", optional: true,
+                defaultValue: "3.14", sampleValue: "0.00", optional: false,
                 type: x => should_be_simple_type(x, typeof(decimal), "decimal", "0.00"));
         }
 
@@ -586,7 +586,7 @@ namespace Tests.Unit.Specification
                 .Members.Single();
 
             should_match_member(member, "Member",
-                defaultValue: "3.1", sampleValue: "0.0", optional: true,
+                defaultValue: "3.1", sampleValue: "0.0", optional: false,
                 type: x => should_be_simple_type(x, typeof(decimal), "decimal", "0.0"));
         }
 
@@ -618,7 +618,7 @@ namespace Tests.Unit.Specification
                 .Members.Single();
 
             should_match_member(member, "Member",
-                sampleValue: "3.14", optional: true,
+                sampleValue: "3.14", optional: false,
                 type: x => should_be_simple_type(x, typeof(decimal), "decimal", "0.00"));
         }
 
@@ -632,16 +632,17 @@ namespace Tests.Unit.Specification
                 .Members.Single();
 
             should_match_member(member, "Member",
-                sampleValue: "3.1", optional: true,
+                sampleValue: "3.1", optional: false,
                 type: x => should_be_simple_type(x, typeof(decimal), "decimal", "0.0"));
         }
 
         public class ComplexTypeWithOptionalMember
         {
-            public string OptionalReference { get; set; }
-            public int? OptionalNullable { get; set; }
-            public int OptionalNonNullable { get; set; }
+            public int? DefaultNullable { get; set; }
+            public int DefaultNonNullable { get; set; }
+            public string DefaultReference { get; set; }
 
+            [Optional]
             public string Optional { get; set; }
 
             [Required]
@@ -661,13 +662,13 @@ namespace Tests.Unit.Specification
         }
 
         private static readonly object[][] OptionalMemberTestCases = TestCaseSource.Create(x => x
-            .Add(nameof(ComplexTypeWithOptionalMember.OptionalReference), true, "string", "", null)
-
+        
+            .Add(nameof(ComplexTypeWithOptionalMember.DefaultReference), false, "string", "", null)
             .Add(nameof(ComplexTypeWithOptionalMember.Optional), true, "string", "", null)
             .Add(nameof(ComplexTypeWithOptionalMember.Required), false, "string", "", null)
 
-            .Add(nameof(ComplexTypeWithOptionalMember.OptionalNullable), true, "int", "0", null)
-            .Add(nameof(ComplexTypeWithOptionalMember.OptionalNonNullable), true, "int", "0", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.DefaultNullable), true, "int", "0", null)
+            .Add(nameof(ComplexTypeWithOptionalMember.DefaultNonNullable), false, "int", "0", null)
 
             .Add(nameof(ComplexTypeWithOptionalMember.OptionalForPost), true, "string", "", HttpMethod.Post)
             .Add(nameof(ComplexTypeWithOptionalMember.RequiredForPost), false, "string", "", HttpMethod.Post)

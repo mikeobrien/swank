@@ -105,6 +105,7 @@ namespace Swank.Configuration
             DefaultDictionaryKeyName = "key";
             EnumFormat = EnumFormat.AsString;
             OverviewLinks = new List<OverviewLink>();
+            DefaultOptionalScope = OptionalScope.None;
             
             ActionNamespace = DefaultActionNamespace;
             ActionName = DefaultActionName;
@@ -220,6 +221,7 @@ namespace Swank.Configuration
         public string DefaultDictionaryKeyName { get; set; }
 
         public EnumFormat EnumFormat { get; set; }
+        public OptionalScope DefaultOptionalScope { get; set; }
 
         public List<CodeExample> CodeExamples { get; }
 

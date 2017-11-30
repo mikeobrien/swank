@@ -50,7 +50,7 @@ namespace Swank.Description
     {
         public string SampleValue { get; set; }
         public string DefaultValue { get; set; }
-        public OptionalScope Optional { get; set; }
+        public OptionalScope? Optional { get; set; }
         public bool Hidden { get; set; }
         public bool Deprecated { get; set; }
         public string DeprecationMessage { get; set; }
