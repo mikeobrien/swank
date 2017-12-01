@@ -12,7 +12,7 @@ namespace Swank
 {
     public static class Bootstrap
     {
-        public static void Swank(this HttpConfiguration httpConfiguration,
+        public static HttpConfiguration AddSwankDocs(this HttpConfiguration httpConfiguration,
             Action<ConfigurationDsl> configure = null)
         {
             var configuration = new Configuration
@@ -61,6 +61,8 @@ namespace Swank
             if (configuration.IgnoreFolders)
                 IgnorePaths.Initialize(Enumerable.Concat(configuration.IgnoreFolderUrls, 
                     new [] { configuration.AppUrl, configuration.SpecificationUrl }));
+
+            return httpConfiguration;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace TestHarness
         {
             var configuration = GlobalConfiguration.Configuration;
             //configuration.EnableSwank();
-            configuration.Swank(x => x
+            configuration.AddSwankDocs(x => x
                 //.WithAppAt("")
                 //.CollapseModules()
                 .IgnoreFolders("~/")

@@ -31,4 +31,37 @@ namespace Swank.Description
         bool HasControllerAttribute<T>() where T : Attribute;
         bool HasControllerOrActionAttribute<T>() where T : Attribute;
     }
+
+    public static class IApiDescriptionExtensions
+    {
+        public static bool IsPost(this IApiDescription description)
+        {
+            return description.HttpMethod == HttpMethod.Post;
+        }
+
+        public static bool IsPut(this IApiDescription description)
+        {
+            return description.HttpMethod == HttpMethod.Put;
+        }
+
+        public static bool HasRequestOfType<T>(this IApiDescription description)
+        {
+            return description.RequestParameter?.Type == typeof(T);
+        }
+
+        public static bool HasRequest(this IApiDescription description)
+        {
+            return description.RequestParameter != null;
+        }
+
+        public static bool HasResponseOfType<T>(this IApiDescription description)
+        {
+            return description.ResponseType == typeof(T);
+        }
+
+        public static bool HasResponse(this IApiDescription description)
+        {
+            return description.ResponseType != null;
+        }
+    }
 }

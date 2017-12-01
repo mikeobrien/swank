@@ -14,7 +14,7 @@ namespace DemoSite
         {
             var configuration = GlobalConfiguration.Configuration;
             //configuration.EnableSwank();
-            configuration.Swank(x => x
+            configuration.AddSwankDocs(x => x
                 //.WithAppAt("")
                 .WithFavIconAt("/img/favicon.png")
                 .WithPageTitle("Setec Astronomy")
