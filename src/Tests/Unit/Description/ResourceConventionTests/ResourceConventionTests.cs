@@ -58,8 +58,7 @@ namespace Tests.Unit.Description.ResourceConventionTests
                 ApiDescription<ResourceDescriptions.NoDescription.Controller>
                     .ForAction(x => x.Get(null)));
 
-            resource.Name.ShouldBeNull();
-            resource.Comments.ShouldBeNull();
+            resource.ShouldBeNull();
         }
 
         [Test]
@@ -77,10 +76,21 @@ namespace Tests.Unit.Description.ResourceConventionTests
         public void should_find_resource_marker_description_and_markdown_embedded_comments()
         {
             var resource = _resourceConvention.GetDescription(
-                ApiDescription<ResourceDescriptions.EmbeddedMarkdownComments.Controller>
+                ApiDescription<ResourceDescriptions.EmbeddedMarkdownResourceMarkerComments.Controller>
                     .ForAction(x => x.Get(null)));
 
             resource.Name.ShouldEqual("Some Markdown Resource");
+            resource.Comments.ShouldEqual("**Some markdown comments**");
+        }
+
+        [Test]
+        public void should_find_resource_description_and_markdown_embedded_comments()
+        {
+            var resource = _resourceConvention.GetDescription(
+                ApiDescription<ResourceDescriptions.EmbeddedMarkdownResourceComments.Controller>
+                    .ForAction(x => x.Get(null)));
+
+            resource.Name.ShouldBeNull();
             resource.Comments.ShouldEqual("**Some markdown comments**");
         }
 
@@ -118,22 +128,25 @@ namespace Tests.Unit.Description.ResourceConventionTests
         }
 
         [Test]
-        public void should_find_xml_comments_description_and_embedded_markdown_comments()
+        public void should_find_xml_comments_description_and_embedded_resource_markdown_comments()
         {
             var resource = _resourceConvention.GetDescription(
                 ApiDescription<XmlCommentsResource.MarkdownCommentsController>
                     .ForAction(x => x.Get(null)));
             resource.ShouldNotBeNull();
             resource.Name.ShouldEqual("summary");
-            resource.Comments.ShouldEqual("**Some markdown comments**");
+            resource.Comments.ShouldEqual("**Some resource markdown comments**");
         }
 
         [Test]
-        public void should_not_find_xml_comments_description_when_summary_is_missing()
+        public void should_use_resource_marker_name_when_xml_comments_summary_is_missing()
         {
-            _resourceConvention.GetDescription(
+            var result = _resourceConvention.GetDescription(
                 ApiDescription<XmlCommentsResource.MissingSummaryController>
-                    .ForAction(x => x.Get(null))).ShouldBeNull();
+                    .ForAction(x => x.Get(null)));
+            
+            result.Name.ShouldEqual("Some Markdown Resource");
+            result.Comments.ShouldEqual("remarks");
         }
 
         [Test]

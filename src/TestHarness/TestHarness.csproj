@@ -97,7 +97,7 @@
     <Content Include="packages.config" />
     <Content Include="Overview.md" />
     <EmbeddedResource Include="Module\Module.md" />
-    <EmbeddedResource Include="Default\AttributeAndEmbeddedController.md" />
+    <EmbeddedResource Include="Default\Resource.md" />
     <Content Include="Templates\Template.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -113,7 +113,6 @@
   <ItemGroup>
     <Compile Include="Default\AttributeAndEmbeddedController.cs" />
     <Compile Include="Default\AnotherController.cs" />
-    <Compile Include="Default\Resource.cs" />
     <Compile Include="Default\XmlCommentsController.cs" />
     <Compile Include="Module\ModuleController.cs" />
     <Compile Include="Module\Module.cs" />

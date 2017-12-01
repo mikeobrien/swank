@@ -1058,7 +1058,7 @@ namespace Swank.Configuration
         /// Defines a default resource that endpoints are added to when none are defined for it.
         /// </summary>
         public ConfigurationDsl WithDefaultResource(
-            Func<IApiDescription, ResourceDescription> factory)
+            Func<IApiDescription, string, ResourceDescription> factory)
         {
             _configuration.DefaultResourceFactory = factory;
             return this;

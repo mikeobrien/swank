@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Swank.Description;
+﻿using Swank.Description;
 using Swank.Specification;
 using NUnit.Framework;
 using Should;
@@ -18,7 +17,8 @@ namespace Tests.Unit.Specification.SpecificationService.ResourceTests
 
             var resource = spec[0].Resources[0];
 
-            resource.Name.ShouldBeNull();
+            resource.Name.ShouldEqual("/Specification/SpecificationService/ResourceTests/" +
+                                      "ResourceDescriptions/NoDescription/Controller/Get");
             resource.Comments.ShouldBeNull();
         }
 
@@ -175,9 +175,10 @@ namespace Tests.Unit.Specification.SpecificationService.ResourceTests
         public void should_group_orphaned_actions_into_the_specified_default_resource()
         {
             var spec = Builder.BuildSpec<OrphanedResources.Controller>(
-                x => x.WithDefaultResource(y => new ResourceDescription
+                x => x.WithDefaultResource((a, c) => new ResourceDescription
                 {
-                    Name = "Endpoints"
+                    Name = "Endpoints",
+                    Comments = c
                 }));
 
             spec[0].Resources.Count.ShouldEqual(1);

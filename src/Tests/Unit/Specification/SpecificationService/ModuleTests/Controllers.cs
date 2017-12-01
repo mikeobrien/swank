@@ -6,8 +6,6 @@ namespace Tests.Unit.Specification.SpecificationService.ModuleTests
     {
         namespace NoDescription
         {
-            public class Module : ModuleDescription { }
-
             public class Controller
             {
                 public object Get(object request)

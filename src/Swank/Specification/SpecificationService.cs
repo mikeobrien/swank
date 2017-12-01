@@ -93,28 +93,31 @@ namespace Swank.Specification
                     Module = _moduleConvention.GetDescription(x),
                     Resource = _resourceConvention.GetDescription(x)
                 })
-                .Where(x => x.Module != null || _configuration.OrphanedModuleEndpoint != OrphanedEndpoints.Exclude)
-                .Where(x => x.Resource != null || _configuration.OrphanedResourceEndpoint != OrphanedEndpoints.Exclude)
+                .Where(x => x.Module?.Name != null || _configuration.OrphanedModuleEndpoint != OrphanedEndpoints.Exclude)
+                .Where(x => x.Resource?.Name != null || _configuration.OrphanedResourceEndpoint != OrphanedEndpoints.Exclude)
                 .Select(x => new EndpointMapping
                 {
                     Endpoint = x.Endpoint,
-                    Module = _configuration.OrphanedModuleEndpoint == OrphanedEndpoints.UseDefault
-                        ? x.Module ?? new ModuleDescription(_configuration.DefaultModuleName)
+                    Module = x.Module?.Name == null
+                        ? (_configuration.OrphanedModuleEndpoint == OrphanedEndpoints.UseDefault
+                            ? new ModuleDescription(_configuration.DefaultModuleName, x.Module?.Comments)
+                            : null)
                         : x.Module,
-                    Resource = _configuration.OrphanedResourceEndpoint == OrphanedEndpoints.UseDefault
-                        ? x.Resource ?? CreateDefaultResource(x.Endpoint)
+                    Resource = x.Resource?.Name == null
+                        ? (_configuration.OrphanedResourceEndpoint == OrphanedEndpoints.UseDefault
+                            ? CreateDefaultResource(x.Endpoint, x.Resource?.Comments)
+                            : null)
                         : x.Resource
                 }).ToList();
         }
         
-        private ResourceDescription CreateDefaultResource(IApiDescription apiDescription)
+        private ResourceDescription CreateDefaultResource(IApiDescription apiDescription, string comments)
         {
-            return _configuration.DefaultResourceFactory?.Invoke(apiDescription) ??
+            return _configuration.DefaultResourceFactory?.Invoke(apiDescription, comments) ??
                 new ResourceDescription
                 {
                     Name = _configuration.DefaultResourceIdentifier(apiDescription),
-                    Comments = apiDescription.ControllerType.Assembly.FindResourceNamed(
-                        apiDescription.ControllerType.FullName.AddMarkdownExtension())
+                    Comments = comments
                 };
         }
 

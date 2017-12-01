@@ -215,7 +215,7 @@ namespace Swank.Configuration
         public OrphanedEndpoints OrphanedModuleEndpoint { get; set; }
         public OrphanedEndpoints OrphanedResourceEndpoint { get; set; }
         public string DefaultModuleName { get; set; }
-        public Func<IApiDescription, ResourceDescription> DefaultResourceFactory { get; set; }
+        public Func<IApiDescription, string, ResourceDescription> DefaultResourceFactory { get; set; }
         public Func<IApiDescription, string> DefaultResourceIdentifier { get; set; }
 
         public string DefaultDictionaryKeyName { get; set; }

@@ -18,7 +18,7 @@ namespace Tests.Unit.Specification.SpecificationService.ModuleTests
 
             var module = spec[0];
 
-            module.Name.ShouldBeNull();
+            module.Name.ShouldEqual(new Config().DefaultModuleName);
             module.Comments.ShouldBeNull();
         }
 
@@ -152,7 +152,7 @@ namespace Tests.Unit.Specification.SpecificationService.ModuleTests
         [Test]
         public void should_throw_an_exception_for_orphaned_actions()
         {
-            NUnit.Framework.Assert.Throws<OrphanedModuleActionException>(() =>
+            Assert.Throws<OrphanedModuleActionException>(() =>
                 Builder.BuildSpec<NoModules.Controller>(x => x
                     .WhenModuleOrphaned(OrphanedEndpoints.Fail)));
         }
@@ -160,8 +160,8 @@ namespace Tests.Unit.Specification.SpecificationService.ModuleTests
         [Test]
         public void should_not_throw_an_exception_when_there_are_no_orphaned_actions()
         {
-            NUnit.Framework.Assert.DoesNotThrow(() => Builder.BuildSpec<ModuleDescriptions
-                .NoDescription.Controller>(x => x.WhenModuleOrphaned(OrphanedEndpoints.Fail)));
+            Assert.DoesNotThrow(() => Builder.BuildSpec<ModuleDescriptions
+                .Description.Controller>(x => x.WhenModuleOrphaned(OrphanedEndpoints.Fail)));
         }
     }
 }

@@ -81,6 +81,26 @@ namespace Tests.Unit.Description.EndpointConventionTests
             }
         }
 
+        namespace ControllerDescription
+        {
+            public class EmbeddedDescriptionController
+            {
+                public object Get(object request)
+                {
+                    return null;
+                }
+            }
+
+            [Resource("resource")]
+            public class EmbeddedDescriptionResourceController
+            {
+                public object Get(object request)
+                {
+                    return null;
+                }
+            }
+        }
+
         namespace RequestDescription
         {
             public class EmbeddedDescriptionController

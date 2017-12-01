@@ -349,12 +349,13 @@ Lets say we have the following controller.
 namespace MyApp.Api{    public class MyController : ApiController    {        public OutputModel Post(InputModel model) { ... }    }}
 ```
 
-You can document the endpoint, request and response by adding embedded resources named as `[controller name].[method name].md`, `[controller name].[method name].Request.md`, `[controller name].[method name].Response.md` respectively. So the mardown files for the above controller would be as follows:
+You can document the endpoint, request and response by adding embedded resources named as `[controller name].md`, `[controller name].[method name].md` (if there are multiple actions), `[controller name].[method name].Request.md`, `[controller name].[method name].Response.md` respectively. So the mardown files for the above controller would be as follows:
 
 ```
 MyApp
     .Api
         MyController.cs
+        MyController.md
         MyController.Post.md
         MyController.Post.Request.md
         MyController.Post.Response.md

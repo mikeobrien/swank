@@ -56,7 +56,7 @@ namespace Tests.Unit.Description.ResourceConventionTests
             }
         }
 
-        namespace EmbeddedMarkdownComments
+        namespace EmbeddedMarkdownResourceMarkerComments
         {
             public class Resource : ResourceDescription
             {
@@ -66,6 +66,17 @@ namespace Tests.Unit.Description.ResourceConventionTests
                 }
             }
 
+            public class Controller
+            {
+                public object Get(object request)
+                {
+                    return null;
+                }
+            }
+        }
+
+        namespace EmbeddedMarkdownResourceComments
+        {
             public class Controller
             {
                 public object Get(object request)
@@ -117,6 +128,7 @@ namespace Tests.Unit.Description.ResourceConventionTests
                 return null;
             }
         }
+
         /// <summary>summary</summary>
         public class MarkdownCommentsController
         {
@@ -132,6 +144,14 @@ namespace Tests.Unit.Description.ResourceConventionTests
             public object Get(object request)
             {
                 return null;
+            }
+        }
+
+        public class Resource : ResourceDescription
+        {
+            public Resource()
+            {
+                Name = "Some Markdown Resource";
             }
         }
     }

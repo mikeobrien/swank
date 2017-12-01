@@ -89,13 +89,33 @@ namespace Tests.Unit.Description.EndpointConventionTests
         }
 
         [Test]
-        public void should_get_embedded_markdown_endpoint_description()
+        public void should_get_action_named_embedded_markdown_endpoint_description()
         {
             var description = _endpointConvention.GetDescription(
                 ApiDescription<EndpointDescriptions.ActionDescription
                     .EmbeddedDescriptionController>.ForAction(x => x.Get(null)));
             description.Name.ShouldEqual("Get");
             description.Comments.ShouldEqual("**An embedded action markdown description**");
+        }
+
+        [Test]
+        public void should_get_controller_named_embedded_markdown_endpoint_description()
+        {
+            var description = _endpointConvention.GetDescription(
+                ApiDescription<EndpointDescriptions.ControllerDescription
+                    .EmbeddedDescriptionController>.ForAction(x => x.Get(null)));
+            description.Name.ShouldEqual("Get");
+            description.Comments.ShouldEqual("**An embedded controller markdown description**");
+        }
+
+        [Test]
+        public void should_not_get_controller_named_embedded_markdown_endpoint_description_when_resource()
+        {
+            var description = _endpointConvention.GetDescription(
+                ApiDescription<EndpointDescriptions.ControllerDescription
+                    .EmbeddedDescriptionResourceController>.ForAction(x => x.Get(null)));
+            description.Name.ShouldEqual("Get");
+            description.Comments.ShouldBeNull();
         }
 
         [Test]

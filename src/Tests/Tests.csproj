@@ -170,13 +170,13 @@
     <EmbeddedResource Include="Unit\Description\ModuleConventionTests\ModuleDescriptions\EmbeddedMarkdownComments\Module.md" />
     <EmbeddedResource Include="Unit\Description\ResourceConventionTests\AttributeResource\EmbeddedMarkdownController.md" />
     <EmbeddedResource Include="Unit\Description\ResourceConventionTests\ResourceCommentsPriority\Resource.md" />
-    <EmbeddedResource Include="Unit\Description\ResourceConventionTests\ResourceDescriptions\EmbeddedMarkdownComments\Resource.md" />
+    <EmbeddedResource Include="Unit\Description\ResourceConventionTests\ResourceDescriptions\EmbeddedMarkdownResourceMarkerComments\Resource.md" />
     <EmbeddedResource Include="Unit\Specification\SpecificationService\EndpointTests\ControllerResource\Controller.md" />
     <EmbeddedResource Include="Unit\Specification\SpecificationService\EndpointTests\EndpointDescriptions\ActionDescription\EmbeddedDescriptionController.Get.md" />
     <EmbeddedResource Include="Unit\Specification\SpecificationService\ModuleTests\ModuleDescriptions\EmbeddedMarkdownComments\Module.md" />
     <EmbeddedResource Include="Unit\Specification\SpecificationService\ResourceTests\AttributeResource\EmbeddedMarkdownComments\Controller.md" />
     <EmbeddedResource Include="Unit\Specification\SpecificationService\ResourceTests\ResourceDescriptions\EmbeddedMarkdownComments\Resource.md" />
-    <EmbeddedResource Include="Unit\Specification\SpecificationService\ResourceTests\ResourceDescriptions\OrphanedEmbeddedMarkdown\Controller.md" />
+    <EmbeddedResource Include="Unit\Specification\SpecificationService\ResourceTests\ResourceDescriptions\OrphanedEmbeddedMarkdown\Resource.md" />
     <EmbeddedResource Include="Unit\Specification\SpecificationService\Tests\Comments\Comments.md" />
     <EmbeddedResource Include="Unit\Web\Assets\MarkdownAssetTests.md" />
     <EmbeddedResource Include="Unit\Web\Templates\RazorTemplateTests.cshtml" />
@@ -195,6 +195,9 @@
     <EmbeddedResource Include="Unit\Configuration\ConfigurationDslTests\CodeExamples\csharp.md" />
     <EmbeddedResource Include="Unit\Configuration\ConfigurationDslTests\App\razor.cshtml" />
     <EmbeddedResource Include="Unit\Description\ResourceConventionTests\XmlCommentsResource\MarkdownCommentsController.md" />
+    <EmbeddedResource Include="Unit\Description\ResourceConventionTests\XmlCommentsResource\Resource.md" />
+    <EmbeddedResource Include="Unit\Description\EndpointConventionTests\EndpointDescriptions\ControllerDescription\EmbeddedDescriptionController.Get.md" />
+    <EmbeddedResource Include="Unit\Description\ResourceConventionTests\ResourceDescriptions\EmbeddedMarkdownResourceComments\Resource.md" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Unit\Extensions\EmbeddedStringResource.txt" />

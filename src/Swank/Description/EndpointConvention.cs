@@ -56,7 +56,12 @@ namespace Swank.Description
                     endpoint.ControllerType.FullName + "." +
                     endpoint.ActionMethod.Name.AddMarkdownExtension()) ?? 
 
-                endpoint.Documentation ?? xmlComments?.Remarks;
+                endpoint.Documentation ?? xmlComments?.Remarks ??
+                
+                (!endpoint.HasControllerAttribute<ResourceAttribute>()
+                    ? endpoint.ControllerType.Assembly.FindResourceNamed(
+                        endpoint.ControllerType.FullName.AddMarkdownExtension())
+                    : null);
         }
 
         protected virtual string GetDataComments<TAttribute>(IApiDescription endpoint, 

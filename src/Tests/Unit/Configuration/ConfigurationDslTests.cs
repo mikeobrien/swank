@@ -876,11 +876,11 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_set_default_resource_factory()
         {
-            Func<IApiDescription, ResourceDescription> factory = x => null;
+            ResourceDescription Factory(IApiDescription a, string c) => null;
 
-            _dsl.WithDefaultResource(factory);
+            _dsl.WithDefaultResource(Factory);
 
-            _configuration.DefaultResourceFactory.ShouldEqual(factory);
+            _configuration.DefaultResourceFactory.ShouldEqual(Factory);
         }
 
         [Test]
