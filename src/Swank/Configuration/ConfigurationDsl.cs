@@ -345,19 +345,35 @@ namespace Swank.Configuration
         /// </summary>
         public ConfigurationDsl WithTokenAuthenticationScheme()
         {
+            return WithAuthenticationScheme("Token");
+        }
+
+        /// <summary>
+        /// Adds the bearer authentication scheme.
+        /// </summary>
+        public ConfigurationDsl WithBearerAuthenticationScheme()
+        {
+            return WithAuthenticationScheme("Bearer");
+        }
+
+        private ConfigurationDsl WithAuthenticationScheme(string scheme)
+        {
             _configuration.AuthenticationSchemes.Add(new AuthenticationScheme
             {
-                Name = "Token",
+                Name = scheme,
                 Components = new List<AuthenticationComponent>
                 {
                     new AuthenticationComponent
                     {
                         Name = "Authorization",
-                        ClientSideGenerator = @"function(token) { return 'Token ' + token; }",
+                        ClientSideGenerator = $"function({scheme.ToLower()}) " +
+                                              "{{ " +
+                                              $"    return '{scheme} ' + {scheme.ToLower()}; " +
+                                              "}}",
                         Location = AuthenticationLocation.Header,
                         Parameters = new List<AuthenticationParameter>
                         {
-                            new AuthenticationParameter("Token")
+                            new AuthenticationParameter(scheme)
                         }
                     }
                 }
