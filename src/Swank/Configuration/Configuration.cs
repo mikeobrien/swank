@@ -93,22 +93,28 @@ namespace Swank.Configuration
             };
         }
         
-        public Type ApiExplorer { get; set; } = typeof(WebApiExplorer);
-        public bool DebugMode { get; set; }
-        public bool IgnoreFolders { get; set; }
-        public string[] IgnoreFolderUrls { get; set; }
-        public string AppUrl { get; set; } = "api";
+        private string _appUrl = "api";
+
+        public string AppUrl
+        {
+            get => _appUrl?.Trim('/');
+            set => _appUrl = value;
+        }
 
         private string _specificationUrl;
 
         public string SpecificationUrl
         {
-            get => _specificationUrl.IsNullOrEmpty()
-                ? $"{AppUrl.TrimEnd('/')}/spec"
-                : _specificationUrl;
+            get => (_specificationUrl.IsNullOrEmpty()
+                ? $"{AppUrl?.TrimEnd('/')}/spec"
+                : _specificationUrl)?.Trim('/');
             set => _specificationUrl = value;
         }
 
+        public string[] IgnoreFolderUrls { get; set; }
+        public Type ApiExplorer { get; set; } = typeof(WebApiExplorer);
+        public bool DebugMode { get; set; }
+        public bool IgnoreFolders { get; set; }
         public RazorTemplate AppTemplate { get; set; }
         public string FavIconUrl { get; set; }
         public string ApiUrl { get; set; }
