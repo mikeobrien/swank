@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -223,8 +224,17 @@ namespace Swank.Extensions
         {
             if (html.IsNullOrEmpty()) return html;
             return HtmlEntityRegex.Replace(html, x => x.Groups[1].Value == "#"
-                ? ((char)int.Parse(x.Groups[2].Value)).ToString()
+                ? ((char)x.Groups[2].Value.ParseByte()).ToString()
                 : HttpUtility.HtmlDecode(x.Groups[0].Value));
+        }
+
+        private static byte ParseByte(this string value)
+        {
+            return value.StartsWith("0x") && value.Length > 2
+                ? byte.Parse(value.Substring(2), NumberStyles.HexNumber)
+                : (value.StartsWith("x") && value.Length > 1
+                    ? byte.Parse(value.Substring(1), NumberStyles.HexNumber)
+                    : byte.Parse(value));
         }
 
         public static string StripHtml(this string html)

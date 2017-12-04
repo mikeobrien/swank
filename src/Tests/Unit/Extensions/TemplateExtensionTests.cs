@@ -21,6 +21,8 @@ namespace Tests.Unit.Extensions
         [TestCase(null, null)]
         [TestCase("Oh [Hai](http://www.google.com)",
             "<p>Oh <a href=\"http://www.google.com\">Hai</a></p>")]
+        [TestCase("Oh [{{someValue}}](mailto:{{someValue}})",
+            "<p>Oh <a href=\"mailto:{{someValue}}\">{{someValue}}</a></p>")]
         public void should_transform_markdown_block(string text, string result)
         {
             text.TransformMarkdownBlock().ShouldEqual(result);
@@ -31,6 +33,8 @@ namespace Tests.Unit.Extensions
         [TestCase(null, null)]
         [TestCase("Oh [Hai](http://www.google.com)",
              "Oh <a href=\"http://www.google.com\">Hai</a>")]
+        [TestCase("Oh [{{someValue}}](mailto:{{someValue}})",
+            "Oh <a href=\"mailto:{{someValue}}\">{{someValue}}</a>")]
         public void should_transform_markdown_inline(string text, string result)
         {
             text.TransformMarkdownInline().ShouldEqual(result);

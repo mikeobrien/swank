@@ -50,7 +50,8 @@ namespace Swank.Extensions
                     ExtraMode = true
                 }.Transform(markdown
                     .RenderMarkdownFencedCodeBlocks()
-                    .ConvertEmojisToHtml()).Trim();
+                    .ConvertEmojisToHtml())
+                .HtmlDecode().Trim();
         }
 
         public static string TransformMarkdownInline(this string markdown)
