@@ -25,7 +25,7 @@ namespace TestHarness
                 .WithLogoAt("/img/logo.png")
                 .WithHeader("Setec Astronomy")
                 .WithApiAt("https://www.setecastronomy.com")
-                .WithCopyright("Copyright &copy; {year} Setec Astronomy")
+                .WithCopyright("Copyright &copy; {{year}} Setec Astronomy")
                 .WithOverviewLink("Authentication")
                 .WithOverviewLink("Bindings")
                 .WithOverviewLink("Data Types")

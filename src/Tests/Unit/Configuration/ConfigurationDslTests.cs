@@ -189,7 +189,7 @@ namespace Tests.Unit.Configuration
         [Test]
         public void should_set_copyright()
         {
-            _dsl.WithCopyright("copyright {year}");
+            _dsl.WithCopyright("copyright {{year}}");
 
             _configuration.Copyright.ShouldEqual("copyright " + DateTime.Now.Year);
         }

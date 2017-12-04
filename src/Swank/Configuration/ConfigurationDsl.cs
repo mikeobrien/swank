@@ -474,12 +474,12 @@ namespace Swank.Configuration
         }
 
         /// <summary>
-        /// Adds a copyright. The {year} token is replaced by the current year.
+        /// Adds a copyright. The {{year}} token is replaced by the current year.
         /// </summary>
         public ConfigurationDsl WithCopyright(string copyright)
         {
             _configuration.Copyright = copyright.Replace(
-                "{year}", DateTime.Now.Year.ToString());
+                "{{year}}", DateTime.Now.Year.ToString());
             return this;
         }
 

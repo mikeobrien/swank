@@ -28,7 +28,7 @@ Swank can be found on nuget:
 Swank can be enabled by calling the `Swank` extension method on an `HttpConfiguration` instance. There are a handful of options you you'll probably want to fill in, although these are not required.
 
 ```csharpusing Swank;using Swank.Configuration;using Swank.Extensions;var configuration = GlobalConfiguration.Configuration;
-configuration.Swank(x => x    .WithFavIconAt("/img/favicon.png")    .WithPageTitle("Setec Astronomy API")    .WithLogoAt("/img/logo.png")    .WithHeader("Setec Astronomy")    .WithCopyright("Copyright &copy; {year} Setec Astronomy"));
+configuration.Swank(x => x    .WithFavIconAt("/img/favicon.png")    .WithPageTitle("Setec Astronomy API")    .WithLogoAt("/img/logo.png")    .WithHeader("Setec Astronomy")    .WithCopyright("Copyright &copy; {{year}} Setec Astronomy"));
 ```  
 
 At this point you should see documentation under `http://yoursite/api`. The url of the docs can be changed to whatever you want, even the root of the website.
