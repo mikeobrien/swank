@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using Swank.Description;
 using Swank.Description.CodeExamples;
@@ -164,6 +165,43 @@ namespace Swank.Configuration
         public ConfigurationDsl WithSpecificationAtUrl(string url)
         {
             _configuration.SpecificationUrl = url;
+            return this;
+        }
+
+        /// <summary>
+        /// Cache key for all requests.
+        /// </summary>
+        public ConfigurationDsl WithCacheKey(Func<HttpRequestMessage, string> getKey)
+        {
+            _configuration.CacheKey = getKey;
+            return this;
+        }
+
+        /// <summary>
+        /// Allows you to modify the app template model before rendering.
+        /// </summary>
+        public ConfigurationDsl WithAppPrerender(Action<HttpRequestMessage, AppModel> prerender)
+        {
+            _configuration.AppPreRender = prerender;
+            return this;
+        }
+
+        /// <summary>
+        /// Allows you to modify the resource model before rendering.
+        /// </summary>
+        public ConfigurationDsl WithResourcePrerender(Action<HttpRequestMessage, ResourceModel> prerender)
+        {
+            _configuration.ResourcePreRender = prerender;
+            return this;
+        }
+
+        /// <summary>
+        /// Allows you to modify the spec model before rendering.
+        /// </summary>
+        public ConfigurationDsl WithSpecPrerender(Action<HttpRequestMessage, 
+            Specification.Module> prerender)
+        {
+            _configuration.SpecPreRender = prerender;
             return this;
         }
 

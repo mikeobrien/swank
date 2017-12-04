@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Swank.Description.CodeExamples;
 using Swank.Extensions;
@@ -16,7 +14,7 @@ namespace Swank.Web.Handlers.App
         public string Name { get; set; }
     }
 
-    public class AppResourceHandler : HandlerBase
+    public class AppResourceHandler : CachingHandlerBase
     {
         private readonly Configuration.Configuration _configuration;
         private readonly SpecificationService _specification;
@@ -25,14 +23,15 @@ namespace Swank.Web.Handlers.App
         public AppResourceHandler(
             Configuration.Configuration configuration,
             SpecificationService specification,
-            BodyDescriptionService bodyDescriptionFactory)
+            BodyDescriptionService bodyDescriptionFactory) : 
+            base(configuration, Mime.ApplicationJson)
         {
             _configuration = configuration;
             _specification = specification;
             _bodyDescriptionFactory = bodyDescriptionFactory;
         }
 
-        protected override Task<HttpResponseMessage> Send(HttpRequestMessage message)
+        protected override byte[] CreateResponse(HttpRequestMessage message)
         {
             var url = _configuration.ApiUrl?.ParseUri() ?? message.RequestUri;
             var request = JsonConvert.DeserializeObject<Request>(
@@ -47,14 +46,13 @@ namespace Swank.Web.Handlers.App
                     Overview = x.Comments,
                     Endpoints = x.Endpoints.Select(e => MapEndpoint(
                         _configuration, url, e, _configuration.CodeExamples,
-                    _bodyDescriptionFactory)).ToList()
+                        _bodyDescriptionFactory)).ToList()
                 })
                 .FirstOrDefault();
 
-            if (resource == null) return message
-                .CreateResponseTask(HttpStatusCode.NotFound);
+            _configuration.ResourcePreRender?.Invoke(message, resource);
 
-            return resource.CreateJsonResponseTask();
+            return resource.SerializeJson().ToBytes();
         }
 
         public static EndpointModel MapEndpoint(Configuration.Configuration configuration,

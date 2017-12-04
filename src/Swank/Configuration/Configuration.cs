@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using Swank.Description;
 using Swank.Description.CodeExamples;
@@ -8,7 +9,9 @@ using Swank.Description.WebApi;
 using Swank.Extensions;
 using Swank.Specification;
 using Swank.Web.Assets;
+using Swank.Web.Handlers.App;
 using Swank.Web.Templates;
+using CodeExampleModel = Swank.Description.CodeExamples.CodeExampleModel;
 using Module = Swank.Specification.Module;
 
 namespace Swank.Configuration
@@ -45,22 +48,8 @@ namespace Swank.Configuration
 
         public Configuration(Assembly assembly)
         {
-            ApiExplorer = typeof(WebApiExplorer);
-            AppUrl = "api";
-            SpecificationUrl = "api/spec";
             AppliesToAssemblies = new List<Assembly> { assembly };
             AppTemplate = RazorTemplate.FromResourceInThisAssembly<List<Module>>("App.cshtml", this);
-            Overview = new LazyAsset(() => MarkdownAsset
-                .FromVirtualPath("~/Overview.md"));
-            XmlComments = new List<IAsset>();
-            Copyright = $"Copyright &copy; {DateTime.Now.Year}";
-            AuthenticationSchemes = new List<AuthenticationScheme>();
-            Templates = new List<WebTemplate>();
-            TemplateNamespaceIncludesModule = false;
-            Assets = new List<WebAsset>(WebAsset.FromResources(
-                Assembly.GetExecutingAssembly().AsList(),
-                "Swank.Web.Content", null, null, ".js", ".css", ".eot", 
-                    ".svg", ".ttf", ".woff", ".woff2", ".png", ".jpg", ".gif"));
 
             Stylesheets = new List<LazyUrl>
             {
@@ -95,21 +84,6 @@ namespace Swank.Configuration
                 Assets.FindByFilename("respond.js").ToLazyUrl(this)
             };
 
-            DisplayJsonData = true;
-            DisplayXmlData = true;
-            Filter = x => true;
-            DefaultModuleName = DefaultDefaultModuleName;
-            OrphanedModuleEndpoint = OrphanedEndpoints.UseDefault;
-            DefaultResourceIdentifier = x => x.RouteTemplate.GetRouteResourceIdentifier();
-            OrphanedResourceEndpoint = OrphanedEndpoints.UseDefault;
-            DefaultDictionaryKeyName = "key";
-            EnumFormat = EnumFormat.AsString;
-            OverviewLinks = new List<OverviewLink>();
-            DefaultOptionalScope = OptionalScope.None;
-            
-            ActionNamespace = DefaultActionNamespace;
-            ActionName = DefaultActionName;
-
             CodeExamples = new List<CodeExample>
             {
                 new CodeExample("Curl", "bash", null, RazorTemplate
@@ -117,62 +91,24 @@ namespace Swank.Configuration
                 new CodeExample("Node.js", "javascript", null, RazorTemplate
                     .FromResourceInThisAssembly<CodeExampleModel>("node.cshtml", this))
             };
-
-            SampleDateTimeFormat = "g";
-            SampleIntegerFormat = "0";
-            SampleRealFormat = "0.00";
-            SampleTimeSpanFormat = "g";
-            SampleGuidFormat = "D";
-
-            SampleStringValue = "";
-            SampleBoolValue = false;
-            SampleDateTimeValue = DateTime.Now;
-            SampleIntegerValue = 0;
-            SampleRealValue = 0;
-            SampleTimeSpanValue = TimeSpan.FromHours(0);
-            SampleGuidValue = Guid.Empty;
-            SampleUriValue = new Uri("http://www.google.com");
-
-            ModuleConvention = new Service<IDescriptionConvention<IApiDescription, 
-                ModuleDescription>> { Type = typeof(ModuleConvention) };
-            ResourceConvention = new Service<IDescriptionConvention<IApiDescription, 
-                ResourceDescription>> { Type = typeof(ResourceConvention) };
-            EndpointConvention = new Service<IDescriptionConvention<IApiDescription, 
-                EndpointDescription>> { Type = typeof(EndpointConvention) };
-            MemberConvention = new Service<IDescriptionConvention<PropertyInfo, 
-                MemberDescription>> { Type = typeof(MemberConvention) };
-            EnumConvention = new Service<IDescriptionConvention<Type, 
-                EnumDescription>> { Type = typeof(EnumConvention) };
-            EnumOptionConvention = new Service<IDescriptionConvention<FieldInfo, 
-                OptionDescription>> { Type = typeof(OptionConvention) };
-            StatusCodeConvention = new Service<IDescriptionConvention<IApiDescription, 
-                List<StatusCodeDescription>>> { Type = typeof(StatusCodeConvention) };
-            HeaderConvention = new Service<IDescriptionConvention<IApiDescription, 
-                List<HeaderDescription>>> { Type = typeof(HeaderConvention) };
-            TypeConvention = new Service<IDescriptionConvention<Type, 
-                TypeDescription>> { Type = typeof(TypeConvention) };
-
-            ModuleOverrides = new List<Action<ModuleOverrideContext>>();
-            ResourceOverrides = new List<Action<ResourceOverrideContext>>();
-            EndpointOverrides = new List<Action<EndpointOverrideContext>>();
-            UrlParameterOverrides = new List<Action<UrlParameterOverrideContext>>();
-            QuerystringOverrides = new List<Action<QuerystringOverrideContext>>();
-            StatusCodeOverrides = new List<Action<StatusCodeOverrideContext>>();
-            RequestHeaderOverrides = new List<Action<HeaderOverrideContext>>();
-            ResponseHeaderOverrides = new List<Action<HeaderOverrideContext>>();
-            RequestOverrides = new List<Action<MessageOverrideContext>>();
-            ResponseOverrides = new List<Action<MessageOverrideContext>>();
-            TypeOverrides = new List<Action<TypeOverrideContext>>();
-            MemberOverrides = new List<Action<MemberOverrideContext>>();
-            OptionOverrides = new List<Action<OptionOverrideContext>>();
         }
         
-        public Type ApiExplorer { get; set; }
+        public Type ApiExplorer { get; set; } = typeof(WebApiExplorer);
         public bool DebugMode { get; set; }
         public bool IgnoreFolders { get; set; }
         public string[] IgnoreFolderUrls { get; set; }
-        public string AppUrl { get; set; }
-        public string SpecificationUrl { get; set; }
+        public string AppUrl { get; set; } = "api";
+
+        private string _specificationUrl;
+
+        public string SpecificationUrl
+        {
+            get => _specificationUrl.IsNullOrEmpty()
+                ? $"{AppUrl.TrimEnd('/')}/spec"
+                : _specificationUrl;
+            set => _specificationUrl = value;
+        }
+
         public RazorTemplate AppTemplate { get; set; }
         public string FavIconUrl { get; set; }
         public string ApiUrl { get; set; }
@@ -180,23 +116,31 @@ namespace Swank.Configuration
         public string Name { get; set; }
         public string LogoUrl { get; set; }
         public bool CollapseModules { get; set; }
-        public List<IAsset> XmlComments { get; set; }
-        public IAsset Overview { get; set; }
-        public List<OverviewLink> OverviewLinks { get; set; }
-        public string Copyright { get; set; }
-        public List<AuthenticationScheme> AuthenticationSchemes { get; set; }
-        public List<WebAsset> Assets { get; }
-        public List<WebTemplate> Templates { get; }
+        public Func<HttpRequestMessage, string> CacheKey { get; set; } = x => x.RequestUri.PathAndQuery;
+        public Action<HttpRequestMessage, AppModel> AppPreRender { get; set; }
+        public Action<HttpRequestMessage, ResourceModel> ResourcePreRender { get; set; }
+        public Action<HttpRequestMessage, Module> SpecPreRender { get; set; }
+        public List<IAsset> XmlComments { get; set; } = new List<IAsset>();
+        public IAsset Overview { get; set; } = new LazyAsset(() => MarkdownAsset
+            .FromVirtualPath("~/Overview.md"));
+        public List<OverviewLink> OverviewLinks { get; set; } = new List<OverviewLink>();
+        public string Copyright { get; set; } = $"Copyright &copy; {DateTime.Now.Year}";
+        public List<AuthenticationScheme> AuthenticationSchemes { get; set; } = new List<AuthenticationScheme>();
+        public List<WebAsset> Assets { get; } = new List<WebAsset>(WebAsset.FromResources(
+            Assembly.GetExecutingAssembly().AsList(),
+            "Swank.Web.Content", null, null, ".js", ".css", ".eot", 
+            ".svg", ".ttf", ".woff", ".woff2", ".png", ".jpg", ".gif"));
+        public List<WebTemplate> Templates { get; } = new List<WebTemplate>();
         public bool TemplateNamespaceIncludesModule { get; set; }
         public List<LazyUrl> Scripts { get; }
         public List<LazyUrl> Stylesheets { get; }
         public List<LazyUrl> IEPolyfills { get; }
-        public bool DisplayJsonData { get; set; }
-        public bool DisplayXmlData { get; set; }
+        public bool DisplayJsonData { get; set; } = true;
+        public bool DisplayXmlData { get; set; } = true;
         public List<Assembly> AppliesToAssemblies { get; }
-        public Func<IApiDescription, bool> Filter { get; set; }
-        public Func<IApiDescription, List<string>> ActionNamespace { get; set; }
-        public Func<IApiDescription, string> ActionName { get; set; }
+        public Func<IApiDescription, bool> Filter { get; set; } = x => true;
+        public Func<IApiDescription, List<string>> ActionNamespace { get; set; } = DefaultActionNamespace;
+        public Func<IApiDescription, string> ActionName { get; set; } = DefaultActionName;
 
         public bool HideStatusCodeSection { get; set; }
         public bool HideCodeExamplesSection { get; set; }
@@ -212,65 +156,74 @@ namespace Swank.Configuration
         public bool HideResponseHeadersSection { get; set; }
         public bool HideResponseBodySection { get; set; }
 
-        public OrphanedEndpoints OrphanedModuleEndpoint { get; set; }
-        public OrphanedEndpoints OrphanedResourceEndpoint { get; set; }
-        public string DefaultModuleName { get; set; }
+        public OrphanedEndpoints OrphanedModuleEndpoint { get; set; } = OrphanedEndpoints.UseDefault;
+        public OrphanedEndpoints OrphanedResourceEndpoint { get; set; } = OrphanedEndpoints.UseDefault;
+        public string DefaultModuleName { get; set; } = DefaultDefaultModuleName;
         public Func<IApiDescription, string, ResourceDescription> DefaultResourceFactory { get; set; }
-        public Func<IApiDescription, string> DefaultResourceIdentifier { get; set; }
+        public Func<IApiDescription, string> DefaultResourceIdentifier { get; set; } = x => x.RouteTemplate.GetRouteResourceIdentifier();
 
-        public string DefaultDictionaryKeyName { get; set; }
+        public string DefaultDictionaryKeyName { get; set; } = "key";
 
-        public EnumFormat EnumFormat { get; set; }
-        public OptionalScope DefaultOptionalScope { get; set; }
+        public EnumFormat EnumFormat { get; set; } = EnumFormat.AsString;
+        public OptionalScope DefaultOptionalScope { get; set; } = OptionalScope.None;
 
         public List<CodeExample> CodeExamples { get; }
 
-        public string SampleDateTimeFormat { get; set; }
-        public string SampleIntegerFormat { get; set; }
-        public string SampleRealFormat { get; set; }
-        public string SampleTimeSpanFormat { get; set; }
-        public string SampleGuidFormat { get; set; }
+        public string SampleDateTimeFormat { get; set; } = "g";
+        public string SampleIntegerFormat { get; set; } = "0";
+        public string SampleRealFormat { get; set; } = "0.00";
+        public string SampleTimeSpanFormat { get; set; } = "g";
+        public string SampleGuidFormat { get; set; } = "D";
 
-        public string SampleStringValue { get; set; }
-        public bool SampleBoolValue { get; set; }
-        public DateTime SampleDateTimeValue { get; set; }
-        public int SampleIntegerValue { get; set; }
-        public decimal SampleRealValue { get; set; }
-        public TimeSpan SampleTimeSpanValue { get; set; }
-        public Guid SampleGuidValue { get; set; }
-        public Uri SampleUriValue { get; set; }
+        public string SampleStringValue { get; set; } = "";
+        public bool SampleBoolValue { get; set; } = false;
+        public DateTime SampleDateTimeValue { get; set; } = DateTime.Now;
+        public int SampleIntegerValue { get; set; } = 0;
+        public decimal SampleRealValue { get; set; } = 0;
+        public TimeSpan SampleTimeSpanValue { get; set; } = TimeSpan.FromHours(0);
+        public Guid SampleGuidValue { get; set; } = Guid.Empty;
+        public Uri SampleUriValue { get; set; } = new Uri("http://www.google.com");
 
         public Service<IDescriptionConvention<IApiDescription, 
-            ModuleDescription>> ModuleConvention { get; }
+            ModuleDescription>> ModuleConvention { get; } = new Service<IDescriptionConvention
+            <IApiDescription, ModuleDescription>> { Type = typeof(ModuleConvention) };
         public Service<IDescriptionConvention<IApiDescription, 
-            ResourceDescription>> ResourceConvention { get; }
+            ResourceDescription>> ResourceConvention { get; } = new Service<IDescriptionConvention
+            <IApiDescription, ResourceDescription>> { Type = typeof(ResourceConvention) };
         public Service<IDescriptionConvention<IApiDescription, 
-            EndpointDescription>> EndpointConvention { get; }
+            EndpointDescription>> EndpointConvention { get; } = new Service<IDescriptionConvention
+            <IApiDescription, EndpointDescription>> { Type = typeof(EndpointConvention) };
         public Service<IDescriptionConvention<IApiDescription, 
-            List<StatusCodeDescription>>> StatusCodeConvention { get; }
+            List<StatusCodeDescription>>> StatusCodeConvention { get; } = new Service<IDescriptionConvention
+            <IApiDescription, List<StatusCodeDescription>>> { Type = typeof(StatusCodeConvention) };
         public Service<IDescriptionConvention<IApiDescription, 
-            List<HeaderDescription>>> HeaderConvention { get; }
+            List<HeaderDescription>>> HeaderConvention { get; } = new Service<IDescriptionConvention
+            <IApiDescription, List<HeaderDescription>>> { Type = typeof(HeaderConvention) };
         public Service<IDescriptionConvention<Type, TypeDescription>> 
-            TypeConvention { get; }
+            TypeConvention { get; } = new Service<IDescriptionConvention<Type, 
+            TypeDescription>> { Type = typeof(TypeConvention) };
         public Service<IDescriptionConvention<PropertyInfo, 
-            MemberDescription>> MemberConvention { get; }
+            MemberDescription>> MemberConvention { get; } = new Service<IDescriptionConvention
+            <PropertyInfo, MemberDescription>> { Type = typeof(MemberConvention) };
         public Service<IDescriptionConvention<Type, EnumDescription>> 
-            EnumConvention { get; }
+            EnumConvention { get; } = new Service<IDescriptionConvention<Type, 
+            EnumDescription>> { Type = typeof(EnumConvention) };
         public Service<IDescriptionConvention<FieldInfo, 
-            OptionDescription>> EnumOptionConvention { get; }
+            OptionDescription>> EnumOptionConvention { get; } = new Service<IDescriptionConvention
+            <FieldInfo, OptionDescription>> { Type = typeof(OptionConvention) };
 
-        public List<Action<ModuleOverrideContext>> ModuleOverrides { get; }
-        public List<Action<ResourceOverrideContext>> ResourceOverrides { get; }
-        public List<Action<EndpointOverrideContext>> EndpointOverrides { get; }
-        public List<Action<UrlParameterOverrideContext>> UrlParameterOverrides { get; }
-        public List<Action<QuerystringOverrideContext>> QuerystringOverrides { get; }
-        public List<Action<StatusCodeOverrideContext>> StatusCodeOverrides { get; }
-        public List<Action<HeaderOverrideContext>> RequestHeaderOverrides { get; }
-        public List<Action<HeaderOverrideContext>> ResponseHeaderOverrides { get; }
-        public List<Action<MessageOverrideContext>> RequestOverrides { get; }
-        public List<Action<MessageOverrideContext>> ResponseOverrides { get; }
-        public List<Action<TypeOverrideContext>> TypeOverrides { get; }
-        public List<Action<MemberOverrideContext>> MemberOverrides { get; }
-        public List<Action<OptionOverrideContext>> OptionOverrides { get; }
+        public List<Action<ModuleOverrideContext>> ModuleOverrides { get; } = new List<Action<ModuleOverrideContext>>();
+        public List<Action<ResourceOverrideContext>> ResourceOverrides { get; } = new List<Action<ResourceOverrideContext>>();
+        public List<Action<EndpointOverrideContext>> EndpointOverrides { get; } = new List<Action<EndpointOverrideContext>>();
+        public List<Action<UrlParameterOverrideContext>> UrlParameterOverrides { get; } = new List<Action<UrlParameterOverrideContext>>();
+        public List<Action<QuerystringOverrideContext>> QuerystringOverrides { get; } = new List<Action<QuerystringOverrideContext>>();
+        public List<Action<StatusCodeOverrideContext>> StatusCodeOverrides { get; } = new List<Action<StatusCodeOverrideContext>>();
+        public List<Action<HeaderOverrideContext>> RequestHeaderOverrides { get; } = new List<Action<HeaderOverrideContext>>();
+        public List<Action<HeaderOverrideContext>> ResponseHeaderOverrides { get; } = new List<Action<HeaderOverrideContext>>();
+        public List<Action<MessageOverrideContext>> RequestOverrides { get; } = new List<Action<MessageOverrideContext>>();
+        public List<Action<MessageOverrideContext>> ResponseOverrides { get; } = new List<Action<MessageOverrideContext>>();
+        public List<Action<TypeOverrideContext>> TypeOverrides { get; } = new List<Action<TypeOverrideContext>>();
+        public List<Action<MemberOverrideContext>> MemberOverrides { get; } = new List<Action<MemberOverrideContext>>();
+        public List<Action<OptionOverrideContext>> OptionOverrides { get; } = new List<Action<OptionOverrideContext>>();
     }
 }

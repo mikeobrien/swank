@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using Swank.Configuration;
 using Swank.Extensions;
 using Swank.Specification;
@@ -49,15 +50,16 @@ namespace Swank.Web.Handlers.App
         private readonly SpecificationService _specification;
 
         public AppHandler(Configuration.Configuration configuration, 
-            SpecificationService specification) : base(Mime.TextHtml, true)
+            SpecificationService specification) : 
+            base(configuration, Mime.TextHtml, true)
         {
             _configuration = configuration;
             _specification = specification;
         }
 
-        protected override byte[] CreateResponse()
+        protected override byte[] CreateResponse(HttpRequestMessage request)
         {
-            return _configuration.AppTemplate.RenderBytes(new AppModel
+            var app = new AppModel
             {
                 AppUrl = _configuration.AppUrl,
                 SpecificationUrl = _configuration.SpecificationUrl,
@@ -70,7 +72,8 @@ namespace Swank.Web.Handlers.App
                     _configuration.OverviewLinks
                         .Select(x => new LinkModel
                         {
-                            Name = x.Name, FragmentId = x.FragmentId
+                            Name = x.Name,
+                            FragmentId = x.FragmentId
                         })),
                 Copyright = _configuration.Copyright,
                 Scripts = _configuration.Scripts.Select(x => x.GetUrl()).ToList(),
@@ -88,7 +91,11 @@ namespace Swank.Web.Handlers.App
                     Collapsed = _configuration.CollapseModules,
                     Resources = m.Resources.Select(r => r.Name.TrimStart('/')).ToList()
                 }).ToList()
-            });
+            };
+
+            _configuration.AppPreRender?.Invoke(request, app);
+
+            return _configuration.AppTemplate.RenderBytes(app);
         }
     }
 }

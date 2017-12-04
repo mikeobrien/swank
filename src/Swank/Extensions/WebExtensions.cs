@@ -60,7 +60,7 @@ namespace Swank.Extensions
         }
         
         public static Task<HttpResponseMessage> CreateJsonResponseTask<T>(
-            this T source)
+            this T source) where T : class
         {
             return new HttpResponseMessage
             {
@@ -180,8 +180,9 @@ namespace Swank.Extensions
             return HttpUtility.JavaScriptStringEncode(value);
         }
 
-        public static string SerializeJson<T>(this T source)
+        public static string SerializeJson<T>(this T source) where T : class
         {
+            if (source == null) return null;
             return JsonConvert.SerializeObject(source, 
                 Formatting.Indented, new JsonSerializerSettings
                 {
