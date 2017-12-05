@@ -920,14 +920,14 @@ namespace Tests.Unit.Specification
             var member = type.Members.Member(nameof(Namespace.Child));
 
             member.Type.LogicalName.ShouldEqual("Child");
-            member.Type.Namespace.ShouldEqual("PostRequestChild");
-            member.Type.FullNamespace.ShouldOnlyContain("Post", "PostRequestChild");
+            member.Type.Namespace.ShouldEqual("Child");
+            member.Type.FullNamespace.ShouldOnlyContain("Post", "Child");
 
             member = member.Type.Members.Member(nameof(NamespacedChild.Child2));
 
             member.Type.LogicalName.ShouldEqual("Child2");
-            member.Type.Namespace.ShouldEqual("ChildChild2");
-            member.Type.FullNamespace.ShouldOnlyContain("Post", "PostRequestChild", "ChildChild2");
+            member.Type.Namespace.ShouldEqual("Child2");
+            member.Type.FullNamespace.ShouldOnlyContain("Post", "Child", "Child2");
         }
 
         [Test]
@@ -945,14 +945,14 @@ namespace Tests.Unit.Specification
             var item = member.Type.ArrayItem;
 
             item.Type.LogicalName.ShouldEqual("ChildList");
-            item.Type.Namespace.ShouldEqual("PostRequestChildList");
-            item.Type.FullNamespace.ShouldOnlyContain("Post", "PostRequestChildList");
+            item.Type.Namespace.ShouldEqual("ChildList");
+            item.Type.FullNamespace.ShouldOnlyContain("Post", "ChildList");
 
             member = item.Type.Members.Member(nameof(NamespacedChild.Child2));
 
             member.Type.LogicalName.ShouldEqual("Child2");
-            member.Type.Namespace.ShouldEqual("ChildListChild2");
-            member.Type.FullNamespace.ShouldOnlyContain("Post", "PostRequestChildList", "ChildListChild2");
+            member.Type.Namespace.ShouldEqual("Child2");
+            member.Type.FullNamespace.ShouldOnlyContain("Post", "ChildList", "Child2");
         }
 
         [Test]
@@ -970,14 +970,14 @@ namespace Tests.Unit.Specification
             var item = member.Type.DictionaryEntry;
 
             item.ValueType.LogicalName.ShouldEqual("ChildHash");
-            item.ValueType.Namespace.ShouldEqual("PostRequestChildHash");
-            item.ValueType.FullNamespace.ShouldOnlyContain("Post", "PostRequestChildHash");
+            item.ValueType.Namespace.ShouldEqual("ChildHash");
+            item.ValueType.FullNamespace.ShouldOnlyContain("Post", "ChildHash");
 
             member = item.ValueType.Members.Member(nameof(NamespacedChild.Child2));
 
             member.Type.LogicalName.ShouldEqual("Child2");
-            member.Type.Namespace.ShouldEqual("ChildHashChild2");
-            member.Type.FullNamespace.ShouldOnlyContain("Post", "PostRequestChildHash", "ChildHashChild2");
+            member.Type.Namespace.ShouldEqual("Child2");
+            member.Type.FullNamespace.ShouldOnlyContain("Post", "ChildHash", "Child2");
         }
 
         [Test]
@@ -999,8 +999,8 @@ namespace Tests.Unit.Specification
             var member = item.Type.Members.Member(nameof(NamespacedChild.Child2));
 
             member.Type.LogicalName.ShouldEqual("Child2");
-            member.Type.Namespace.ShouldEqual("PostRequestChild2");
-            member.Type.FullNamespace.ShouldOnlyContain("Post", "PostRequestChild2");
+            member.Type.Namespace.ShouldEqual("Child2");
+            member.Type.FullNamespace.ShouldOnlyContain("Post", "Child2");
         }
 
         [Test]
@@ -1040,8 +1040,8 @@ namespace Tests.Unit.Specification
             var member = item.ValueType.Members.Member(nameof(NamespacedChild.Child2));
 
             member.Type.LogicalName.ShouldEqual("Child2");
-            member.Type.Namespace.ShouldEqual("PostRequestChild2");
-            member.Type.FullNamespace.ShouldOnlyContain("Post", "PostRequestChild2");
+            member.Type.Namespace.ShouldEqual("Child2");
+            member.Type.FullNamespace.ShouldOnlyContain("Post", "Child2");
         }
 
         [Test]

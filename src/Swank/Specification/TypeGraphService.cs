@@ -242,7 +242,7 @@ namespace Swank.Specification
         {
             dataType.IsComplex = true;
             dataType.LogicalName = logicalName ?? dataType.Name;
-            dataType.Namespace = @namespace ?? parent.LogicalName + dataType.LogicalName;
+            dataType.Namespace = @namespace ?? dataType.LogicalName;
             dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
                 .Concat(dataType.Namespace).ToList();
             dataType.Members = type.GetProperties()
