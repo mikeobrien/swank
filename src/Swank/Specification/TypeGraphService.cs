@@ -62,23 +62,37 @@ namespace Swank.Specification
 
             var dataType = new DataType
             {
-                Name = name ?? (!type.IsSimpleType() && memberDescription != null ? 
-                    memberDescription.Name : description.Name),
                 Comments = description.Comments
             };
 
+            logicalName = logicalName ?? memberDescription?.Name;
+
             if (type.IsDictionary())
+            {
+                dataType.Name = name ?? memberDescription?.Name ?? description.Name;
                 BuildDictionary(dataType, type, description, requestGraph, 
                     endpoint, ancestors, memberDescription, parent,
                     logicalName, @namespace);
+            }
             else if (type.IsArray || type.IsList())
+            {
+                dataType.Name = name ?? memberDescription?.Name ?? description.Name;
                 BuildArray(dataType, type, description, requestGraph, 
                     endpoint, ancestors, memberDescription, parent, 
                     logicalName, @namespace);
-            else if (type.IsSimpleType()) BuildSimpleType(parent, dataType, 
-                description, type, requestGraph, @namespace, memberDescription);
-            else BuildComplexType(parent, dataType, type, requestGraph, 
-                endpoint, ancestors, logicalName, @namespace);
+            }
+            else if (type.IsSimpleType())
+            {
+                dataType.Name = name ?? description.Name;
+                BuildSimpleType(parent, dataType, description, type, 
+                    requestGraph, @namespace, memberDescription);
+            }
+            else
+            {
+                dataType.Name = name ?? description.Name;
+                BuildComplexType(parent, dataType, type, requestGraph, 
+                    endpoint, ancestors, logicalName ?? memberDescription?.Name, @namespace);
+            }
 
             return _configuration.TypeOverrides.Apply(new TypeOverrideContext
             {
@@ -228,7 +242,7 @@ namespace Swank.Specification
         {
             dataType.IsComplex = true;
             dataType.LogicalName = logicalName ?? dataType.Name;
-            dataType.Namespace = @namespace ?? parent.LogicalName + dataType.Name;
+            dataType.Namespace = @namespace ?? parent.LogicalName + dataType.LogicalName;
             dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
                 .Concat(dataType.Namespace).ToList();
             dataType.Members = type.GetProperties()
