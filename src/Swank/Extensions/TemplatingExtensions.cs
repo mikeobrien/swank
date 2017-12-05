@@ -25,7 +25,10 @@ namespace Swank.Extensions
 
         public static string RenderRazor<T>(this string template, T model)
         {
-            return Engine.Razor.Run(template.Hash(), typeof(T), model);
+            var name = template.Hash();
+            return Engine.Razor.IsTemplateCached(name, typeof(T))
+                ? Engine.Razor.Run(name, typeof(T), model)
+                : Engine.Razor.RunCompile(template, name, typeof(T), model);
         }
 
         public static string RenderAndCompileRazor<T>(this string template, T model)
