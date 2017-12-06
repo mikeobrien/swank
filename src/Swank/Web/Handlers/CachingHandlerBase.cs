@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -21,15 +22,36 @@ namespace Swank.Web.Handlers
             _mimeType = mimeType;
         }
 
-        protected abstract byte[] CreateResponse(HttpRequestMessage request);
+        protected virtual object GetData(HttpRequestMessage request)
+        {
+            return null;
+        }
+
+        protected virtual string GetCacheKey(HttpRequestMessage request, object data)
+        {
+            return "";
+        }
+
+        protected virtual byte[] CreateResponse(HttpRequestMessage request)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual byte[] CreateResponse(HttpRequestMessage request, object data)
+        {
+            return CreateResponse(request);
+        }
 
         protected override Task<HttpResponseMessage> Send(HttpRequestMessage request)
         {
-            var cacheKey = _configuration.CacheKey(request);
+            var data = GetData(request);
+            var cacheKey = GetCacheKey(request, data) ?? "";
+            cacheKey += (cacheKey != "" ? "-" : "") + 
+                _configuration.CacheKey(request);
             byte[] response;
             if (!Cache.ContainsKey(cacheKey))
             {
-                response = CreateResponse(request);
+                response = CreateResponse(request, data);
                 Cache.TryAdd(cacheKey, response);
             }
             else response = Cache[cacheKey];

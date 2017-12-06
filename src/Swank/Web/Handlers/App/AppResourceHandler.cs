@@ -31,11 +31,23 @@ namespace Swank.Web.Handlers.App
             _bodyDescriptionFactory = bodyDescriptionFactory;
         }
 
-        protected override byte[] CreateResponse(HttpRequestMessage message)
+        protected override object GetData(HttpRequestMessage request)
+        {
+            return JsonConvert.DeserializeObject<Request>(
+                request.Content.ReadAsStringAsync().Result);
+        }
+
+        protected override string GetCacheKey(HttpRequestMessage request, object data)
+        {
+            return (data as Request)?.Name;
+        }
+
+        protected override byte[] CreateResponse(HttpRequestMessage message, object data)
         {
             var url = _configuration.ApiUrl?.ParseUri() ?? message.RequestUri;
-            var request = JsonConvert.DeserializeObject<Request>(
-                message.Content.ReadAsStringAsync().Result);
+            var request = data as Request;
+
+            if (request == null) return null;
 
             var resource = _specification.Generate()
                 .SelectMany(x => x.Resources)
