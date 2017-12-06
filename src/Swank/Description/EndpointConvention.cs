@@ -24,7 +24,8 @@ namespace Swank.Description
             
             return new EndpointDescription
             {
-                Name = attribute?.Name ?? xmlComments?.Summary ?? endpoint.Name,
+                Name = endpoint.GetActionAttribute<NameAttribute>()?.Name ??
+                    attribute?.Name ?? xmlComments?.Summary ?? endpoint.Name,
                 Comments = GetEndpointComments(endpoint, attribute, xmlComments),
                 Namespace = _configuration.ActionNamespace(endpoint),
                 MethodName = _configuration.ActionName(endpoint),
@@ -34,8 +35,9 @@ namespace Swank.Description
                 RequestComments = GetDataComments<RequestCommentsAttribute>(
                     endpoint, x => x.Comments, RequestCommentsExtension) ??
                     endpoint.RequestParameter?.Documentation ??
-                    endpoint.RequestParameter.WhenNotNull(x => xmlComments?
-                        .Parameters.TryGetValue(x.Name)).OtherwiseDefault(),
+                    (endpoint.RequestParameter != null
+                        ? xmlComments?.Parameters.TryGetValue(endpoint.RequestParameter.Name)
+                        : null),
                 ResponseComments = GetDataComments<ResponseCommentsAttribute>(
                     endpoint, x => x.Comments, ResponseCommentsExtension) ?? 
                     endpoint.ResponseDocumentation ?? 
@@ -46,11 +48,8 @@ namespace Swank.Description
         protected virtual string GetEndpointComments(IApiDescription endpoint, 
             DescriptionAttribute description, XmlComments.Comments xmlComments)
         {
-            return description
-                .WhenNotNull(x => x.Comments)
-                .Otherwise(endpoint.GetActionAttribute<CommentsAttribute>()
-                .WhenNotNull(x => x.Comments)
-                .OtherwiseDefault()) ??
+            return description?.Comments ??
+                endpoint.GetActionAttribute<CommentsAttribute>()?.Comments ??
 
                 endpoint.ControllerType.Assembly.FindResourceNamed(
                     endpoint.ControllerType.FullName + "." +
@@ -68,9 +67,8 @@ namespace Swank.Description
             Func<TAttribute, string> attributeComments, string resourcePostfix = "")
             where TAttribute : Attribute
         {
-            return endpoint.GetActionAttribute<TAttribute>()
-                .WhenNotNull(attributeComments)
-                .OtherwiseDefault() ??
+            var attribute = endpoint.GetActionAttribute<TAttribute>();
+            return (attribute != null ? attributeComments(attribute) : null) ??
 
                 endpoint.ControllerType.Assembly.FindResourceNamed(
                         endpoint.ControllerType.FullName + "." +

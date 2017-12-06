@@ -27,21 +27,18 @@ namespace Swank.Description
             var xmlComments = _xmlComments.GetProperty(property);
 
             return new MemberDescription {
-                Name = description.WhenNotNull(x => x.Name).OtherwiseDefault() ??
-                    property.GetCustomAttribute<XmlElementAttribute>()
-                        .WhenNotNull(x => x.ElementName).OtherwiseDefault() ??
-                    property.GetCustomAttribute<DataMemberAttribute>()
-                        .WhenNotNull(x => x.Name).OtherwiseDefault() ??
+                Name = property.GetCustomAttribute<NameAttribute>()?.Name ?? description?.Name ??
+                    property.GetCustomAttribute<XmlElementAttribute>()?.ElementName ??
+                    property.GetCustomAttribute<DataMemberAttribute>()?.Name ??
                     property.Name,
-                Comments = description.WhenNotNull(x => x.Comments).OtherwiseDefault() ??
-                    property.GetCustomAttribute<CommentsAttribute>()
-                        .WhenNotNull(x => x.Comments).OtherwiseDefault() ??
+                Comments = description?.Comments ??
+                    property.GetCustomAttribute<CommentsAttribute>()?.Comments ??
                     xmlComments?.Summary ?? xmlComments?.Remarks,
-                DefaultValue = property.GetCustomAttribute<DefaultValueAttribute>()
-                    .WhenNotNull(x => x.Value.ToSampleValueString(_configuration)).OtherwiseDefault(),
-                SampleValue = property.GetCustomAttribute<SampleValueAttribute>()
-                    .WhenNotNull(x => x.Value.ToSampleValueString(_configuration))
-                    .Otherwise(property.PropertyType.GetSampleValue(_configuration)),
+                DefaultValue = property.GetCustomAttribute<DefaultValueAttribute>()?
+                    .Value.ToSampleValueString(_configuration),
+                SampleValue = property.GetCustomAttribute<SampleValueAttribute>()?
+                    .Value.ToSampleValueString(_configuration) ??
+                    property.PropertyType.GetSampleValue(_configuration),
                 Optional = property.GetOptionalScope(),
                 Hidden = property.PropertyType.HasAttribute<HideAttribute>() ||
                     property.HasAttribute<HideAttribute>() ||
@@ -49,19 +46,18 @@ namespace Swank.Description
                 Encoding = GetEncoding(property),
                 MaxLength = property.GetCustomAttribute<MaxLengthAttribute>()?.MaxLength,
                 Deprecated = obsolete != null,
-                DeprecationMessage = obsolete.WhenNotNull(x => x.Message).OtherwiseDefault(),
+                DeprecationMessage = obsolete?.Message,
                 ArrayItem = new Description
                 {
-                    Name = property.GetCustomAttribute<XmlArrayItemAttribute>()
-                            .WhenNotNull(x => x.ElementName).OtherwiseDefault() ??
-                        arrayDescription.WhenNotNull(x => x.ItemName).OtherwiseDefault(),
-                    Comments = arrayDescription.WhenNotNull(x => x.ItemComments).OtherwiseDefault()
+                    Name = property.GetCustomAttribute<XmlArrayItemAttribute>()?.ElementName ??
+                        arrayDescription?.ItemName,
+                    Comments = arrayDescription?.ItemComments
                 },
                 DictionaryEntry = new DictionaryDescription
                 {
-                    KeyName = dictionaryDescription.WhenNotNull(x => x.KeyName).OtherwiseDefault(),
-                    KeyComments = dictionaryDescription.WhenNotNull(x => x.KeyComments).OtherwiseDefault(),
-                    ValueComments = dictionaryDescription.WhenNotNull(x => x.ValueComments).OtherwiseDefault()
+                    KeyName = dictionaryDescription?.KeyName,
+                    KeyComments = dictionaryDescription?.KeyComments,
+                    ValueComments = dictionaryDescription?.ValueComments
                 }
             };
         }

@@ -191,7 +191,7 @@ namespace Tests.Acceptance
             bodyLine.IsComplexType.ShouldEqual(true);
             bodyLine.IsFirst.ShouldEqual(true);
             bodyLine.IsOpening.ShouldEqual(true);
-            bodyLine.LogicalName.ShouldEqual("GetResponse");
+            bodyLine.LogicalName.ShouldEqual("Response");
             bodyLine.Namespace.ShouldEqual("Get");
             bodyLine.FullNamespace.ShouldOnlyContain("Get");
             bodyLine.Whitespace.ShouldBeEmpty();

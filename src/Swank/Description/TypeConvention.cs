@@ -26,32 +26,29 @@ namespace Swank.Description
             var dictionaryDescription = type.GetCustomAttribute<DictionaryDescriptionAttribute>();
             var xmlComments = _xmlComments.GetType(type);
 
-            return new TypeDescription {
-                Name = type.GetCustomAttribute<XmlRootAttribute>()
-                        .WhenNotNull(x => x.ElementName).OtherwiseDefault() ??
-                    type.GetCustomAttribute<XmlTypeAttribute>()
-                        .WhenNotNull(x => x.TypeName).OtherwiseDefault() ??
-                    type.GetCustomAttribute<DataContractAttribute>()
-                        .WhenNotNull(x => x.Name).OtherwiseDefault() ??
-                    type.GetCustomAttribute<CollectionDataContractAttribute>()
-                        .WhenNotNull(x => x.Name).OtherwiseDefault() ??
-                    description.WhenNotNull(x => x.Name).OtherwiseDefault() ??
+            return new TypeDescription
+            {
+                Id = type.FullName.Hash(),
+                Name = type.GetCustomAttribute<XmlRootAttribute>()?.ElementName ??
+                    type.GetCustomAttribute<XmlTypeAttribute>()?.TypeName ??
+                    type.GetCustomAttribute<DataContractAttribute>()?.Name ??
+                    type.GetCustomAttribute<CollectionDataContractAttribute>()?.Name ??
+                    type.GetCustomAttribute<NameAttribute>()?.Name ?? description?.Name ??
                     type.GetXmlName(_configuration.EnumFormat == EnumFormat.AsString),
-                Comments = type.GetCustomAttribute<CommentsAttribute>()
-                        .WhenNotNull(x => x.Comments).OtherwiseDefault() ??
-                    description.WhenNotNull(x => x.Comments).OtherwiseDefault() ??
+                Comments = type.GetCustomAttribute<CommentsAttribute>()?.Comments ??
+                    description?.Comments ??
                     xmlComments?.Summary ?? xmlComments?.Remarks,
                 Nullable = type.IsNullable(),
                 ArrayItem = new Description
                 {
-                    Name = arrayDescription.WhenNotNull(x => x.ItemName).OtherwiseDefault(),
-                    Comments = arrayDescription.WhenNotNull(x => x.ItemComments).OtherwiseDefault()
+                    Name = arrayDescription?.ItemName,
+                    Comments = arrayDescription?.ItemComments
                 },
                 DictionaryEntry = new DictionaryDescription
                 {
-                    KeyName = dictionaryDescription.WhenNotNull(x => x.KeyName).OtherwiseDefault(),
-                    KeyComments = dictionaryDescription.WhenNotNull(x => x.KeyComments).OtherwiseDefault(),
-                    ValueComments = dictionaryDescription.WhenNotNull(x => x.ValueComments).OtherwiseDefault()
+                    KeyName = dictionaryDescription?.KeyName,
+                    KeyComments = dictionaryDescription?.KeyComments,
+                    ValueComments = dictionaryDescription?.ValueComments
                 }
             };
         }

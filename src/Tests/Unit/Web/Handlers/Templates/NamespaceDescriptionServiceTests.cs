@@ -53,8 +53,8 @@ namespace Tests.Unit.Web.Handlers.Templates
 
             endpoint.Namespace.ShouldOnlyContain("Web", "Handlers", "Templates", "Controller", "Post");
 
-            should_equal_type(endpoint.Request.Type, "Post", "Post", "PostRequest");
-            should_equal_type(endpoint.Response.Type, "Post", "Post", "PostResponse");
+            should_equal_type(endpoint.Request.Type, "Post", "Post", "Request");
+            should_equal_type(endpoint.Response.Type, "Post", "Post", "Response");
         }
 
         [Test]
@@ -88,8 +88,8 @@ namespace Tests.Unit.Web.Handlers.Templates
 
             endpoint.Namespace.ShouldOnlyContain("Web", "Handlers", "Templates", "Controller", "Post");
 
-            should_equal_type(endpoint.Request.Type, "Post", "Post", "PostRequest");
-            should_equal_type(endpoint.Response.Type, "Post", "Post", "PostResponse");
+            should_equal_type(endpoint.Request.Type, "Post", "Post", "Request");
+            should_equal_type(endpoint.Response.Type, "Post", "Post", "Response");
         }
 
         private void should_equal_type(DataType type,

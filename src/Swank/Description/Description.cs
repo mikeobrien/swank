@@ -1,6 +1,4 @@
-﻿using Swank.Extensions;
-
-namespace Swank.Description
+﻿namespace Swank.Description
 {
     public class Description
     {
@@ -22,7 +20,7 @@ namespace Swank.Description
 
         public override int GetHashCode()
         {
-            return Name.WhenNotNull(x => x.GetHashCode()).Otherwise(0);
+            return Name?.GetHashCode() ?? 0;
         }
     }
 }

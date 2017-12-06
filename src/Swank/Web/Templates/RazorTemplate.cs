@@ -29,9 +29,7 @@ namespace Swank.Web.Templates
         {
             try
             {
-                return _asset.WhenNotNull(x => x.ReadString())
-                    .WhenNotNull(x => x.RenderRazor(model))
-                    .OtherwiseDefault();
+                return _asset?.ReadString()?.RenderRazor(model);
             }
             catch (Exception exception)
             {

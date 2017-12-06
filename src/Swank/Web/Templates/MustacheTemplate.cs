@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Swank.Extensions;
 using Swank.Web.Assets;
 
@@ -27,13 +26,11 @@ namespace Swank.Web.Templates
         {
             try
             {
-                return _asset.WhenNotNull(x => x.ReadString())
-                    .WhenNotNull(x => x
+                return _asset?.ReadString()?
                         .NormalizeLineBreaks().RemoveWhitespace()
                         .ConvertNbspHtmlEntityToSpaces()
                         .ConvertBrHtmlTagsToLineBreaks()
-                        .RenderMustache(model))
-                    .OtherwiseDefault();
+                        .RenderMustache(model);
             }
             catch (Exception exception)
             {

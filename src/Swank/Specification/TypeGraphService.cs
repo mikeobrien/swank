@@ -31,7 +31,7 @@ namespace Swank.Specification
             EndpointDescription description, IApiDescription endpoint)
         {
             var @namespace = description.MethodName;
-            var logicalName = @namespace + (requestGraph ? "Request" : "Response");
+            var logicalName = requestGraph ? "Request" : "Response";
             var dataType = BuildGraph(type, requestGraph, endpoint, 
                 logicalName: logicalName, @namespace: @namespace);
             return dataType;
@@ -67,30 +67,26 @@ namespace Swank.Specification
 
             logicalName = logicalName ?? memberDescription?.Name;
 
-            if (type.IsDictionary())
+            if (type.IsSimpleType())
             {
-                dataType.Name = name ?? memberDescription?.Name ?? description.Name;
-                BuildDictionary(dataType, type, description, requestGraph, 
+                BuildSimpleType(parent, name, dataType, description, type, 
+                    requestGraph, @namespace, memberDescription);
+            }
+            else if (type.IsDictionary())
+            {
+                BuildDictionary(name, dataType, type, description, requestGraph, 
                     endpoint, ancestors, memberDescription, parent,
                     logicalName, @namespace);
             }
-            else if (type.IsArray || type.IsList())
+            else if (type.IsArray || type.IsEnumerable())
             {
-                dataType.Name = name ?? memberDescription?.Name ?? description.Name;
-                BuildArray(dataType, type, description, requestGraph, 
+                BuildArray(name, dataType, type, description, requestGraph, 
                     endpoint, ancestors, memberDescription, parent, 
                     logicalName, @namespace);
             }
-            else if (type.IsSimpleType())
+            else 
             {
-                dataType.Name = name ?? description.Name;
-                BuildSimpleType(parent, dataType, description, type, 
-                    requestGraph, @namespace, memberDescription);
-            }
-            else
-            {
-                dataType.Name = name ?? description.Name;
-                BuildComplexType(parent, dataType, type, requestGraph, 
+                BuildComplexType(parent, name, description, dataType, type, requestGraph, 
                     endpoint, ancestors, logicalName ?? memberDescription?.Name, @namespace);
             }
 
@@ -106,6 +102,7 @@ namespace Swank.Specification
 
         private void BuildSimpleType(
             DataType parent,
+            string name,
             DataType dataType, 
             TypeDescription description, 
             Type type, 
@@ -113,6 +110,7 @@ namespace Swank.Specification
             string @namespace,
             MemberDescription memberDescription)
         {
+            dataType.Name = name ?? description.Name;
             dataType.IsSimple = true;
             dataType.IsNullable = description.Nullable;
             if (type.GetNullableUnderlyingType().IsEnum)
@@ -164,9 +162,10 @@ namespace Swank.Specification
         }
 
         private void BuildDictionary(
+            string name,
             DataType dataType,
             Type type,
-            TypeDescription typeDescription,
+            TypeDescription description,
             bool requestGraph,
             IApiDescription endpoint,
             IEnumerable<Type> ancestors,
@@ -175,24 +174,19 @@ namespace Swank.Specification
             string logicalName = null,
             string @namespace = null)
         {
+            dataType.Name = name ?? memberDescription?.Name ?? description.Name;
             var types = type.GetGenericDictionaryTypes();
             dataType.IsDictionary = true;
-            dataType.Comments = memberDescription.WhenNotNull(x => x.Comments)
-                .OtherwiseDefault() ?? dataType.Comments;
+            dataType.Comments = memberDescription?.Comments ?? dataType.Comments;
             dataType.DictionaryEntry = new DictionaryEntry
             {
-                KeyName = memberDescription.WhenNotNull(x => x.DictionaryEntry.KeyName)
-                    .OtherwiseDefault() ??  typeDescription.WhenNotNull(x => x
-                        .DictionaryEntry.KeyName).OtherwiseDefault(),
-                KeyComments = memberDescription
-                    .WhenNotNull(x => x.DictionaryEntry.KeyComments).OtherwiseDefault() ??
-                    typeDescription.WhenNotNull(x => x.DictionaryEntry.KeyComments)
-                        .OtherwiseDefault(),
+                KeyName = memberDescription?.DictionaryEntry.KeyName ??  
+                    description?.DictionaryEntry.KeyName,
+                KeyComments = memberDescription?.DictionaryEntry.KeyComments ??
+                    description?.DictionaryEntry.KeyComments,
                 KeyType = BuildGraph(types.Key, requestGraph, endpoint, dataType, ancestors),
-                ValueComments = memberDescription
-                    .WhenNotNull(x => x.DictionaryEntry.ValueComments).OtherwiseDefault() ??
-                    typeDescription.WhenNotNull(x => x.DictionaryEntry.ValueComments)
-                        .OtherwiseDefault(),
+                ValueComments = memberDescription?.DictionaryEntry.ValueComments ??
+                    description?.DictionaryEntry.ValueComments,
                 ValueType = BuildGraph(types.Value, requestGraph, 
                     endpoint, parent ?? dataType, ancestors, memberDescription,
                     logicalName: logicalName, @namespace: @namespace)
@@ -200,9 +194,10 @@ namespace Swank.Specification
         }
 
         private void BuildArray(
+            string name,
             DataType dataType,
             Type type,
-            TypeDescription typeDescription,
+            TypeDescription description,
             bool requestGraph,
             IApiDescription endpoint,
             IEnumerable<Type> ancestors,
@@ -211,27 +206,27 @@ namespace Swank.Specification
             string logicalName = null,
             string @namespace = null)
         {
+            dataType.Name = name ?? memberDescription?.Name ?? description.Name;
             dataType.IsArray = true;
-            dataType.Comments = memberDescription.WhenNotNull(x => x.Comments)
-                .OtherwiseDefault() ?? dataType.Comments;
-            var itemType = BuildGraph(type.GetListElementType(), requestGraph, 
+            dataType.Comments = memberDescription?.Comments ?? dataType.Comments;
+            var itemType = BuildGraph(type.GetEnumerableElementType(), requestGraph, 
                 endpoint, parent ?? dataType, ancestors, memberDescription,
                 logicalName: logicalName, @namespace: @namespace);
             dataType.ArrayItem = new ArrayItem
             {
-                Name = memberDescription
-                    .WhenNotNull(x => x.ArrayItem.Name).OtherwiseDefault() ?? 
-                    typeDescription.WhenNotNull(x => x.ArrayItem.Name).OtherwiseDefault() ?? 
+                Name = memberDescription?.ArrayItem.Name ?? 
+                    description?.ArrayItem.Name ?? 
                     itemType.Name,
-                Comments = memberDescription
-                    .WhenNotNull(x => x.ArrayItem.Comments).OtherwiseDefault() ?? 
-                    typeDescription.ArrayItem.WhenNotNull(x => x.Comments).OtherwiseDefault(),
+                Comments = memberDescription?.ArrayItem.Comments ?? 
+                    description.ArrayItem?.Comments,
                 Type = itemType
             };
         }
 
         private void BuildComplexType(
             DataType parent,
+            string name,
+            TypeDescription description,
             DataType dataType,
             Type type,
             bool requestGraph,
@@ -240,6 +235,8 @@ namespace Swank.Specification
             string logicalName,
             string @namespace)
         {
+            dataType.Id = description.Id;
+            dataType.Name = name ?? description.Name;
             dataType.IsComplex = true;
             dataType.LogicalName = logicalName ?? dataType.Name;
             dataType.Namespace = @namespace ?? dataType.LogicalName;
@@ -263,14 +260,10 @@ namespace Swank.Specification
                     IsRequest = requestGraph,
                     Member = new Member
                     {
-                        Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
-                        Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
-                        DefaultValue = requestGraph ? x.Description
-                            .WhenNotNull(y => y.DefaultValue)
-                            .OtherwiseDefault() : null,
-                        SampleValue = x.Description
-                            .WhenNotNull(y => y.SampleValue)
-                                .OtherwiseDefault(),
+                        Name = x.Description?.Name,
+                        Comments = x.Description?.Comments,
+                        DefaultValue = requestGraph ? x.Description?.DefaultValue : null,
+                        SampleValue = x.Description?.SampleValue,
                         Optional = requestGraph && 
                             (x.Description?.Optional ?? 
                             _configuration.DefaultOptionalScope)

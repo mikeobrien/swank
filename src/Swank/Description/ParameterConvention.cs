@@ -26,21 +26,20 @@ namespace Swank.Description
 
             return new ParameterDescription
             {
-                Name = description.WhenNotNull(x => x.Name).Otherwise(parameter.Name),
+                Name = parameter.GetAttribute<NameAttribute>()?.Name ?? 
+                    description?.Name ?? parameter.Name,
                 Type = (type.GetListElementType() ?? type).GetXmlName(
                     _configuration.EnumFormat == EnumFormat.AsString),
-                Comments = description.WhenNotNull(x => x.Comments).OtherwiseDefault() ??
-                    parameter.GetAttribute<CommentsAttribute>().WhenNotNull(x => x.Comments)
-                        .OtherwiseDefault() ?? parameter.Documentation ??
-                        xmlComments?.Parameters.TryGetValue(parameter.Name),
+                Comments = description?.Comments ??
+                    parameter.GetAttribute<CommentsAttribute>()?.Comments ?? 
+                    parameter.Documentation ??
+                    xmlComments?.Parameters.TryGetValue(parameter.Name),
                 DefaultValue = (parameter.GetAttribute<DefaultValueAttribute>()?.Value ??
-                        GetDefaultValue(parameter))
-                    .WhenNotNull(x => x.ToSampleValueString(_configuration))
-                    .OtherwiseDefault(),
-                SampleValue = parameter.GetAttribute<SampleValueAttribute>()
-                    .WhenNotNull(x => x.Value.ToSampleValueString(_configuration))
-                    .Otherwise(parameter.Type
-                    .GetSampleValue(_configuration)),
+                        GetDefaultValue(parameter))?
+                        .ToSampleValueString(_configuration),
+                SampleValue = parameter.GetAttribute<SampleValueAttribute>()?
+                        .Value.ToSampleValueString(_configuration) ??
+                    parameter.Type.GetSampleValue(_configuration),
                 Optional = IsOptional(parameter),
                 Hidden = parameter.HasAttribute<HideAttribute>() ||
                     parameter.HasAttribute<XmlIgnoreAttribute>(),

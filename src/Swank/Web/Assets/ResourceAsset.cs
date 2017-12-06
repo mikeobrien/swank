@@ -30,16 +30,12 @@ namespace Swank.Web.Assets
 
         public byte[] ReadBytes()
         {
-            return _assembly.WhenNotNull(x => x
-                .GetManifestResourceStream(_name)
-                    .ReadAllBytes()).Otherwise(null);
+            return _assembly?.GetManifestResourceStream(_name).ReadAllBytes();
         }
 
         public string ReadString()
         {
-            return _assembly.WhenNotNull(x => x
-                .GetManifestResourceStream(_name)
-                    .ReadAllText()).Otherwise(null);
+            return _assembly?.GetManifestResourceStream(_name).ReadAllText();
         }
 
         public static List<ResourceAsset> FindMany(IEnumerable<Assembly> assemblies,

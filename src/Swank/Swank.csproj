@@ -101,6 +101,7 @@
     <Compile Include="Description\HideAttribute.cs" />
     <Compile Include="Description\IDescriptionConvention.cs" />
     <Compile Include="Description\MarkerConvention.cs" />
+    <Compile Include="Description\NameAttribute.cs" />
     <Compile Include="Description\RequiredAttribute.cs" />
     <Compile Include="Description\ParameterConvention.cs" />
     <Compile Include="Description\MemberConvention.cs" />

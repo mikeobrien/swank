@@ -65,9 +65,9 @@ namespace Swank.Web.Handlers.App
                 IsBinary = endpoint.Request.IsBinary,
                 HasBody = endpoint.Request.HasBody,
                 Type = endpoint.Request.Type,
-                Body = endpoint.Request.Type
-                    .WhenNotNull(bodyDescriptionFactory.Create)
-                    .OtherwiseDefault(),
+                Body = endpoint.Request.Type != null 
+                    ? bodyDescriptionFactory.Create(endpoint.Request.Type)
+                    : null,
                 Headers = endpoint.Request.Headers
             };
 
@@ -77,9 +77,9 @@ namespace Swank.Web.Handlers.App
                 IsBinary = endpoint.Response.IsBinary,
                 HasBody = endpoint.Response.HasBody,
                 Type = endpoint.Response.Type,
-                Body = endpoint.Response.Type
-                    .WhenNotNull(bodyDescriptionFactory.Create)
-                    .OtherwiseDefault(),
+                Body = endpoint.Response.Type != null 
+                    ? bodyDescriptionFactory.Create(endpoint.Response.Type)
+                    : null,
                 Headers = endpoint.Response.Headers
             };
 

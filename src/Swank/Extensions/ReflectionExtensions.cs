@@ -104,6 +104,40 @@ namespace Swank.Extensions
             return new Uri(assembly.CodeBase).LocalPath;
         }
 
+        // Enumerable
+        
+        public static bool IsEnumerableType(this Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+        }
+
+        public static bool ImplementsEnumerableType(this Type type)
+        {
+            return type.Implements(typeof(IEnumerable<>));
+        }
+
+        public static bool IsEnumerable(this Type type)
+        {
+            return type.IsEnumerableType() || type.ImplementsEnumerableType();
+        }
+
+        public static Type GetEnumerableInterface(this Type type)
+        {
+            return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) 
+                ? type 
+                : type.GetInterfaces().First(x => x.IsGenericType && 
+                    x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+        }
+
+        public static Type GetEnumerableElementType(this Type type)
+        {
+            return type.IsArray 
+                ? type.GetElementType() 
+                : type.IsEnumerable() 
+                    ? type.GetEnumerableInterface().GetGenericArguments()[0] 
+                    : null;
+        }
+
         // Lists
 
         private static readonly Type[] ListTypes = { typeof(IList<>), typeof(List<>) };

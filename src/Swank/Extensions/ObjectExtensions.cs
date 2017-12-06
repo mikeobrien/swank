@@ -58,7 +58,7 @@ namespace Swank.Extensions
             }
         }
 
-        public static OtherwiseOptions<TResult> WhenNotNull<TSource, TResult>(
+        private static OtherwiseOptions<TResult> WhenNotNull<TSource, TResult>(
             this TSource value, Func<TSource, TResult> returnThis)
         {
             return new OtherwiseOptions<TResult>(value, () => returnThis(value));

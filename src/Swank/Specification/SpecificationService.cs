@@ -187,8 +187,8 @@ namespace Swank.Specification
                         Endpoint = new Endpoint
                         {
                             Id = endpoint.Id.Hash(),
-                            Name = description.WhenNotNull(y => y.Name).OtherwiseDefault(),
-                            Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
+                            Name = description?.Name,
+                            Comments = description?.Comments,
                             Namespace = description.Namespace,
                             MethodName = description.MethodName,
                             UrlTemplate = endpoint.RelativePath,
@@ -214,7 +214,7 @@ namespace Swank.Specification
                 .Select(x =>
                 {
                     var description = _parameterConvention.GetDescription(x);
-                    var name = description.WhenNotNull(y => y.Name).OtherwiseDefault();
+                    var name = description?.Name;
                     return _configuration.UrlParameterOverrides.Apply(new UrlParameterOverrideContext
                     {
                         ApiDescription = apiDescription,
@@ -222,9 +222,9 @@ namespace Swank.Specification
                         UrlParameter = new UrlParameter
                         {
                             Name = name,
-                            Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
+                            Comments = description?.Comments,
                             Type = _typeGraphService.BuildForParameter(x.Type, endpointDescription, description, apiDescription),
-                            SampleValue = description.WhenNotNull(y => y.SampleValue).OtherwiseDefault(),
+                            SampleValue = description?.SampleValue,
                             IsAuth = _configuration.AuthenticationSchemes
                                 .SelectMany(y => y.Components)
                                 .Any(y => y.Name.EqualsIgnoreCase(name) &&
@@ -247,7 +247,7 @@ namespace Swank.Specification
                 .Where(x => !x.Description.Hidden)
                 .Select(x =>
                 {
-                    var name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault();
+                    var name = x.Description?.Name;
                     return _configuration.QuerystringOverrides.Apply(new QuerystringOverrideContext
                     {
                         ApiDescription = apiDescription,
@@ -255,12 +255,11 @@ namespace Swank.Specification
                         Querystring = new QuerystringParameter
                         {
                             Name = name,
-                            Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
+                            Comments = x.Description?.Comments,
                             Type = _typeGraphService.BuildForParameter(x.Parameter.Type, 
                                 endpointDescription, x.Description, apiDescription),
-                            DefaultValue = x.Description.DefaultValue.WhenNotNull(y => y
-                                .ToSampleValueString(_configuration)).OtherwiseDefault(),
-                            SampleValue = x.Description.WhenNotNull(y => y.SampleValue).OtherwiseDefault(),
+                            DefaultValue = x.Description.DefaultValue?.ToSampleValueString(_configuration),
+                            SampleValue = x.Description?.SampleValue,
                             MultipleAllowed = x.Description.MultipleAllowed,
                             Required = !x.Description.Optional,
                             IsAuth = _configuration.AuthenticationSchemes

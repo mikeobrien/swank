@@ -9,6 +9,6 @@ namespace Swank.Description
             Comments = comments;
         }
 
-        public string Comments { get; private set; }
+        public string Comments { get; }
     }
 }

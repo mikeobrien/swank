@@ -11,42 +11,6 @@ namespace Tests.Unit.Extensions
     [TestFixture]
     public class ObjectExtensionTests
     {
-        [Test]
-        public void Should_return_source_value_when_not_null()
-        {
-            new List<string> { "fark" }.WhenNotNull(x => x.Count)
-                .OtherwiseDefault().ShouldEqual(1);
-        }
-
-        [Test]
-        public void Should_return_default_value_when_null()
-        {
-            ((List<string>)null).WhenNotNull(x => x.Count)
-                .OtherwiseDefault().ShouldEqual(0);
-        }
-
-        [Test]
-        public void Should_return_first_non_null_otherwise_value_when_null()
-        {
-            ((List<string>)null).WhenNotNull(x => x.Count.ToString())
-                .Otherwise(null, "5", "6").ShouldEqual("5");
-        }
-
-        [Test]
-        public void Should_return_chained_default_value_when_null()
-        {
-            ((List<string>)null).WhenNotNull(x => x.GetHashCode().ToString())
-                .WhenNotNull(x => x.Length).OtherwiseDefault().ShouldEqual(0);
-        }
-
-        [Test]
-        public void Should_return_first_chained_non_null_otherwise_value_when_null()
-        {
-            ((List<string>)null).WhenNotNull(x => x.GetHashCode().ToString())
-                .WhenNotNull(x => x.Length.ToString()).Otherwise(null, "5", "6")
-                .ShouldEqual("5");
-        }
-
         private static readonly object[][] FormatSampleValueTestCases = TestCaseSource.Create(4, x => x
             .Add((decimal)5, "5.00").Add((decimal)5, "5.000", nameof(Swank.Configuration.Configuration.SampleRealFormat), "0.000")
             .Add((decimal?)5, "5.00").Add((decimal?)5, "5.000", nameof(Swank.Configuration.Configuration.SampleRealFormat), "0.000")

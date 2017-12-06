@@ -22,9 +22,7 @@ namespace Swank.Web.Assets
 
         public string ReadString()
         {
-            return _asset.WhenNotNull(x => x.ReadString())
-                .WhenNotNull(x => x.TransformMarkdownBlock())
-                .OtherwiseDefault();
+            return _asset?.ReadString()?.TransformMarkdownBlock();
         }
 
         public static MarkdownAsset FromVirtualPath(string virtualPath)

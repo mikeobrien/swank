@@ -885,8 +885,8 @@ namespace Tests.Unit.Specification
         public class NamespacedChild2 { }
 
         [Test]
-        [TestCase(true, "Post", "PostRequest")]
-        [TestCase(false, "Put", "PutResponse")]
+        [TestCase(true, "Post", "Request")]
+        [TestCase(false, "Put", "Response")]
         public void should_have_complex_type_namespace( 
             bool request, string @namespace, string logicalName)
             
@@ -907,8 +907,8 @@ namespace Tests.Unit.Specification
             var member = type.Members.Member(nameof(Namespace.Options));
 
             member.Type.LogicalName.ShouldBeNull();
-            member.Type.Namespace.ShouldEqual("PostRequestOptions");
-            member.Type.FullNamespace.ShouldOnlyContain("Post", "PostRequestOptions");
+            member.Type.Namespace.ShouldEqual("RequestOptions");
+            member.Type.FullNamespace.ShouldOnlyContain("Post", "RequestOptions");
         }
 
         [Test]
@@ -992,7 +992,7 @@ namespace Tests.Unit.Specification
 
             var item = type.ArrayItem;
 
-            item.Type.LogicalName.ShouldEqual("PostRequest");
+            item.Type.LogicalName.ShouldEqual("Request");
             item.Type.Namespace.ShouldEqual("Post");
             item.Type.FullNamespace.ShouldOnlyContain("Post");
 
@@ -1033,7 +1033,7 @@ namespace Tests.Unit.Specification
 
             var item = type.DictionaryEntry;
 
-            item.ValueType.LogicalName.ShouldEqual("PostRequest");
+            item.ValueType.LogicalName.ShouldEqual("Request");
             item.ValueType.Namespace.ShouldEqual("Post");
             item.ValueType.FullNamespace.ShouldOnlyContain("Post");
 

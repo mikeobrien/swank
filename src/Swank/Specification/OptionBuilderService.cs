@@ -30,8 +30,8 @@ namespace Swank.Specification
             var description = _enumConvention.GetDescription(type);
             return new Enumeration
             {
-                Name = description.WhenNotNull(y => y.Name).Otherwise(type.Name),
-                Comments = description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
+                Name = description?.Name ?? type.Name,
+                Comments = description?.Comments,
                 Options = type.GetEnumOptions()
                     .Select(x => new
                     {
@@ -48,8 +48,8 @@ namespace Swank.Specification
                             Field = x.Option,
                             Option = new Option
                             {
-                                Name = x.Description.WhenNotNull(y => y.Name).OtherwiseDefault(),
-                                Comments = x.Description.WhenNotNull(y => y.Comments).OtherwiseDefault(),
+                                Name = x.Description?.Name,
+                                Comments = x.Description?.Comments,
                                 Value = _configuration.EnumFormat == EnumFormat.AsString ? 
                                     x.Option.Name : x.Option.GetRawConstantValue().ToString()
                             }
