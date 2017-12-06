@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bender.Collections;
 using Fclp;
 
 namespace SwankUtil
@@ -100,6 +101,11 @@ namespace SwankUtil
                 switch (arguments.Object.Command)
                 {
                     case Command.CodeExample:
+                        Console.WriteLine($"Template Path: {arguments.Object.TemplatePath}");
+                        Console.WriteLine($"Spec Path: {arguments.Object.SpecPath}");
+                        Console.WriteLine($"Endpoint Id: {arguments.Object.EndpointId}");
+                        Console.WriteLine($"Output Path: {arguments.Object.OutputPath}");
+                        Console.WriteLine($"Rendering Engine: {arguments.Object.RenderingEngine}");
                         Renderer.RenderEndpoint(
                             arguments.Object.TemplatePath,
                             arguments.Object.SpecPath,
@@ -107,15 +113,23 @@ namespace SwankUtil
                             arguments.Object.OutputPath,
                             arguments.Object.RenderingEngine); break;
                     case Command.Template:
+                        var values = arguments.Object.Values?
+                            .Select(x => x.Split(':'))
+                            .ToDictionary(x => x[0], x => x[1],
+                                StringComparer.OrdinalIgnoreCase);
+                        Console.WriteLine($"TemplatePath: {arguments.Object.TemplatePath}");
+                        Console.WriteLine($"SpecPath: {arguments.Object.SpecPath}");
+                        Console.WriteLine($"OutputPath: {arguments.Object.OutputPath}");
+                        Console.WriteLine($"RenderingEngine: {arguments.Object.RenderingEngine}");
+                        Console.WriteLine($"TemplateNamespaceIncludesModule: {arguments.Object.TemplateNamespaceIncludesModule}");
+                        values.ForEach(x => Console.WriteLine($"{x.Key}: {x.Value}"));
                         Renderer.RenderTemplate(
                             arguments.Object.TemplatePath,
                             arguments.Object.SpecPath,
                             arguments.Object.OutputPath,
                             arguments.Object.RenderingEngine,
                             arguments.Object.TemplateNamespaceIncludesModule,
-                            arguments.Object.Values?.Select(x => x.Split(':'))
-                                .ToDictionary(x => x[0], x => x[1],
-                                    StringComparer.OrdinalIgnoreCase)); break;
+                            values); break;
                     default: Console.WriteLine("No command passed."); break;
                 }
             }

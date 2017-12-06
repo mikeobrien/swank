@@ -670,6 +670,18 @@ Swank also allows you to generate your own content with templates. For example y
 @using Swank.Web.Handlers.Templates;
 @using Swank.Specification;
 @using Swank.Extensions;
+
+@Model.Values["SomeValue"]
+
+foreach (var nspace in @Model.Namespaces) 
+{
+    ...
+}
+
+foreach (var module in @Model.Specification) 
+{
+    ...
+}
 ...
 ```
 You can add templates as follows.
@@ -765,7 +777,8 @@ D:\Dev\MyApp\packages\Swank.1.0.71.0\tools\SwankUtil ^
     -c Template ^
     -s D:\Temp\Spec.json ^
     -t D:\Dev\MyApp\Templates\SomeTemplate.cshtml ^
-    -o D:\Temp\SomeTemplate.txt
+    -o D:\Temp\SomeTemplate.txt ^
+    -v Value1:Fark Value2:Farker
 ``` 
 
 Code examples are rendered pretty much the same way except you have to pass the id of the endpoint you want to use as the model. To do this, open your specification file and find the endpoint you want to use, you will see it has an `id` field as illustrated below.
