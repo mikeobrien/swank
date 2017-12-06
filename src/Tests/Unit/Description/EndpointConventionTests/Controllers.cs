@@ -71,6 +71,15 @@ namespace Tests.Unit.Description.EndpointConventionTests
                 }
             }
 
+            public class NameController
+            {
+                [Name("name")]
+                public object Get(object request)
+                {
+                    return null;
+                }
+            }
+
             public class Controller
             {
                 [Description("action name", "action description")]

@@ -120,6 +120,7 @@ namespace Swank.Specification
                 dataType.FullNamespace = (parent?.FullNamespace ?? Enumerable.Empty<string>())
                     .Concat(dataType.Namespace).ToList();
                 dataType.Enumeration = _optionBuilderService.BuildOptions(type, null, requestGraph);
+                dataType.Id = description.Id;
             }
             dataType.SampleValue = GetSimpleTypeSampleValue(dataType);
         }

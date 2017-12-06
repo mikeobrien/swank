@@ -67,6 +67,16 @@ namespace Tests.Unit.Description.EndpointConventionTests
         }
 
         [Test]
+        public void should_get_endpoint_name_from_name_attribute()
+        {
+            var description = _endpointConvention.GetDescription(
+                ApiDescription<EndpointDescriptions.ActionDescription.NameController>
+                    .ForAction(x => x.Get(null)));
+            description.Name.ShouldEqual("name");
+            description.Comments.ShouldBeNull();
+        }
+
+        [Test]
         public void should_get_endpoint_comments_from_endpoint_comments_attribute()
         {
             var description = _endpointConvention.GetDescription(
@@ -279,7 +289,7 @@ namespace Tests.Unit.Description.EndpointConventionTests
         }
 
         [Test]
-        public void should_get_action_name_from_name_attribute()
+        public void should_get_action_name_from_action_name_attribute()
         {
             var description = _endpointConvention.GetDescription(
                 ApiDescription<ActionNameController>
@@ -312,5 +322,6 @@ namespace Tests.Unit.Description.EndpointConventionTests
             description.MethodName.ShouldEqual("Get");
             description.Namespace.ShouldOnlyContain("Action", "Namespace");
         }
+        
     }
 }

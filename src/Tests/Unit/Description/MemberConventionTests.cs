@@ -39,6 +39,9 @@ namespace Tests.Unit.Description
         {
             public string NoDescription { get; set; }
 
+            [Name("NewName")]
+            public string CustomName { get; set; }
+
             [XmlElement("NewName")]
             public string CustomXmlElementName { get; set; }
 
@@ -189,8 +192,8 @@ namespace Tests.Unit.Description
         }
 
         [Test]
-        public void should_return_custom_name(
-            [Values(nameof(Model.CustomXmlElementName), nameof(Model.CustomDataMemberName),
+        public void should_return_custom_name([Values(nameof(Model.CustomName),
+            nameof(Model.CustomXmlElementName), nameof(Model.CustomDataMemberName),
                 nameof(Model.WithDescription), nameof(Model.WithArrayDescription),
                 nameof(Model.WithDictionaryDescription))] string property)
         {

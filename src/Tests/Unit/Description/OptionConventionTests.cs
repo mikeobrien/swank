@@ -36,7 +36,18 @@ namespace Tests.Unit.Description
             /// <summary>summary</summary>
             XmlSummary,
             /// <summary>remarks</summary>
-            XmlRemarks
+            XmlRemarks,
+            [Name("some name")]
+            CustomName
+        }
+
+        [Test]
+        public void should_return_custom_name()
+        {
+            var description = _optionConvention.GetDescription(
+                typeof(Options).GetField("CustomName"));
+            description.Name.ShouldEqual("some name");
+            description.Comments.ShouldBeNull();
         }
 
         [Test]

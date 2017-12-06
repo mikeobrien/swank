@@ -42,6 +42,7 @@ namespace Tests.Unit.Description
 
             public object DescriptionValue([Swank.Description
                 .Description("name", "comments")] int value) { return null; }
+            public object NameValue([Name("name")] int value) { return null; }
             public object CommentsValue([Comments("comments")] int value) { return null; }
             /// <param name="value1">value 1 comments</param>            
             /// <param name="value2">value 2 comments</param>
@@ -65,6 +66,14 @@ namespace Tests.Unit.Description
         {
             var description = GetDescription(x => x.Value(0));
             description.Name.ShouldEqual("value");
+            description.Comments.ShouldBeNull();
+        }
+
+        [Test]
+        public void should_specify_name_if_name_attribute_applied()
+        {
+            var description = GetDescription(x => x.NameValue(0));
+            description.Name.ShouldEqual("name");
             description.Comments.ShouldBeNull();
         }
 

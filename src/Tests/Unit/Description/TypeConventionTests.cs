@@ -82,6 +82,17 @@ namespace Tests.Unit.Description
             description.Comments.ShouldEqual("remarks");
         }
 
+        [Name("SomeType")]
+        public class SomeTypeWithName { }
+
+        [Test]
+        public void should_return_attribute_name()
+        {
+            var description = GetDescription<SomeTypeWithName>();
+            description.Name.ShouldEqual("SomeType");
+            description.Comments.ShouldBeNull();
+        }
+
         [XmlType("SomeType")]
         public class SomeTypeWithXmlName { }
 

@@ -170,7 +170,8 @@ namespace Tests.Unit.Specification
         {
             var dataType = Builder.BuildTypeGraphService(x => x.EnumFormat = format)
                 .BuildForMessage(false, type, _endpointDescription, null);
-
+            
+            dataType.Id.ShouldNotBeEmpty();
             dataType.Name.ShouldEqual(dataTypeName);
             dataType.IsSimple.ShouldBeTrue();
             dataType.Enumeration.Options.Count.ShouldEqual(2);
@@ -193,7 +194,8 @@ namespace Tests.Unit.Specification
             var dataType = Builder.BuildTypeGraphService(
                     x => x.EnumFormat = EnumFormat.AsString)
                 .BuildForMessage(false, type, _endpointDescription, null);
-
+            
+            dataType.Id.ShouldNotBeEmpty();
             dataType.Name.ShouldEqual("string");
             dataType.IsSimple.ShouldBeTrue();
             dataType.Enumeration.Options.Count.ShouldEqual(2);
@@ -219,7 +221,8 @@ namespace Tests.Unit.Specification
         {
             var dataType = Builder.BuildTypeGraphService(x => x.EnumFormat = format)
                 .BuildForParameter(type, "options", "Get");
-
+            
+            dataType.Id.ShouldNotBeEmpty();
             dataType.Name.ShouldEqual(dataTypeName);
             dataType.IsSimple.ShouldBeTrue();
             dataType.Enumeration.Options.Count.ShouldEqual(2);
@@ -243,7 +246,8 @@ namespace Tests.Unit.Specification
             var dataType = Builder.BuildTypeGraphService(
                     x => x.EnumFormat = EnumFormat.AsString)
                 .BuildForParameter(type, "options", "Get");
-
+            
+            dataType.Id.ShouldNotBeEmpty();
             dataType.Name.ShouldEqual("string");
             dataType.IsSimple.ShouldBeTrue();
             dataType.Enumeration.Options.Count.ShouldEqual(2);

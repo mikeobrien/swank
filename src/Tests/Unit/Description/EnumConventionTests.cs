@@ -51,6 +51,17 @@ namespace Tests.Unit.Description
             description.Comments.ShouldEqual("This is an enum with comments.");
         }
 
+        [Name("SomeEnum")]
+        public enum SomeEnumWithNameAttribute { }
+
+        [Test]
+        public void should_return_attribute_name_from_name_attribute()
+        {
+            var description = GetDescription<SomeEnumWithNameAttribute>();
+            description.Name.ShouldEqual("SomeEnum");
+            description.Comments.ShouldBeNull();
+        }
+
         [XmlType("SomeEnum")]
         public enum SomeEnumWithXmlName { }
 
