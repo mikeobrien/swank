@@ -349,7 +349,7 @@ namespace Tests.Unit.Web.Handlers.App
             description[2].ShouldBeSimpleType(itemName,
                 "string", 2, "", x => x.IsString());
 
-            description[3].ShouldBeArrayMember("ArrayMember", 1,
+            description[3].ShouldBeArrayMember("ArrayMember", "string", 1,
                 x => x.Closing(), x => x.IsLastMember());
 
             description[4].ShouldBeComplexType(type.Name, 0,
@@ -385,7 +385,7 @@ namespace Tests.Unit.Web.Handlers.App
                 x => x.IsString().Comments("This is a dictionary value."),
                 x => x.KeyComments("This is a dictionary key."));
 
-            description[3].ShouldBeDictionaryMember("Entries", 1, x => x.Closing(),
+            description[3].ShouldBeDictionaryMember("Entries", "string", 1, x => x.Closing(),
                 x => x.IsLastMember());
 
             description[4].ShouldBeComplexType("ComplexTypeWithDictionaryMember", 0,
@@ -412,7 +412,7 @@ namespace Tests.Unit.Web.Handlers.App
             description[1].ShouldBeSimpleType("Item", "string", 1, "", x => x
                 .Comments("This is an array item.").IsString());
 
-            description[2].ShouldBeArray("Items", 0,
+            description[2].ShouldBeArray("Items", "string", 0,
                 x => x.Last().Closing());
         }
 
@@ -445,7 +445,7 @@ namespace Tests.Unit.Web.Handlers.App
                         .WithOption("Option1", value1)
                         .WithOption("Option2", value2));
 
-            description[2].ShouldBeArray($"ArrayOf{dataTypeName}", 0,
+            description[2].ShouldBeArray($"ArrayOf{dataTypeName}", dataTypeName.ToLower(), 0,
                 x => x.Last().Closing());
         }
 
@@ -458,21 +458,21 @@ namespace Tests.Unit.Web.Handlers.App
 
             description.ShouldBeIndexed().ShouldTotal(5);
 
-            description[0].ShouldBeArray("ArrayOfArrayComplexType", 0,
+            description[0].ShouldBeArray("ArrayOfArrayComplexType", "ArrayComplexType", 0,
                 x => x.First().Opening().LogicalName("Response")
                     .Namespace("Get").FullNamespace("Get"));
 
             description[1].ShouldBeComplexType("ArrayComplexType", 
-                1, x => x.Opening().Namespace("Get").FullNamespace("Get")
+                "ArrayComplexType", 1, x => x.Opening().Namespace("Get").FullNamespace("Get")
                     .LogicalName("Response"));
 
             description[2].ShouldBeSimpleTypeMember("Member", "string", 2, "",
                 x => x.IsString(), x => x.IsLastMember().Required());
 
-            description[3].ShouldBeComplexType("ArrayComplexType", 1,
+            description[3].ShouldBeComplexType("ArrayComplexType", "ArrayComplexType", 1,
                 x => x.Closing());
 
-            description[4].ShouldBeArray("ArrayOfArrayComplexType", 0,
+            description[4].ShouldBeArray("ArrayOfArrayComplexType", "ArrayComplexType", 0,
                 x => x.Last().Closing());
         }
 
@@ -483,18 +483,18 @@ namespace Tests.Unit.Web.Handlers.App
 
             description.ShouldBeIndexed().ShouldTotal(5);
 
-            description[0].ShouldBeArray("ArrayOfArrayOfString", 0,
+            description[0].ShouldBeArray("ArrayOfArrayOfString", "ArrayOfString", 0,
                 x => x.First().Opening());
 
-            description[1].ShouldBeArray("ArrayOfString", 1, 
+            description[1].ShouldBeArray("ArrayOfString", "String", 1, 
                 x => x.Opening().TypeName("string"));
 
             description[2].ShouldBeSimpleType("string", 
                 "string", 2, "", x => x.IsString());
 
-            description[3].ShouldBeArray("ArrayOfString", 1, x => x.Closing());
+            description[3].ShouldBeArray("ArrayOfString", "string", 1, x => x.Closing());
 
-            description[4].ShouldBeArray("ArrayOfArrayOfString", 
+            description[4].ShouldBeArray("ArrayOfArrayOfString", "ArrayOfString", 
                 0, x => x.Last().Closing());
         }
 
@@ -505,7 +505,7 @@ namespace Tests.Unit.Web.Handlers.App
 
             description.ShouldBeIndexed().ShouldTotal(5);
 
-            description[0].ShouldBeArray("ArrayOfDictionaryOfInt", 0,
+            description[0].ShouldBeArray("ArrayOfDictionaryOfInt", "DictionaryOfInt", 0,
                 x => x.First().Opening());
 
             description[1].ShouldBeDictionary("DictionaryOfInt", 1,
@@ -515,9 +515,9 @@ namespace Tests.Unit.Web.Handlers.App
                 "key", "string", "int", 2, "0", x => x.IsNumeric());
 
             description[3].ShouldBeDictionary("DictionaryOfInt", 
-                1, x => x.Closing());
+                "int", 1, x => x.Closing());
 
-            description[4].ShouldBeArray("ArrayOfDictionaryOfInt", 
+            description[4].ShouldBeArray("ArrayOfDictionaryOfInt", "DictionaryOfInt", 
                 0, x => x.Last().Closing());
         }
 
@@ -545,7 +545,7 @@ namespace Tests.Unit.Web.Handlers.App
                 x => x.KeyComments("This is a dictionary key."));
 
             description[2].ShouldBeDictionary("Entries", 
-                0, x => x.Last().Closing());
+                "int", 0, x => x.Last().Closing());
         }
 
         public enum DictionaryKeyOptions { KeyOption1, KeyOption2 }
@@ -585,7 +585,7 @@ namespace Tests.Unit.Web.Handlers.App
                     .WithOption("KeyOption2", key2));
 
             description[2].ShouldBeDictionary($"DictionaryOf{dataTypeName}", 
-                0, x => x.Last().Closing());
+                dataTypeName.ToLower(), 0, x => x.Last().Closing());
         }
 
         public class DictionaryComplexType { public string Member { get; set; } }
@@ -597,21 +597,21 @@ namespace Tests.Unit.Web.Handlers.App
 
             description.ShouldBeIndexed().ShouldTotal(5);
 
-            description[0].ShouldBeDictionary("DictionaryOfDictionaryComplexType", 0,
-                x => x.First().Opening().LogicalName("Response")
+            description[0].ShouldBeDictionary("DictionaryOfDictionaryComplexType", 
+                "DictionaryComplexType", 0, x => x.First().Opening().LogicalName("Response")
                     .Namespace("Get").FullNamespace("Get"));
 
             description[1].ShouldBeOpeningComplexTypeDictionaryEntry(
-                "key", "string", 1, x => x.Namespace("Get")
+                "key", "string", "DictionaryComplexType", 1, x => x.Namespace("Get")
                     .FullNamespace("Get").LogicalName("Response"));
 
             description[2].ShouldBeSimpleTypeMember("Member", "string", 2, "",
                 x => x.IsString(), x => x.IsLastMember().Required());
 
-            description[3].ShouldBeClosingComplexTypeDictionaryEntry("key", 1);
+            description[3].ShouldBeClosingComplexTypeDictionaryEntry("key", "DictionaryComplexType", 1);
 
             description[4].ShouldBeDictionary("DictionaryOfDictionaryComplexType", 
-                0, x => x.Last().Closing());
+                "DictionaryComplexType", 0, x => x.Last().Closing());
         }
 
         [Test]
@@ -621,17 +621,17 @@ namespace Tests.Unit.Web.Handlers.App
 
             description.ShouldBeIndexed().ShouldTotal(5);
 
-            description[0].ShouldBeDictionary("DictionaryOfArrayOfInt", 0,
+            description[0].ShouldBeDictionary("DictionaryOfArrayOfInt", "ArrayOfInt", 0,
                 x => x.First().Opening());
 
             description[1].ShouldBeOpeningArrayDictionaryEntry(
-                "key", "string", 1, x => x.TypeName("int"));
+                "key", "string", "ArrayOfInt", 1, x => x.TypeName("int"));
 
             description[2].ShouldBeSimpleType("int", "int", 2, "0", x => x.IsNumeric());
 
-            description[3].ShouldBeClosingArrayDictionaryEntry("key", 1);
+            description[3].ShouldBeClosingArrayDictionaryEntry("key", "int", 1);
 
-            description[4].ShouldBeDictionary("DictionaryOfArrayOfInt", 
+            description[4].ShouldBeDictionary("DictionaryOfArrayOfInt", "ArrayOfInt", 
                 0, x => x.Last().Closing());
         }
 
@@ -642,18 +642,18 @@ namespace Tests.Unit.Web.Handlers.App
 
             description.ShouldBeIndexed().ShouldTotal(5);
 
-            description[0].ShouldBeDictionary("DictionaryOfDictionaryOfInt", 0,
+            description[0].ShouldBeDictionary("DictionaryOfDictionaryOfInt", "DictionaryOfInt", 0,
                 x => x.First().Opening());
 
             description[1].ShouldBeOpeningDictionaryDictionaryEntry(
-                "key", "string", 1, x => x.TypeName("int"));
+                "key", "string", "DictionaryOfInt", 1, x => x.TypeName("int"));
 
             description[2].ShouldBeSimpleTypeDictionaryEntry(
                 "key", "string", "int", 2, "0", x => x.IsNumeric());
 
-            description[3].ShouldBeClosingDictionaryDictionaryEntry("key", 1);
+            description[3].ShouldBeClosingDictionaryDictionaryEntry("key", "int", 1);
 
-            description[4].ShouldBeDictionary("DictionaryOfDictionaryOfInt", 
+            description[4].ShouldBeDictionary("DictionaryOfDictionaryOfInt", "DictionaryOfInt", 
                 0, x => x.Last().Closing());
         }
     }
@@ -771,7 +771,14 @@ namespace Tests.Unit.Web.Handlers.App
             this BodyDefinitionModel source, string name, int level,
             Action<ArrayDsl> properties)
         {
-            source.ShouldMatchLineItem(CreateArray(name, level, properties));
+            source.ShouldBeArray(name, null, level, properties);
+        }
+
+        public static void ShouldBeArray(
+            this BodyDefinitionModel source, string name, string typeName, int level,
+            Action<ArrayDsl> properties)
+        {
+            source.ShouldMatchLineItem(CreateArray(name, typeName, level, properties));
         }
 
         public static void ShouldBeArrayMember(
@@ -779,18 +786,26 @@ namespace Tests.Unit.Web.Handlers.App
             Action<ArrayDsl> arrayProperties,
             Action<MemberDsl> memberProperties = null)
         {
-            var compare = CreateArray(name, level, arrayProperties);
+            source.ShouldBeArrayMember(name, null, level, arrayProperties, memberProperties);
+        }
+
+        public static void ShouldBeArrayMember(
+            this BodyDefinitionModel source, string name, string typeName, int level,
+            Action<ArrayDsl> arrayProperties,
+            Action<MemberDsl> memberProperties = null)
+        {
+            var compare = CreateArray(name, typeName, level, arrayProperties);
             compare.IsMember = true;
             memberProperties?.Invoke(new MemberDsl(compare));
             source.ShouldMatchLineItem(compare);
         }
 
         public static void ShouldBeOpeningArrayDictionaryEntry(
-            this BodyDefinitionModel source, string name, string keyTypeName, int level,
+            this BodyDefinitionModel source, string name, string keyTypeName, string typeName, int level,
             Action<ArrayDsl> arrayProperties = null,
             Action<DictionaryKeyDsl> dictionaryKeyProperties = null)
         {
-            var compare = CreateArray(name, level, arrayProperties);
+            var compare = CreateArray(name, typeName, level, arrayProperties);
             compare.IsOpening = true;
             compare.IsDictionaryEntry = true;
             compare.DictionaryKey = new KeyModel { TypeName = keyTypeName };
@@ -802,18 +817,26 @@ namespace Tests.Unit.Web.Handlers.App
             this BodyDefinitionModel source, string name, int level,
             Action<ArrayDsl> arrayProperties = null)
         {
-            var compare = CreateArray(name, level, arrayProperties);
+            source.ShouldBeClosingArrayDictionaryEntry(name, null, level, arrayProperties);
+        }
+
+        public static void ShouldBeClosingArrayDictionaryEntry(
+            this BodyDefinitionModel source, string name, string typeName, int level,
+            Action<ArrayDsl> arrayProperties = null)
+        {
+            var compare = CreateArray(name, typeName, level, arrayProperties);
             compare.IsClosing = true;
             compare.IsDictionaryEntry = true;
             source.ShouldMatchLineItem(compare);
         }
 
         private static BodyDefinitionModel CreateArray(
-            string name, int level, Action<ArrayDsl> properties)
+            string name, string typeName, int level, Action<ArrayDsl> properties)
         {
             var arrayType = new BodyDefinitionModel
             {
                 Name = name,
+                TypeName = typeName,
                 IsArray = true,
                 Whitespace = BodyDescriptionService.Whitespace.Repeat(level)
             };
@@ -870,7 +893,14 @@ namespace Tests.Unit.Web.Handlers.App
             this BodyDefinitionModel source, string name, int level,
             Action<DictionaryDsl> properties)
         {
-            source.ShouldMatchLineItem(CreateDictionary(name, level, properties));
+            source.ShouldBeDictionary(name, null, level, properties);
+        }
+
+        public static void ShouldBeDictionary(
+            this BodyDefinitionModel source, string name, string typeName, int level,
+            Action<DictionaryDsl> properties)
+        {
+            source.ShouldMatchLineItem(CreateDictionary(name, typeName, level, properties));
         }
 
         public static void ShouldBeDictionaryMember(
@@ -878,18 +908,26 @@ namespace Tests.Unit.Web.Handlers.App
             Action<DictionaryDsl> dictionaryProperties,
             Action<MemberDsl> memberProperties = null)
         {
-            var compare = CreateDictionary(name, level, dictionaryProperties);
+            source.ShouldBeDictionaryMember(name, null, level, dictionaryProperties, memberProperties);
+        }
+
+        public static void ShouldBeDictionaryMember(
+            this BodyDefinitionModel source, string name, string typeName, int level,
+            Action<DictionaryDsl> dictionaryProperties,
+            Action<MemberDsl> memberProperties = null)
+        {
+            var compare = CreateDictionary(name, typeName, level, dictionaryProperties);
             compare.IsMember = true;
             memberProperties?.Invoke(new MemberDsl(compare));
             source.ShouldMatchLineItem(compare);
         }
 
         public static void ShouldBeDictionaryDictionaryEntry(
-            this BodyDefinitionModel source, string name, string keyTypeName, int level,
+            this BodyDefinitionModel source, string name, string keyTypeName, string typeName, int level,
             Action<DictionaryDsl> dictionaryProperties,
             Action<DictionaryKeyDsl> dictionaryKeyProperties = null)
         {
-            var compare = CreateDictionary(name, level, dictionaryProperties);
+            var compare = CreateDictionary(name, typeName, level, dictionaryProperties);
             compare.IsDictionaryEntry = true;
             compare.DictionaryKey = new KeyModel { TypeName = keyTypeName };
             dictionaryKeyProperties?.Invoke(new DictionaryKeyDsl(compare));
@@ -897,11 +935,11 @@ namespace Tests.Unit.Web.Handlers.App
         }
 
         public static void ShouldBeOpeningDictionaryDictionaryEntry(
-            this BodyDefinitionModel source, string name, string keyTypeName, int level,
+            this BodyDefinitionModel source, string name, string keyTypeName, string typeName, int level,
             Action<DictionaryDsl> dictionaryProperties = null,
             Action<DictionaryKeyDsl> dictionaryKeyProperties = null)
         {
-            var compare = CreateDictionary(name, level, dictionaryProperties);
+            var compare = CreateDictionary(name, typeName, level, dictionaryProperties);
             compare.IsOpening = true;
             compare.IsDictionaryEntry = true;
             compare.DictionaryKey = new KeyModel { TypeName = keyTypeName };
@@ -910,21 +948,23 @@ namespace Tests.Unit.Web.Handlers.App
         }
 
         public static void ShouldBeClosingDictionaryDictionaryEntry(
-            this BodyDefinitionModel source, string name, int level,
+            this BodyDefinitionModel source, string name, string typeName, int level,
             Action<DictionaryDsl> dictionaryKeyProperties = null)
         {
-            var compare = CreateDictionary(name, level, dictionaryKeyProperties);
+            var compare = CreateDictionary(name, typeName, level, dictionaryKeyProperties);
             compare.IsClosing = true;
             compare.IsDictionaryEntry = true;
             source.ShouldMatchLineItem(compare);
         }
 
         private static BodyDefinitionModel CreateDictionary(
-            string name, int level, Action<DictionaryDsl> properties)
+            string name, string typeName, int level, 
+            Action<DictionaryDsl> properties)
         {
             var dictionaryType = new BodyDefinitionModel
             {
                 Name = name,
+                TypeName = typeName,
                 IsDictionary = true,
                 Whitespace = BodyDescriptionService.Whitespace.Repeat(level)
             };
@@ -980,26 +1020,32 @@ namespace Tests.Unit.Web.Handlers.App
         public static void ShouldBeComplexType(this BodyDefinitionModel source,
             string name, int level, Action<ComplexTypeDsl> properties)
         {
-            source.ShouldMatchLineItem(CreateComplexType(name, level, properties));
+            source.ShouldBeComplexType(name, name, level, properties);
         }
 
-        public static void ShouldBeComplexTypeMember(
-            this BodyDefinitionModel source, string name, int level,
+        public static void ShouldBeComplexType(this BodyDefinitionModel source,
+            string name, string typeName, int level, Action<ComplexTypeDsl> properties)
+        {
+            source.ShouldMatchLineItem(CreateComplexType(name, typeName, level, properties));
+        }
+
+        public static void ShouldBeComplexTypeMember(this BodyDefinitionModel source, 
+            string name, string typeName, int level,
             Action<ComplexTypeDsl> complexTypeProperties = null,
             Action<MemberDsl> memberProperties = null)
         {
-            var compare = CreateComplexType(name, level, complexTypeProperties);
+            var compare = CreateComplexType(name, typeName, level, complexTypeProperties);
             compare.IsMember = true;
             memberProperties?.Invoke(new MemberDsl(compare));
             source.ShouldMatchLineItem(compare);
         }
 
-        public static void ShouldBeOpeningComplexTypeDictionaryEntry(
-            this BodyDefinitionModel source, string name, string keyTypeName, int level,
+        public static void ShouldBeOpeningComplexTypeDictionaryEntry(this BodyDefinitionModel source, 
+            string name, string keyTypeName, string valueTypeName, int level,
             Action<ComplexTypeDsl> complexTypeProperties = null,
             Action<DictionaryKeyDsl> dictionaryKeyProperties = null)
         {
-            var compare = CreateComplexType(name, level, complexTypeProperties);
+            var compare = CreateComplexType(name, valueTypeName, level, complexTypeProperties);
             compare.IsOpening = true;
             compare.IsDictionaryEntry = true;
             compare.DictionaryKey = new KeyModel { TypeName = keyTypeName };
@@ -1008,21 +1054,28 @@ namespace Tests.Unit.Web.Handlers.App
         }
 
         public static void ShouldBeClosingComplexTypeDictionaryEntry(
-            this BodyDefinitionModel source, string name, int level,
+            this BodyDefinitionModel source, string name, string typeName, int level,
             Action<ComplexTypeDsl> complexTypeProperties = null)
         {
-            var compare = CreateComplexType(name, level, complexTypeProperties);
+            var compare = CreateComplexType(name, typeName, level, complexTypeProperties);
             compare.IsClosing = true;
             compare.IsDictionaryEntry = true;
             source.ShouldMatchLineItem(compare);
         }
 
-        private static BodyDefinitionModel CreateComplexType(
-            string name, int level, Action<ComplexTypeDsl> properties = null)
+        private static BodyDefinitionModel CreateComplexType(string name,
+            int level, Action<ComplexTypeDsl> properties = null)
+        {
+            return CreateComplexType(name, name, level, properties);
+        }
+
+        private static BodyDefinitionModel CreateComplexType(string name, 
+            string typeName, int level, Action<ComplexTypeDsl> properties = null)
         {
             var complexType = new BodyDefinitionModel
             {
                 Name = name,
+                TypeName = typeName,
                 IsComplexType = true,
                 Whitespace = BodyDescriptionService.Whitespace.Repeat(level)
             };

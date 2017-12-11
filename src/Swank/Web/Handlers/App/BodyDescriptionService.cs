@@ -122,6 +122,7 @@ namespace Swank.Web.Handlers.App
             var arrayOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
+                TypeName = type.ArrayItem.Type.Name,
                 Namespace = type.ArrayItem.Type.Namespace,
                 FullNamespace = type.ArrayItem.Type.FullNamespace,
                 LogicalName = type.ArrayItem.Type.LogicalName,
@@ -156,6 +157,7 @@ namespace Swank.Web.Handlers.App
             var arrayClosing = new BodyDefinitionModel
             {
                 Name = type.Name,
+                TypeName = type.ArrayItem.Type.Name,
                 Whitespace = Whitespace.Repeat(level),
                 IsClosing = true,
                 IsArray = true
@@ -173,6 +175,7 @@ namespace Swank.Web.Handlers.App
             var dictionaryOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
+                TypeName = type.DictionaryEntry.ValueType.Name,
                 Namespace = type.DictionaryEntry.ValueType.Namespace,
                 FullNamespace = type.DictionaryEntry.ValueType.FullNamespace,
                 LogicalName = type.DictionaryEntry.ValueType.LogicalName,
@@ -214,6 +217,7 @@ namespace Swank.Web.Handlers.App
             var dictionaryClosing = new BodyDefinitionModel
             {
                 Name = type.Name,
+                TypeName = type.DictionaryEntry.ValueType.Name,
                 Whitespace = Whitespace.Repeat(level),
                 IsClosing = true,
                 IsDictionary = true
@@ -232,6 +236,7 @@ namespace Swank.Web.Handlers.App
             var complexOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
+                TypeName = type.Name,
                 Namespace = type.Namespace,
                 FullNamespace = type.FullNamespace,
                 LogicalName = type.LogicalName,
@@ -278,6 +283,7 @@ namespace Swank.Web.Handlers.App
             var complexClosing = new BodyDefinitionModel
             {
                 Name = type.Name,
+                TypeName = type.Name,
                 Whitespace = Whitespace.Repeat(level),
                 IsClosing = true,
                 IsComplexType = true
