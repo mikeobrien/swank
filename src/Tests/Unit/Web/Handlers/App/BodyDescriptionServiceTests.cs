@@ -463,13 +463,13 @@ namespace Tests.Unit.Web.Handlers.App
                     .Namespace("Get").FullNamespace("Get"));
 
             description[1].ShouldBeComplexType("ArrayComplexType", 
-                1, x => x.Opening().Namespace("Get").FullNamespace("Get")
+                "ArrayComplexType", 1, x => x.Opening().Namespace("Get").FullNamespace("Get")
                     .LogicalName("Response"));
 
             description[2].ShouldBeSimpleTypeMember("Member", "string", 2, "",
                 x => x.IsString(), x => x.IsLastMember().Required());
 
-            description[3].ShouldBeComplexType("ArrayComplexType", 1,
+            description[3].ShouldBeComplexType("ArrayComplexType", "ArrayComplexType", 1,
                 x => x.Closing());
 
             description[4].ShouldBeArray("ArrayOfArrayComplexType", 0,
@@ -602,13 +602,13 @@ namespace Tests.Unit.Web.Handlers.App
                     .Namespace("Get").FullNamespace("Get"));
 
             description[1].ShouldBeOpeningComplexTypeDictionaryEntry(
-                "key", "string", 1, x => x.Namespace("Get")
+                "key", "string", "DictionaryComplexType", 1, x => x.Namespace("Get")
                     .FullNamespace("Get").LogicalName("Response"));
 
             description[2].ShouldBeSimpleTypeMember("Member", "string", 2, "",
                 x => x.IsString(), x => x.IsLastMember().Required());
 
-            description[3].ShouldBeClosingComplexTypeDictionaryEntry("key", 1);
+            description[3].ShouldBeClosingComplexTypeDictionaryEntry("key", "DictionaryComplexType", 1);
 
             description[4].ShouldBeDictionary("DictionaryOfDictionaryComplexType", 
                 0, x => x.Last().Closing());
@@ -980,26 +980,32 @@ namespace Tests.Unit.Web.Handlers.App
         public static void ShouldBeComplexType(this BodyDefinitionModel source,
             string name, int level, Action<ComplexTypeDsl> properties)
         {
-            source.ShouldMatchLineItem(CreateComplexType(name, level, properties));
+            source.ShouldBeComplexType(name, name, level, properties);
         }
 
-        public static void ShouldBeComplexTypeMember(
-            this BodyDefinitionModel source, string name, int level,
+        public static void ShouldBeComplexType(this BodyDefinitionModel source,
+            string name, string typeName, int level, Action<ComplexTypeDsl> properties)
+        {
+            source.ShouldMatchLineItem(CreateComplexType(name, typeName, level, properties));
+        }
+
+        public static void ShouldBeComplexTypeMember(this BodyDefinitionModel source, 
+            string name, string typeName, int level,
             Action<ComplexTypeDsl> complexTypeProperties = null,
             Action<MemberDsl> memberProperties = null)
         {
-            var compare = CreateComplexType(name, level, complexTypeProperties);
+            var compare = CreateComplexType(name, typeName, level, complexTypeProperties);
             compare.IsMember = true;
             memberProperties?.Invoke(new MemberDsl(compare));
             source.ShouldMatchLineItem(compare);
         }
 
-        public static void ShouldBeOpeningComplexTypeDictionaryEntry(
-            this BodyDefinitionModel source, string name, string keyTypeName, int level,
+        public static void ShouldBeOpeningComplexTypeDictionaryEntry(this BodyDefinitionModel source, 
+            string name, string keyTypeName, string valueTypeName, int level,
             Action<ComplexTypeDsl> complexTypeProperties = null,
             Action<DictionaryKeyDsl> dictionaryKeyProperties = null)
         {
-            var compare = CreateComplexType(name, level, complexTypeProperties);
+            var compare = CreateComplexType(name, valueTypeName, level, complexTypeProperties);
             compare.IsOpening = true;
             compare.IsDictionaryEntry = true;
             compare.DictionaryKey = new KeyModel { TypeName = keyTypeName };
@@ -1008,21 +1014,28 @@ namespace Tests.Unit.Web.Handlers.App
         }
 
         public static void ShouldBeClosingComplexTypeDictionaryEntry(
-            this BodyDefinitionModel source, string name, int level,
+            this BodyDefinitionModel source, string name, string typeName, int level,
             Action<ComplexTypeDsl> complexTypeProperties = null)
         {
-            var compare = CreateComplexType(name, level, complexTypeProperties);
+            var compare = CreateComplexType(name, typeName, level, complexTypeProperties);
             compare.IsClosing = true;
             compare.IsDictionaryEntry = true;
             source.ShouldMatchLineItem(compare);
         }
 
-        private static BodyDefinitionModel CreateComplexType(
-            string name, int level, Action<ComplexTypeDsl> properties = null)
+        private static BodyDefinitionModel CreateComplexType(string name,
+            int level, Action<ComplexTypeDsl> properties = null)
+        {
+            return CreateComplexType(name, name, level, properties);
+        }
+
+        private static BodyDefinitionModel CreateComplexType(string name, 
+            string typeName, int level, Action<ComplexTypeDsl> properties = null)
         {
             var complexType = new BodyDefinitionModel
             {
                 Name = name,
+                TypeName = typeName,
                 IsComplexType = true,
                 Whitespace = BodyDescriptionService.Whitespace.Repeat(level)
             };

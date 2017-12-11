@@ -232,6 +232,7 @@ namespace Swank.Web.Handlers.App
             var complexOpening = new BodyDefinitionModel
             {
                 Name = type.Name,
+                TypeName = type.Name,
                 Namespace = type.Namespace,
                 FullNamespace = type.FullNamespace,
                 LogicalName = type.LogicalName,
@@ -278,6 +279,7 @@ namespace Swank.Web.Handlers.App
             var complexClosing = new BodyDefinitionModel
             {
                 Name = type.Name,
+                TypeName = type.Name,
                 Whitespace = Whitespace.Repeat(level),
                 IsClosing = true,
                 IsComplexType = true
