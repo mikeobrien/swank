@@ -520,7 +520,7 @@
                     </button>
                     <pre class="swank-code-example {{language}}"><code id="code-example-{{../id}}-{{index}}-content">
                         {{~#with example~}}
-                            {{{replace . '\r\n' '&lt;br/>'}}}
+                            {{{replace (htmlEncode .) '\r\n' '&lt;br/>'}}}
                         {{~/with~}}
                     </code></pre>
                 </div>

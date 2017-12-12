@@ -208,6 +208,10 @@ $(function () {
                 .replace(/&lt;/g, '<').replace(/&gt;/g, '>'));
         });
 
+        Handlebars.registerHelper('htmlEncode', function (source) {
+            return source.replace(/\</g, '&lt;').replace(/\>/g, '&gt;');
+        });
+
         Handlebars.registerHelper('equals',
             function (actual, expected, options) {
                 return actual == expected ?
