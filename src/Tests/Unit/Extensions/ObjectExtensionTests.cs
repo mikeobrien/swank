@@ -74,8 +74,8 @@ namespace Tests.Unit.Extensions
             .Add<ulong?>("5").Add<DateTime>(new DateTime(1985, 10, 22).ToString("g"))
             .Add<DateTime?>(new DateTime(1985, 10, 22).ToString("g")).Add<TimeSpan>("0:05:00")
             .Add<TimeSpan?>("0:05:00").Add<Guid>("00000000-0000-0000-0000-000000000000")
-            .Add<Guid?>("00000000-0000-0000-0000-000000000000").Add<UriFormat>("0")
-            .Add<UriFormat?>("0"));
+            .Add<Guid?>("00000000-0000-0000-0000-000000000000").Add<UriFormat>("UriEscaped")
+            .Add<UriFormat?>("UriEscaped"));
 
         [Test]       
         [TestCaseSource(nameof(SampleValueTestCases))]
@@ -91,6 +91,27 @@ namespace Tests.Unit.Extensions
                 SampleStringValue = "fark"
             };
             type.GetSampleValue(configuration).ShouldEqual(expected);
+        }
+
+        public enum ImplicitEnum
+        {
+            Fark, Farker
+        }
+
+        public enum ExplicitEnum
+        {
+            Fark = 1, Farker = 2
+        }
+
+        [Test]
+        public void Should_return_sample_enum_value(
+            [Values(typeof(ImplicitEnum), typeof(ExplicitEnum))] Type type)
+        {
+            var configuration = new Swank.Configuration.Configuration
+            {
+                EnumFormat = EnumFormat.AsString
+            };
+            type.GetSampleValue(configuration).ShouldEqual("Fark");
         }
     }
 }

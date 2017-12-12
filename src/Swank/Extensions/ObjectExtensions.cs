@@ -100,8 +100,8 @@ namespace Swank.Extensions
             if (type == typeof(Uri))
                 return configuration.SampleUriValue.ToString();
 
-            if (type.IsEnum) return Activator.CreateInstance(type)
-                .ToSampleValueString(configuration);
+            if (type.IsEnum) return Enum.ToObject(type, type.GetEnumOptions().First()
+                .GetRawConstantValue()).ToSampleValueString(configuration);
 
             return configuration.SampleStringValue;
         }
