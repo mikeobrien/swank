@@ -13,11 +13,12 @@ namespace Swank.Extensions
     {
         public static string RenderMustache<T>(this string template, T model)
         {
-            return Render.StringToString(template, model);
+            return Render.StringToString(template.NormalizeLineBreaks(), model);
         }
 
         public static void CompileRazor<T>(this string template)
         {
+            template = template.NormalizeLineBreaks();
             var name = template.Hash();
             if (Engine.Razor.IsTemplateCached(name, typeof(T))) return;
             Engine.Razor.Compile(template, name, typeof(T));
@@ -25,6 +26,7 @@ namespace Swank.Extensions
 
         public static string RenderRazor<T>(this string template, T model)
         {
+            template = template.NormalizeLineBreaks();
             var name = template.Hash();
             return Engine.Razor.IsTemplateCached(name, typeof(T))
                 ? Engine.Razor.Run(name, typeof(T), model)
@@ -33,6 +35,7 @@ namespace Swank.Extensions
 
         public static string RenderAndCompileRazor<T>(this string template, T model)
         {
+            template = template.NormalizeLineBreaks();
             return Engine.Razor.RunCompile(template, template.Hash(), typeof(T), model);
         }
 

@@ -27,7 +27,7 @@ namespace Swank.Web.Templates
             try
             {
                 return _asset?.ReadString()?
-                        .NormalizeLineBreaks().RemoveWhitespace()
+                        .RemoveWhitespace()
                         .ConvertNbspHtmlEntityToSpaces()
                         .ConvertBrHtmlTagsToLineBreaks()
                         .RenderMustache(model);
